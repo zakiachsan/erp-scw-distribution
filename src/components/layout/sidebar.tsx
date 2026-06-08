@@ -82,12 +82,19 @@ export function Sidebar() {
   const [mounted, setMounted] = useState(false)
   const { activeModule, setActiveModule } = useModuleStore()
 
+  const moduleInfo = activeModule ? getModuleById(activeModule) : null
+
   // Delay rendering until client-side hydration is complete
   React.useEffect(() => {
     setMounted(true)
-  }, [])
-
-  const moduleInfo = activeModule ? getModuleById(activeModule) : null
+    // Open all sub-menus by default
+    if (moduleInfo) {
+      const allSections = moduleInfo.menuItems
+        .filter((item) => item.children && item.children.length > 0)
+        .map((item) => item.label)
+      setOpenSections(allSections)
+    }
+  }, [moduleInfo])
 
   // Build menu items from module
   const menuItems = useMemo(() => {
