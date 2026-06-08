@@ -283,12 +283,10 @@ export default function WarehousePage() {
           </p>
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogTrigger>
-           <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Rack
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger render={<Button />}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Rack
+                    </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Rack</DialogTitle>

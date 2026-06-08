@@ -247,12 +247,10 @@ export default function PackingMaterialsPage() {
           </p>
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogTrigger>
-           <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Material
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger render={<Button />}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Material
+                    </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Material</DialogTitle>
