@@ -1,0 +1,15 @@
+node_modules/
+.next/
+UsersUser.npm-cache/
+
+# Build artifacts
+.open-next/
+.wrangler/
+storefront/dist/
+storefront/node_modules/
+node_modules/
+
+# Local env
+.env.local
+*.local
+.git-rewrite/
