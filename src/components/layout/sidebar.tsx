@@ -40,6 +40,7 @@ import {
   Image,
   Ticket,
   Star,
+  CreditCard,
 } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
@@ -78,7 +79,13 @@ export function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [openSections, setOpenSections] = useState<string[]>([])
+  const [mounted, setMounted] = useState(false)
   const { activeModule, setActiveModule } = useModuleStore()
+
+  // Delay rendering until client-side hydration is complete
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const moduleInfo = activeModule ? getModuleById(activeModule) : null
 
@@ -130,7 +137,7 @@ export function Sidebar() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">SCW Distribution</span>
-              {moduleInfo && (
+              {mounted && moduleInfo && (
                 <span className={cn("text-[10px] font-medium px-1.5 py-0.5 rounded-full w-fit", colors.accent)}>
                   {moduleInfo.name}
                 </span>
@@ -148,7 +155,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2 px-2">
-        {menuItems.map((item) => {
+        {mounted && menuItems.map((item) => {
           const Icon = item.iconEl
           const hasChildren = !!item.children
           const isExpanded = openSections.includes(item.label)

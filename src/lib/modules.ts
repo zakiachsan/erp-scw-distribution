@@ -46,7 +46,13 @@ export const MODULES: ModuleInfo[] = [
         icon: "Receipt",
         children: [
           { label: "Invoice List", href: "/sales/invoices" },
+          { label: "Create Invoice", href: "/sales/invoices/create" },
         ],
+      },
+      {
+        label: "Payments",
+        icon: "CreditCard",
+        href: "/sales/payments",
       },
       { label: "Commission", icon: "DollarSign", href: "/sales/commission" },
       { label: "Tiering Discount", icon: "Percent", href: "/tiering" },
@@ -69,6 +75,8 @@ export const MODULES: ModuleInfo[] = [
           { label: "Stock Opname", href: "/inventory/stock-opname" },
           { label: "Stock Alert", href: "/inventory/stock-alert" },
           { label: "Packing Materials", href: "/inventory/packing-materials" },
+          { label: "Stock Ledger", href: "/inventory/stock-ledger" },
+          { label: "Estimasi Harga", href: "/inventory/estimasi-harga" },
         ],
       },
       {

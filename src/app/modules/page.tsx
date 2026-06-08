@@ -8,6 +8,7 @@ import {
   BookOpen,
   Store,
   ArrowRight,
+  Settings,
 } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
@@ -71,6 +72,12 @@ export default function ModulesPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/settings/users")}
+              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+            >
+              <Settings className="h-4 w-4 text-slate-500" />
+            </button>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
               AD
             </div>
