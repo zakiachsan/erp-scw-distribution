@@ -11,6 +11,13 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -202,47 +209,56 @@ export default function StockAlertPage() {
         </Card>
       </div>
 
-      {showSettings && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+      <Dialog open={showSettings} onOpenChange={setShowSettings}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
               Threshold Settings
-            </CardTitle>
-            <CardDescription>
+            </DialogTitle>
+            <DialogDescription>
               Configure minimum stock thresholds for each product category
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {alertProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center justify-between gap-2 rounded-lg border p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{product.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Current: {product.currentStock}
-                    </p>
-                  </div>
-                  <Input
-                    type="number"
-                    value={thresholds[product.id] || product.threshold}
-                    onChange={(e) =>
-                      setThresholds({
-                        ...thresholds,
-                        [product.id]: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-20 text-right"
-                  />
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 md:grid-cols-2 max-h-[60vh] overflow-y-auto py-2">
+            {alertProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between gap-2 rounded-lg border p-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{product.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Current: {product.currentStock}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                <Input
+                  type="number"
+                  value={thresholds[product.id] || product.threshold}
+                  onChange={(e) =>
+                    setThresholds({
+                      ...thresholds,
+                      [product.id]: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-20 text-right"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2 pt-2 border-t">
+            <Button variant="outline" onClick={() => setShowSettings(false)}>
+              Batal
+            </Button>
+            <Button onClick={() => {
+              alert("Threshold berhasil disimpan!")
+              setShowSettings(false)
+            }}>
+              Simpan
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>
