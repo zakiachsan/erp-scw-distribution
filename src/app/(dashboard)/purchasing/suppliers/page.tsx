@@ -2,6 +2,12 @@
 
 import { useState, useMemo } from "react"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Card,
   CardContent,
   CardHeader,
@@ -11,6 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Table,
   TableBody,
@@ -144,6 +151,21 @@ const statusConfig = {
 
 export default function SuppliersPage() {
   const [search, setSearch] = useState("")
+  const [addOpen, setAddOpen] = useState(false)
+  const [name, setName] = useState("")
+  const [contact, setContact] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+
+  const addSupplier = () => {
+    if (!name.trim()) return
+    alert(`Supplier "${name}" added successfully!`)
+    setName("")
+    setContact("")
+    setPhone("")
+    setEmail("")
+    setAddOpen(false)
+  }
 
   const filtered = useMemo(() => {
     return suppliers.filter(
@@ -166,11 +188,40 @@ export default function SuppliersPage() {
             Manage your supplier directory and contact information
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setAddOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Add Supplier
         </Button>
       </div>
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Supplier</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Supplier Name</Label>
+              <Input placeholder="Enter supplier name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Contact Person</Label>
+              <Input placeholder="Enter contact person" value={contact} onChange={(e) => setContact(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone</Label>
+              <Input placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <Button onClick={addSupplier} className="w-full">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Supplier
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

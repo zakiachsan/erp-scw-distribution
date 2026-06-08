@@ -31,6 +31,7 @@ import {
   Filter,
   FileText,
   DollarSign,
+  Plus,
 } from "lucide-react"
 
 interface Invoice {
@@ -81,6 +82,12 @@ export default function InvoiceListPage() {
             Manage invoices and track payment status
           </p>
         </div>
+        <Link href="/sales/invoices/create">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Invoice
+          </Button>
+        </Link>
       </div>
 
       {/* Summary Cards */}

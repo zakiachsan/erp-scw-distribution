@@ -244,6 +244,10 @@ export default function StockOpnamePage() {
               className="w-full"
               size="lg"
               disabled={entries.length === 0}
+              onClick={() => {
+                alert("Stock Opname submitted successfully!")
+                setEntries([])
+              }}
             >
               Submit Stock Opname
             </Button>

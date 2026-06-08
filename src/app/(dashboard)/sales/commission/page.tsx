@@ -80,7 +80,7 @@ export default function CommissionPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline">Export</Button>
+          <Button variant="outline" onClick={() => alert("Export akan tersedia setelah integrasi dengan database")}>Export</Button>
         </div>
       </div>
 

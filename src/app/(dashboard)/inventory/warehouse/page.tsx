@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Card,
   CardContent,
@@ -9,6 +10,14 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Warehouse,
@@ -237,10 +246,32 @@ function RackCard({ rack }: { rack: Rack }) {
 }
 
 export default function WarehousePage() {
+  const [addOpen, setAddOpen] = useState(false)
+  const [rackName, setRackName] = useState("")
+  const [capacity, setCapacity] = useState("")
+  const [rackList, setRackList] = useState(racks)
+
+  const addRack = () => {
+    if (!rackName.trim()) return
+    const newRack = {
+      id: String(rackList.length + 1),
+      name: rackName,
+      warehouse: "Gudang Utama",
+      status: "empty" as const,
+      capacity: Number(capacity) || 100,
+      used: 0,
+      products: [],
+    }
+    setRackList([...rackList, newRack])
+    setRackName("")
+    setCapacity("")
+    setAddOpen(false)
+  }
+
   const warehouses = ["All", "Gudang Utama", "Gudang Cabang", "Gudang Display"]
-  const emptyCount = racks.filter((r) => r.status === "empty").length
-  const occupiedCount = racks.filter((r) => r.status === "occupied").length
-  const fullCount = racks.filter((r) => r.status === "full").length
+  const emptyCount = rackList.filter((r) => r.status === "empty").length
+  const occupiedCount = rackList.filter((r) => r.status === "occupied").length
+  const fullCount = rackList.filter((r) => r.status === "full").length
 
   return (
     <div className="space-y-6 p-6">
@@ -251,10 +282,24 @@ export default function WarehousePage() {
             Manage rack assignments and warehouse layout
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Rack
-        </Button>
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger>
+           <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Rack
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Rack</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <Input placeholder="Rack Name" value={rackName} onChange={(e) => setRackName(e.target.value)} />
+              <Input placeholder="Capacity" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} />
+              <Button onClick={addRack} className="w-full">Add Rack</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -266,7 +311,7 @@ export default function WarehousePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Racks</p>
-                <p className="text-2xl font-bold">{racks.length}</p>
+                <p className="text-2xl font-bold">{rackList.length}</p>
               </div>
             </div>
           </CardContent>
@@ -310,7 +355,7 @@ export default function WarehousePage() {
         {warehouses.map((wh) => (
           <TabsContent key={wh} value={wh}>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {racks
+              {rackList
                 .filter((r) => wh === "All" || r.warehouse === wh)
                 .map((rack) => (
                   <RackCard key={rack.id} rack={rack} />

@@ -115,7 +115,7 @@ export default function TieringPage() {
             Configure tier-based discount rules per product
           </p>
         </div>
-        <Button>
+        <Button onClick={() => alert("Konfigurasi berhasil disimpan!")}>
           <Save className="mr-2 h-4 w-4" />
           Save Configuration
         </Button>

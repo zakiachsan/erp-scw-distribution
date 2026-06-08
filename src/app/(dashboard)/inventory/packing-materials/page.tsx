@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Card,
   CardContent,
@@ -9,6 +10,14 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -198,9 +207,35 @@ const statusConfig = {
 }
 
 export default function PackingMaterialsPage() {
-  const totalItems = packingMaterials.length
-  const criticalItems = packingMaterials.filter((p) => p.status === "critical").length
-  const lowItems = packingMaterials.filter((p) => p.status === "low").length
+  const [addOpen, setAddOpen] = useState(false)
+  const [matName, setMatName] = useState("")
+  const [matUnit, setMatUnit] = useState("")
+  const [matStock, setMatStock] = useState("")
+  const [materialList, setMaterialList] = useState(packingMaterials)
+
+  const addMaterial = () => {
+    if (!matName.trim()) return
+    const newMat = {
+      id: String(materialList.length + 1),
+      name: matName,
+      type: "Protection",
+      stockQty: Number(matStock) || 0,
+      unit: matUnit || "pcs",
+      reorderPoint: 10,
+      location: "Gudang Packing A",
+      lastUsed: new Date().toISOString().split("T")[0],
+      status: "sufficient" as const,
+    }
+    setMaterialList([...materialList, newMat])
+    setMatName("")
+    setMatUnit("")
+    setMatStock("")
+    setAddOpen(false)
+  }
+
+  const totalItems = materialList.length
+  const criticalItems = materialList.filter((p) => p.status === "critical").length
+  const lowItems = materialList.filter((p) => p.status === "low").length
 
   return (
     <div className="space-y-6 p-6">
@@ -211,10 +246,25 @@ export default function PackingMaterialsPage() {
             Track and manage packaging supplies for order fulfillment
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Material
-        </Button>
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger>
+           <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Material
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Material</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <Input placeholder="Material Name" value={matName} onChange={(e) => setMatName(e.target.value)} />
+              <Input placeholder="Unit (e.g. pcs, rolls, kg)" value={matUnit} onChange={(e) => setMatUnit(e.target.value)} />
+              <Input placeholder="Stock Quantity" type="number" value={matStock} onChange={(e) => setMatStock(e.target.value)} />
+              <Button onClick={addMaterial} className="w-full">Add Material</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -280,7 +330,7 @@ export default function PackingMaterialsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {packingMaterials.map((material) => (
+              {materialList.map((material) => (
                 <TableRow key={material.id}>
                   <TableCell className="font-medium">{material.name}</TableCell>
                   <TableCell>

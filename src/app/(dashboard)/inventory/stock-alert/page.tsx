@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -131,6 +132,7 @@ const alertProducts: AlertProduct[] = [
 ]
 
 export default function StockAlertPage() {
+  const router = useRouter()
   const [thresholds, setThresholds] = useState<Record<string, number>>(
     Object.fromEntries(alertProducts.map((p) => [p.id, p.threshold]))
   )
@@ -328,7 +330,7 @@ export default function StockAlertPage() {
                     {product.leadTimeDays} days
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => router.push("/purchasing/create")}>
                       <ShoppingCart className="mr-2 h-3 w-3" />
                       Create PO
                     </Button>

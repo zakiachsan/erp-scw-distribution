@@ -1,5 +1,14 @@
 "use client"
 
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Card,
   CardContent,
@@ -59,6 +68,20 @@ const statusConfig: Record<string, { className: string }> = {
 }
 
 export default function CouriersPage() {
+  const [addOpen, setAddOpen] = useState(false)
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [rates, setRates] = useState("")
+
+  const addCourier = () => {
+    if (!name.trim()) return
+    alert(`Courier "${name}" added successfully!`)
+    setName("")
+    setPhone("")
+    setRates("")
+    setAddOpen(false)
+  }
+
   const internalCouriers = couriers.filter((c) => c.type === "Internal")
   const expedisiPartners = couriers.filter((c) => c.type === "Expedisi Partner")
 
@@ -71,11 +94,36 @@ export default function CouriersPage() {
             Manage internal couriers and expedisi partners
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setAddOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Add Courier
         </Button>
       </div>
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Courier</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Courier Name</Label>
+              <Input placeholder="Enter courier name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone</Label>
+              <Input placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Rates</Label>
+              <Input placeholder="Enter rate info" value={rates} onChange={(e) => setRates(e.target.value)} />
+            </div>
+            <Button onClick={addCourier} className="w-full">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Courier
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Summary */}
       <div className="grid gap-4 md:grid-cols-3">

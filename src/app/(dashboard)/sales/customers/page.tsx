@@ -13,6 +13,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -68,9 +75,31 @@ const tierConfig = {
 export default function CustomerListPage() {
   const [search, setSearch] = useState("")
   const [tierFilter, setTierFilter] = useState("All")
+  const [addOpen, setAddOpen] = useState(false)
+  const [custName, setCustName] = useState("")
+  const [custCompany, setCustCompany] = useState("")
+  const [customerList, setCustomerList] = useState(customers)
+
+  const addCustomer = () => {
+    if (!custName.trim()) return
+    const newCust = {
+      id: `C${String(customerList.length + 1).padStart(3, "0")}`,
+      name: custName,
+      company: custCompany || "Unknown",
+      creditLimit: 0,
+      remainingCredit: 0,
+      lastPurchase: new Date().toISOString().split("T")[0],
+      tier: "Bronze" as const,
+      totalPurchase: 0,
+    }
+    setCustomerList([...customerList, newCust])
+    setCustName("")
+    setCustCompany("")
+    setAddOpen(false)
+  }
 
   const filtered = useMemo(() => {
-    return customers.filter((c) => {
+    return customerList.filter((c) => {
       const matchesSearch =
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.company.toLowerCase().includes(search.toLowerCase()) ||
@@ -78,7 +107,7 @@ export default function CustomerListPage() {
       const matchesTier = tierFilter === "All" || c.tier === tierFilter
       return matchesSearch && matchesTier
     })
-  }, [search, tierFilter])
+  }, [search, tierFilter, customerList])
 
   return (
     <div className="space-y-6 p-6">
@@ -89,10 +118,24 @@ export default function CustomerListPage() {
             Manage your customer database and credit accounts
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Customer
-        </Button>
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger>
+           <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Customer
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Customer</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <Input placeholder="Customer Name" value={custName} onChange={(e) => setCustName(e.target.value)} />
+              <Input placeholder="Company" value={custCompany} onChange={(e) => setCustCompany(e.target.value)} />
+              <Button onClick={addCustomer} className="w-full">Add Customer</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Summary Cards */}
@@ -105,7 +148,7 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Customers</p>
-                <p className="text-2xl font-bold">{customers.length}</p>
+                <p className="text-2xl font-bold">{customerList.length}</p>
               </div>
             </div>
           </CardContent>
@@ -119,7 +162,7 @@ export default function CustomerListPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Credit Limit</p>
                 <p className="text-2xl font-bold">
-                  Rp {(customers.reduce((sum, c) => sum + c.creditLimit, 0) / 1000000).toFixed(0)}M
+                  Rp {(customerList.reduce((sum, c) => sum + c.creditLimit, 0) / 1000000).toFixed(0)}M
                 </p>
               </div>
             </div>
@@ -134,7 +177,7 @@ export default function CustomerListPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Remaining Credit</p>
                 <p className="text-2xl font-bold">
-                  Rp {(customers.reduce((sum, c) => sum + c.remainingCredit, 0) / 1000000).toFixed(0)}M
+                  Rp {(customerList.reduce((sum, c) => sum + c.remainingCredit, 0) / 1000000).toFixed(0)}M
                 </p>
               </div>
             </div>
