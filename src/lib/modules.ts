@@ -77,6 +77,7 @@ export const MODULES: ModuleInfo[] = [
           { label: "Packing Materials", href: "/inventory/packing-materials" },
           { label: "Stock Ledger", href: "/inventory/stock-ledger" },
           { label: "Estimasi Harga", href: "/inventory/estimasi-harga" },
+          { label: "Inbound", href: "/inventory/inbound" },
         ],
       },
       {
