@@ -13,6 +13,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -79,9 +86,38 @@ const statusConfig = {
 export default function InventoryPage() {
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
+  const [addOpen, setAddOpen] = useState(false)
+  const [prodName, setProdName] = useState("")
+  const [prodSku, setProdSku] = useState("")
+  const [prodCategory, setProdCategory] = useState("")
+  const [prodStock, setProdStock] = useState("")
+  const [prodLocation, setProdLocation] = useState("")
+  const [productList, setProductList] = useState(products)
+
+  const addProduct = () => {
+    if (!prodName || !prodSku) return
+    const newProduct: Product = {
+      id: String(productList.length + 1),
+      sku: prodSku,
+      name: prodName,
+      category: prodCategory || "General",
+      stockQty: parseInt(prodStock) || 0,
+      location: prodLocation || "Gudang Utama",
+      status: parseInt(prodStock) > 10 ? "in-stock" : parseInt(prodStock) > 0 ? "low-stock" : "out-of-stock",
+      unit: "pcs",
+    }
+    setProductList([newProduct, ...productList])
+    setProdName("")
+    setProdSku("")
+    setProdCategory("")
+    setProdStock("")
+    setProdLocation("")
+    setAddOpen(false)
+    alert("Produk berhasil ditambahkan!")
+  }
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
+    return productList.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.sku.toLowerCase().includes(search.toLowerCase())
@@ -105,10 +141,25 @@ export default function InventoryPage() {
             Manage your product catalog and stock levels
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button>
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger render={<Button />}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Product</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input placeholder="Product Name" value={prodName} onChange={(e) => setProdName(e.target.value)} />
+              <Input placeholder="SKU" value={prodSku} onChange={(e) => setProdSku(e.target.value)} />
+              <Input placeholder="Category" value={prodCategory} onChange={(e) => setProdCategory(e.target.value)} />
+              <Input type="number" placeholder="Stock Qty" value={prodStock} onChange={(e) => setProdStock(e.target.value)} />
+              <Input placeholder="Location (e.g. Rak A-01)" value={prodLocation} onChange={(e) => setProdLocation(e.target.value)} />
+              <Button onClick={addProduct} className="w-full">Add Product</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">

@@ -171,7 +171,7 @@ export default function PurchaseOrderDetailPage() {
             <Send className="mr-2 h-4 w-4" />
             Send
           </Button>
-          <Button>
+          <Button onClick={() => alert("Edit mode akan tersedia setelah integrasi database")}>
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>

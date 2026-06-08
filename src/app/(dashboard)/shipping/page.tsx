@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -26,6 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Plus,
   Eye,
@@ -73,6 +83,10 @@ const courierColors: Record<string, string> = {
 
 export default function ShippingPage() {
   const [courierFilter, setCourierFilter] = useState("All")
+  const [shipmentOpen, setShipmentOpen] = useState(false)
+  const [dest, setDest] = useState("")
+  const [courier, setCourier] = useState("")
+  const [tracking, setTracking] = useState("")
 
   const filtered = useMemo(() => {
     return shipmentOrders.filter((o) =>
@@ -93,10 +107,37 @@ export default function ShippingPage() {
             Manage shipment queue and track delivery status
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Shipment
-        </Button>
+        <Dialog open={shipmentOpen} onOpenChange={setShipmentOpen}>
+          <DialogTrigger render={<Button />}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Shipment
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create Shipment</DialogTitle>
+              <DialogDescription>Fill in the shipment details below.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium">Destination</label>
+                <Input placeholder="e.g. Jl. Sudirman No. 1, Jakarta" value={dest} onChange={(e) => setDest(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Courier</label>
+                <Input placeholder="e.g. JNE, SiCepat, J&T" value={courier} onChange={(e) => setCourier(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Tracking Number</label>
+                <Input placeholder="e.g. JNE1234567890" value={tracking} onChange={(e) => setTracking(e.target.value)} />
+              </div>
+            </div>
+            <DialogFooter showCloseButton>
+              <Button onClick={() => { alert("Shipment berhasil dibuat!"); setShipmentOpen(false); setDest(""); setCourier(""); setTracking(""); }}>
+                Create Shipment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Summary Cards */}

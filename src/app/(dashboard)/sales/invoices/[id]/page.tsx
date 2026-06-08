@@ -72,7 +72,7 @@ export default function InvoiceDetailPage() {
             PDF
           </Button>
           {invoiceData.status !== "Paid" && (
-            <Button>
+            <Button onClick={() => alert("Invoice berhasil dikirim!")}>
               <Send className="mr-2 h-4 w-4" />
               Send Invoice
             </Button>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -18,6 +20,15 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Package,
   TrendingDown,
@@ -58,6 +69,9 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 }
 
 export default function PackingMaterialsPage() {
+  const [restockOpen, setRestockOpen] = useState(false)
+  const [restockQty, setRestockQty] = useState("")
+
   const totalMaterials = materials.length
   const lowStockCount = materials.filter((m) => m.status === "low" || m.status === "critical").length
   const totalUsageCost = materials.reduce((sum, m) => sum + m.usageThisMonth * m.cost, 0)
@@ -71,10 +85,27 @@ export default function PackingMaterialsPage() {
             Track usage and remaining stock for packing materials
           </p>
         </div>
-        <Button>
-          <Package className="mr-2 h-4 w-4" />
-          Restock Materials
-        </Button>
+        <Dialog open={restockOpen} onOpenChange={setRestockOpen}>
+          <DialogTrigger render={<Button />}>
+            <Package className="mr-2 h-4 w-4" />
+            Restock Materials
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Restock Materials</DialogTitle>
+              <DialogDescription>Enter the quantity to restock for low/critical items.</DialogDescription>
+            </DialogHeader>
+            <div>
+              <label className="text-sm font-medium">Quantity to Restock</label>
+              <Input type="number" placeholder="e.g. 50" value={restockQty} onChange={(e) => setRestockQty(e.target.value)} />
+            </div>
+            <DialogFooter showCloseButton>
+              <Button onClick={() => { alert(`Berhasil restock ${restockQty} unit!`); setRestockOpen(false); setRestockQty(""); }}>
+                Submit Restock
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Summary Cards */}

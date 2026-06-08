@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -19,6 +21,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   ArrowLeft,
   Edit,
@@ -125,6 +136,12 @@ export default function ProductDetailPage() {
   const id = params.id as string
   const product = productMap[id] || { ...defaultProduct, id }
 
+  const [editOpen, setEditOpen] = useState(false)
+  const [editName, setEditName] = useState(product.name)
+  const [editSku, setEditSku] = useState(product.sku)
+  const [editCategory, setEditCategory] = useState(product.category)
+  const [editDescription, setEditDescription] = useState(product.description)
+
   const totalStock = product.warehouses.reduce((sum, w) => sum + w.qty, 0)
 
   const barcodeLines = product.barcode
@@ -146,10 +163,41 @@ export default function ProductDetailPage() {
             <p className="text-muted-foreground">{product.sku}</p>
           </div>
         </div>
-        <Button>
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Product
-        </Button>
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogTrigger render={<Button />}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Product
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Product</DialogTitle>
+              <DialogDescription>Update product information below.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium">Name</label>
+                <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">SKU</label>
+                <Input value={editSku} onChange={(e) => setEditSku(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Category</label>
+                <Input value={editCategory} onChange={(e) => setEditCategory(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Input value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+              </div>
+            </div>
+            <DialogFooter showCloseButton>
+              <Button onClick={() => { alert("Product berhasil diupdate!"); setEditOpen(false); }}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
