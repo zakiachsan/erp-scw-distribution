@@ -204,12 +204,12 @@ export default function ProfitLossPage() {
                 {revenue.map((item, idx) => (
                   <TableRow key={idx}>
                     <TableCell className="pl-8 text-slate-600">{item.account}</TableCell>
-                    <TableCell className="text-right font-mono">{formatIDR(item.amount)}</TableCell>
+                    <TableCell className="text-right font-sans">{formatIDR(item.amount)}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="border-t border-slate-300 bg-blue-50">
                   <TableCell className="pl-8 font-bold text-slate-700">Total Revenue</TableCell>
-                  <TableCell className="text-right font-mono font-bold text-blue-700">
+                  <TableCell className="text-right font-sans font-bold text-blue-700">
                     {formatIDR(totalRevenue)}
                   </TableCell>
                 </TableRow>
@@ -227,12 +227,12 @@ export default function ProfitLossPage() {
                 {cogs.map((item, idx) => (
                   <TableRow key={idx}>
                     <TableCell className="pl-8 text-slate-600">{item.account}</TableCell>
-                    <TableCell className="text-right font-mono">{formatIDR(item.amount)}</TableCell>
+                    <TableCell className="text-right font-sans">{formatIDR(item.amount)}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="border-t border-slate-300 bg-indigo-50">
                   <TableCell className="pl-8 font-bold text-slate-700">Total COGS</TableCell>
-                  <TableCell className="text-right font-mono font-bold text-indigo-700">
+                  <TableCell className="text-right font-sans font-bold text-indigo-700">
                     {formatIDR(totalCOGS)}
                   </TableCell>
                 </TableRow>
@@ -244,7 +244,7 @@ export default function ProfitLossPage() {
           <div className="border-t-2 border-green-300 bg-green-50 rounded-lg p-3">
             <div className="flex justify-between">
               <span className="font-bold text-green-800 text-lg">GROSS PROFIT</span>
-              <span className="font-mono font-bold text-green-800 text-lg">{formatIDR(grossProfit)}</span>
+              <span className="font-sans font-bold text-green-800 text-lg">{formatIDR(grossProfit)}</span>
             </div>
             <div className="text-right text-sm text-green-600">
               Gross Margin: {grossProfitMargin}%
@@ -266,14 +266,14 @@ export default function ProfitLossPage() {
                     {items.map((item, idx) => (
                       <TableRow key={idx}>
                         <TableCell className="pl-8 text-slate-600">{item.account}</TableCell>
-                        <TableCell className="text-right font-mono">{formatIDR(item.amount)}</TableCell>
+                        <TableCell className="text-right font-sans">{formatIDR(item.amount)}</TableCell>
                       </TableRow>
                     ))}
                     <TableRow className="border-b border-slate-200">
                       <TableCell className="pl-8 font-medium text-slate-500 italic">
                         Subtotal {category}
                       </TableCell>
-                      <TableCell className="text-right font-mono font-medium text-slate-600">
+                      <TableCell className="text-right font-sans font-medium text-slate-600">
                         {formatIDR(total)}
                       </TableCell>
                     </TableRow>
@@ -284,7 +284,7 @@ export default function ProfitLossPage() {
             <div className="border-t border-slate-300 bg-amber-50 rounded-lg p-3">
               <div className="flex justify-between">
                 <span className="font-bold text-amber-800">Total Operating Expenses</span>
-                <span className="font-mono font-bold text-amber-800">{formatIDR(totalOpex)}</span>
+                <span className="font-sans font-bold text-amber-800">{formatIDR(totalOpex)}</span>
               </div>
             </div>
           </div>
@@ -302,7 +302,7 @@ export default function ProfitLossPage() {
                   NET PROFIT (Laba Bersih)
                 </span>
               </div>
-              <span className={`font-mono font-bold text-xl ${netProfit >= 0 ? "text-green-800" : "text-red-800"}`}>
+              <span className={`font-sans font-bold text-xl ${netProfit >= 0 ? "text-green-800" : "text-red-800"}`}>
                 {formatIDR(netProfit)}
               </span>
             </div>

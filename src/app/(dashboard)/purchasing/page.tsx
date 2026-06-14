@@ -31,9 +31,7 @@ import {
   Search,
   Plus,
   FileText,
-  Eye,
   Filter,
-  ShoppingCart,
   CheckCircle2,
   Clock,
   DollarSign,
@@ -182,7 +180,6 @@ export default function PurchasingPage() {
   const pendingCount = purchaseOrders.filter(
     (po) => po.status === "Sent" || po.status === "Received"
   ).length
-  const paidCount = purchaseOrders.filter((po) => po.status === "Paid").length
 
   const totalValue = purchaseOrders.reduce((sum, po) => {
     if (po.currency === "IDR") return sum + po.totalAmount
@@ -206,55 +203,55 @@ export default function PurchasingPage() {
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <FileText className="h-5 w-5 text-indigo-600" />
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total POs</p>
+                <p className="mt-1 text-lg font-semibold font-sans truncate">{totalPOs}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total POs</p>
-                <p className="text-2xl font-bold">{totalPOs}</p>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-50 dark:bg-indigo-900/20">
+                <FileText className="h-4 w-4 text-indigo-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800/30">
-                <FileText className="h-5 w-5 text-gray-600" />
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Draft</p>
+                <p className="mt-1 text-lg font-semibold font-sans truncate">{draftCount}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Draft</p>
-                <p className="text-2xl font-bold">{draftCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Clock className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{pendingCount}</p>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-50 dark:bg-gray-800/20">
+                <FileText className="h-4 w-4 text-gray-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <DollarSign className="h-5 w-5 text-emerald-600" />
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pending</p>
+                <p className="mt-1 text-lg font-semibold font-sans truncate">{pendingCount}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Value</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalValue, "IDR")}</p>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-50 dark:bg-amber-900/20">
+                <Clock className="h-4 w-4 text-amber-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total Value</p>
+                <p className="mt-1 text-sm font-semibold font-sans truncate leading-tight">{formatCurrency(totalValue, "IDR")}</p>
+              </div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-900/20">
+                <DollarSign className="h-4 w-4 text-emerald-600" />
               </div>
             </div>
           </CardContent>
@@ -306,7 +303,6 @@ export default function PurchasingPage() {
                 <TableHead className="text-right">Items</TableHead>
                 <TableHead className="text-right">Total</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -315,11 +311,18 @@ export default function PurchasingPage() {
                 const Icon = cfg.icon
                 return (
                   <TableRow key={po.id}>
-                    <TableCell className="font-mono font-medium">{po.poNumber}</TableCell>
+                    <TableCell className="font-sans font-medium text-sm">
+                      <Link
+                        href={`/purchasing/${po.id}?status=${po.status}`}
+                        className="text-primary hover:underline"
+                      >
+                        {po.poNumber}
+                      </Link>
+                    </TableCell>
                     <TableCell>{po.supplier}</TableCell>
                     <TableCell className="text-muted-foreground">{po.date}</TableCell>
                     <TableCell className="text-right">{po.itemCount} items</TableCell>
-                    <TableCell className="text-right font-mono font-bold">
+                    <TableCell className="text-right font-sans text-sm font-normal">
                       {formatCurrency(po.totalAmount, po.currency)}
                     </TableCell>
                     <TableCell>
@@ -327,13 +330,6 @@ export default function PurchasingPage() {
                         <Icon className="mr-1 h-3 w-3" />
                         {cfg.label}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link href={`/purchasing/${po.id}`}>
-                        <Button variant="ghost" size="icon-sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
                     </TableCell>
                   </TableRow>
                 )

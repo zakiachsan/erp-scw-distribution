@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { useModuleStore, getModuleById, MODULES, type ModuleId } from "@/lib/modules"
+import { useModuleStore, getModuleById, getModuleIdByPathname } from "@/lib/modules"
 import {
   LayoutDashboard,
   Package,
@@ -40,7 +40,6 @@ import {
   Image,
   Ticket,
   Star,
-  CreditCard,
 } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
@@ -82,10 +81,20 @@ export function Sidebar() {
   const [mounted, setMounted] = useState(false)
   const { activeModule, setActiveModule } = useModuleStore()
 
+  // Auto-detect active module from current path so the sidebar menu never
+  // disappears when navigating directly to a module page.
+  React.useEffect(() => {
+    const moduleFromPath = getModuleIdByPathname(pathname)
+    if (moduleFromPath && moduleFromPath !== activeModule) {
+      setActiveModule(moduleFromPath)
+    }
+  }, [pathname, activeModule, setActiveModule])
+
   const moduleInfo = activeModule ? getModuleById(activeModule) : null
 
   // Delay rendering until client-side hydration is complete
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
     // Open all sub-menus by default
     if (moduleInfo) {
@@ -115,8 +124,24 @@ export function Sidebar() {
   }
 
   const isActive = (href: string) => pathname === href
-  const isSectionActive = (item: { children?: { href: string }[] }) =>
-    item.children?.some((child) => pathname === child.href)
+  const isChildActive = (href: string, allChildHrefs: string[]) => {
+    if (pathname === href) return true
+    if (!pathname.startsWith(href + "/")) return false
+    // When href is a prefix (e.g., /inventory or /purchasing), check if
+    // the next path segment matches a known sibling page. If so, it's
+    // NOT a detail page of this href.
+    const nextSegment = pathname.slice(href.length + 1).split("/")[0]
+    const isKnownSibling = allChildHrefs.some((h) => {
+      if (h === href) return false
+      const siblingNext = h.slice(href.length + 1).split("/")[0]
+      return siblingNext === nextSegment
+    })
+    return !isKnownSibling
+  }
+  const isSectionActive = (item: { children?: { href: string }[] }) => {
+    const childHrefs = item.children?.map((c) => c.href) ?? []
+    return item.children?.some((child) => isChildActive(child.href, childHrefs))
+  }
 
   // Module color themes
   const moduleColors: Record<string, { active: string; hover: string; accent: string }> = {
@@ -200,7 +225,7 @@ export function Sidebar() {
                         href={child.href}
                         className={cn(
                           "block rounded-md px-3 py-1.5 text-sm transition-colors",
-                          isActive(child.href)
+                          isChildActive(child.href, item.children!.map((c) => c.href))
                             ? `${colors.accent} font-medium`
                             : `text-muted-foreground hover:bg-muted hover:text-foreground`
                         )}

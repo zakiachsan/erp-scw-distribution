@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - heading "SCW Distribution" [level=1] [ref=e8]
+            - paragraph [ref=e9]: ERP Management System
+        - generic [ref=e10]:
+          - button [ref=e11]:
+            - img [ref=e12]
+          - generic [ref=e15]: AD
+          - generic [ref=e16]:
+            - paragraph [ref=e17]: Admin User
+            - paragraph [ref=e18]: admin@scw.co.id
+    - main [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - heading "Pilih Modul" [level=1] [ref=e22]
+          - paragraph [ref=e23]: Pilih modul yang ingin kamu akses. Sidebar akan menyesuaikan dengan modul yang dipilih.
+        - generic [ref=e24]:
+          - button "Sales & CRM Kelola penjualan, customer, invoice, dan komisi sales 10 menu Buka" [ref=e25]:
+            - img [ref=e27]
+            - heading "Sales & CRM" [level=3] [ref=e32]
+            - paragraph [ref=e33]: Kelola penjualan, customer, invoice, dan komisi sales
+            - generic [ref=e34]:
+              - generic [ref=e35]: 10 menu
+              - generic [ref=e36]:
+                - text: Buka
+                - img [ref=e37]
+          - button "Operasional Kelola inventory, gudang, pembelian, pengiriman, dan packing 18 menu Buka" [ref=e39]:
+            - img [ref=e41]
+            - heading "Operasional" [level=3] [ref=e45]
+            - paragraph [ref=e46]: Kelola inventory, gudang, pembelian, pengiriman, dan packing
+            - generic [ref=e47]:
+              - generic [ref=e48]: 18 menu
+              - generic [ref=e49]:
+                - text: Buka
+                - img [ref=e50]
+          - button "Accounting Pembukuan, jurnal, neraca, laporan keuangan, dan pajak 11 menu Buka" [ref=e52]:
+            - img [ref=e54]
+            - heading "Accounting" [level=3] [ref=e56]
+            - paragraph [ref=e57]: Pembukuan, jurnal, neraca, laporan keuangan, dan pajak
+            - generic [ref=e58]:
+              - generic [ref=e59]: 11 menu
+              - generic [ref=e60]:
+                - text: Buka
+                - img [ref=e61]
+          - button "WebCommerce Kelola toko online, katalog produk, dan order dari customer 9 menu Buka" [ref=e63]:
+            - img [ref=e65]
+            - heading "WebCommerce" [level=3] [ref=e69]
+            - paragraph [ref=e70]: Kelola toko online, katalog produk, dan order dari customer
+            - generic [ref=e71]:
+              - generic [ref=e72]: 9 menu
+              - generic [ref=e73]:
+                - text: Buka
+                - img [ref=e74]
+    - contentinfo [ref=e76]: © 2026 SCW Distribution. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e82] [cursor=pointer]:
+    - img [ref=e83]

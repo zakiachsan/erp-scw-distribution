@@ -234,7 +234,7 @@ export default function ProductsPage() {
                         </div>
                         <div>
                           <p className="font-medium">{product.name}</p>
-                          <p className="text-xs text-muted-foreground font-mono">{product.sku}</p>
+                          <p className="text-xs text-muted-foreground font-sans">{product.sku}</p>
                         </div>
                       </div>
                     </TableCell>

@@ -203,7 +203,7 @@ export default function FixedAssetPage() {
 
                 return (
                   <TableRow key={asset.id}>
-                    <TableCell className="font-mono text-sm font-medium">
+                    <TableCell className="font-sans text-sm font-medium">
                       {asset.id}
                     </TableCell>
                     <TableCell>
@@ -220,12 +220,12 @@ export default function FixedAssetPage() {
                     <TableCell className="text-slate-600">
                       {asset.purchaseDate}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatIDR(asset.purchaseValue)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex flex-col items-end">
-                        <span className="font-mono text-sm text-amber-600">
+                        <span className="font-sans text-sm text-amber-600">
                           {formatIDR(asset.accumulatedDepreciation)}
                         </span>
                         <span className="text-xs text-slate-400">
@@ -233,7 +233,7 @@ export default function FixedAssetPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold text-green-700">
+                    <TableCell className="text-right font-sans font-bold text-green-700">
                       {formatIDR(asset.bookValue)}
                     </TableCell>
                     <TableCell className="text-center text-sm text-slate-600">
@@ -293,13 +293,13 @@ export default function FixedAssetPage() {
                     <TableRow key={cat}>
                       <TableCell className="font-medium">{cat}</TableCell>
                       <TableCell className="text-center">{catAssets.length}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right font-sans">
                         {formatIDR(totalPV)}
                       </TableCell>
-                      <TableCell className="text-right font-mono text-amber-600">
+                      <TableCell className="text-right font-sans text-amber-600">
                         {formatIDR(totalAD)}
                       </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-green-700">
+                      <TableCell className="text-right font-sans font-bold text-green-700">
                         {formatIDR(totalBV)}
                       </TableCell>
                       <TableCell className="text-center text-sm text-slate-600">

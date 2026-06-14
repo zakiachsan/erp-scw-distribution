@@ -218,7 +218,7 @@ export default function OrderDetailPage() {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Nomor Order</span>
-                <span className="font-mono font-medium">{order.id}</span>
+                <span className="font-sans font-medium">{order.id}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Tanggal</span>
@@ -313,7 +313,7 @@ export default function OrderDetailPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">{item.name}</p>
-                          <p className="text-xs text-muted-foreground font-mono">{item.sku}</p>
+                          <p className="text-xs text-muted-foreground font-sans">{item.sku}</p>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">{item.qty}</TableCell>

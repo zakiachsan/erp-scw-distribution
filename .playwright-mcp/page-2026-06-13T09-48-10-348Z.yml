@@ -1,0 +1,256 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e8]: SCW Distribution
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45]: Warehouse / Rak
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - img [ref=e48]
+            - textbox "Search..." [ref=e51]
+          - separator [ref=e52]
+          - button "3" [ref=e54]:
+            - img [ref=e55]
+            - generic [ref=e58]: "3"
+          - button "AD" [ref=e59]:
+            - generic [ref=e61]: AD
+      - main [ref=e62]:
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - heading "Warehouse & Rak" [level=1] [ref=e66]
+              - paragraph [ref=e67]: Manage warehouse locations first, then assign racks
+            - generic [ref=e68]:
+              - button "Manage Locations" [ref=e69]:
+                - img
+                - text: Manage Locations
+              - button "Add Rack" [ref=e70]:
+                - img
+                - text: Add Rack
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - img [ref=e74]
+                - text: Warehouse Locations
+              - generic [ref=e77]: Click a location to filter racks. Manage categories using the button above.
+            - generic [ref=e79]:
+              - generic [ref=e80] [cursor=pointer]:
+                - text: All
+                - generic [ref=e81]: (12)
+              - generic [ref=e82] [cursor=pointer]:
+                - img
+                - text: Gudang Utama
+                - generic [ref=e83]: (7)
+              - generic [ref=e84] [cursor=pointer]:
+                - img
+                - text: Gudang Cabang
+                - generic [ref=e85]: (3)
+              - generic [ref=e86] [cursor=pointer]:
+                - img
+                - text: Gudang Display
+                - generic [ref=e87]: (2)
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]:
+                - img [ref=e91]
+                - text: Daftar Rak
+              - generic [ref=e95]: Klik tombol Detail untuk melihat produk dan mengelola rak.
+            - table [ref=e98]:
+              - rowgroup [ref=e99]:
+                - row "Nama Rak Lokasi Status Kapasitas Produk Aksi" [ref=e100]:
+                  - columnheader "Nama Rak" [ref=e101]
+                  - columnheader "Lokasi" [ref=e102]
+                  - columnheader "Status" [ref=e103]
+                  - columnheader "Kapasitas" [ref=e104]
+                  - columnheader "Produk" [ref=e105]
+                  - columnheader "Aksi" [ref=e106]
+              - rowgroup [ref=e107]:
+                - row "Rak A-01 Gudang Utama Occupied 185/200 (93%) SCW Snow Foam (150), SCW Shampoo Plus (35) Detail" [ref=e108]:
+                  - cell "Rak A-01" [ref=e109]
+                  - cell "Gudang Utama" [ref=e110]
+                  - cell "Occupied" [ref=e111]:
+                    - generic [ref=e112]: Occupied
+                  - cell "185/200 (93%)" [ref=e113]
+                  - cell "SCW Snow Foam (150), SCW Shampoo Plus (35)" [ref=e114]
+                  - cell "Detail" [ref=e115]:
+                    - link "Detail" [ref=e116] [cursor=pointer]:
+                      - /url: /inventory/warehouse/1
+                      - button "Detail" [ref=e117]:
+                        - img
+                        - text: Detail
+                - row "Rak A-02 Gudang Utama Occupied 75/200 (38%) SCW Ceramic Coating (40), SCW Spray Wax (35) Detail" [ref=e118]:
+                  - cell "Rak A-02" [ref=e119]
+                  - cell "Gudang Utama" [ref=e120]
+                  - cell "Occupied" [ref=e121]:
+                    - generic [ref=e122]: Occupied
+                  - cell "75/200 (38%)" [ref=e123]
+                  - cell "SCW Ceramic Coating (40), SCW Spray Wax (35)" [ref=e124]
+                  - cell "Detail" [ref=e125]:
+                    - link "Detail" [ref=e126] [cursor=pointer]:
+                      - /url: /inventory/warehouse/2
+                      - button "Detail" [ref=e127]:
+                        - img
+                        - text: Detail
+                - row "Rak A-03 Gudang Utama Occupied 120/200 (60%) SCW Microfiber Wash (120) Detail" [ref=e128]:
+                  - cell "Rak A-03" [ref=e129]
+                  - cell "Gudang Utama" [ref=e130]
+                  - cell "Occupied" [ref=e131]:
+                    - generic [ref=e132]: Occupied
+                  - cell "120/200 (60%)" [ref=e133]
+                  - cell "SCW Microfiber Wash (120)" [ref=e134]
+                  - cell "Detail" [ref=e135]:
+                    - link "Detail" [ref=e136] [cursor=pointer]:
+                      - /url: /inventory/warehouse/3
+                      - button "Detail" [ref=e137]:
+                        - img
+                        - text: Detail
+                - row "Rak B-01 Gudang Utama Occupied 180/200 (90%) SCW Interior Detailer (180) Detail" [ref=e138]:
+                  - cell "Rak B-01" [ref=e139]
+                  - cell "Gudang Utama" [ref=e140]
+                  - cell "Occupied" [ref=e141]:
+                    - generic [ref=e142]: Occupied
+                  - cell "180/200 (90%)" [ref=e143]
+                  - cell "SCW Interior Detailer (180)" [ref=e144]
+                  - cell "Detail" [ref=e145]:
+                    - link "Detail" [ref=e146] [cursor=pointer]:
+                      - /url: /inventory/warehouse/4
+                      - button "Detail" [ref=e147]:
+                        - img
+                        - text: Detail
+                - row "Rak B-02 Gudang Utama Occupied 95/200 (48%) SCW Tire Gel (95) Detail" [ref=e148]:
+                  - cell "Rak B-02" [ref=e149]
+                  - cell "Gudang Utama" [ref=e150]
+                  - cell "Occupied" [ref=e151]:
+                    - generic [ref=e152]: Occupied
+                  - cell "95/200 (48%)" [ref=e153]
+                  - cell "SCW Tire Gel (95)" [ref=e154]
+                  - cell "Detail" [ref=e155]:
+                    - link "Detail" [ref=e156] [cursor=pointer]:
+                      - /url: /inventory/warehouse/5
+                      - button "Detail" [ref=e157]:
+                        - img
+                        - text: Detail
+                - row "Rak C-01 Gudang Utama Empty 0/200 (0%) - Detail" [ref=e158]:
+                  - cell "Rak C-01" [ref=e159]
+                  - cell "Gudang Utama" [ref=e160]
+                  - cell "Empty" [ref=e161]:
+                    - generic [ref=e162]: Empty
+                  - cell "0/200 (0%)" [ref=e163]
+                  - cell "-" [ref=e164]
+                  - cell "Detail" [ref=e165]:
+                    - link "Detail" [ref=e166] [cursor=pointer]:
+                      - /url: /inventory/warehouse/6
+                      - button "Detail" [ref=e167]:
+                        - img
+                        - text: Detail
+                - row "Rak C-02 Gudang Utama Occupied 45/200 (23%) SCW Polish Compound (25), SCW Clay Bar (20) Detail" [ref=e168]:
+                  - cell "Rak C-02" [ref=e169]
+                  - cell "Gudang Utama" [ref=e170]
+                  - cell "Occupied" [ref=e171]:
+                    - generic [ref=e172]: Occupied
+                  - cell "45/200 (23%)" [ref=e173]
+                  - cell "SCW Polish Compound (25), SCW Clay Bar (20)" [ref=e174]
+                  - cell "Detail" [ref=e175]:
+                    - link "Detail" [ref=e176] [cursor=pointer]:
+                      - /url: /inventory/warehouse/7
+                      - button "Detail" [ref=e177]:
+                        - img
+                        - text: Detail
+                - row "Rak D-01 Gudang Cabang Occupied 100/150 (67%) SCW Glass Cleaner (100) Detail" [ref=e178]:
+                  - cell "Rak D-01" [ref=e179]
+                  - cell "Gudang Cabang" [ref=e180]
+                  - cell "Occupied" [ref=e181]:
+                    - generic [ref=e182]: Occupied
+                  - cell "100/150 (67%)" [ref=e183]
+                  - cell "SCW Glass Cleaner (100)" [ref=e184]
+                  - cell "Detail" [ref=e185]:
+                    - link "Detail" [ref=e186] [cursor=pointer]:
+                      - /url: /inventory/warehouse/8
+                      - button "Detail" [ref=e187]:
+                        - img
+                        - text: Detail
+                - row "Rak D-02 Gudang Cabang Occupied 140/150 (93%) SCW Leather Conditioner (45), SCW Dashboard Coating (95) Detail" [ref=e188]:
+                  - cell "Rak D-02" [ref=e189]
+                  - cell "Gudang Cabang" [ref=e190]
+                  - cell "Occupied" [ref=e191]:
+                    - generic [ref=e192]: Occupied
+                  - cell "140/150 (93%)" [ref=e193]
+                  - cell "SCW Leather Conditioner (45), SCW Dashboard Coating (95)" [ref=e194]
+                  - cell "Detail" [ref=e195]:
+                    - link "Detail" [ref=e196] [cursor=pointer]:
+                      - /url: /inventory/warehouse/9
+                      - button "Detail" [ref=e197]:
+                        - img
+                        - text: Detail
+                - row "Rak E-01 Gudang Cabang Occupied 67/150 (45%) SCW Trim Restorer (67) Detail" [ref=e198]:
+                  - cell "Rak E-01" [ref=e199]
+                  - cell "Gudang Cabang" [ref=e200]
+                  - cell "Occupied" [ref=e201]:
+                    - generic [ref=e202]: Occupied
+                  - cell "67/150 (45%)" [ref=e203]
+                  - cell "SCW Trim Restorer (67)" [ref=e204]
+                  - cell "Detail" [ref=e205]:
+                    - link "Detail" [ref=e206] [cursor=pointer]:
+                      - /url: /inventory/warehouse/10
+                      - button "Detail" [ref=e207]:
+                        - img
+                        - text: Detail
+                - row "Rak F-01 Gudang Display Occupied 55/100 (55%) SCW Foam Pad (30), SCW Microfiber Towel (25) Detail" [ref=e208]:
+                  - cell "Rak F-01" [ref=e209]
+                  - cell "Gudang Display" [ref=e210]
+                  - cell "Occupied" [ref=e211]:
+                    - generic [ref=e212]: Occupied
+                  - cell "55/100 (55%)" [ref=e213]
+                  - cell "SCW Foam Pad (30), SCW Microfiber Towel (25)" [ref=e214]
+                  - cell "Detail" [ref=e215]:
+                    - link "Detail" [ref=e216] [cursor=pointer]:
+                      - /url: /inventory/warehouse/11
+                      - button "Detail" [ref=e217]:
+                        - img
+                        - text: Detail
+                - row "Rak F-02 Gudang Display Empty 0/100 (0%) - Detail" [ref=e218]:
+                  - cell "Rak F-02" [ref=e219]
+                  - cell "Gudang Display" [ref=e220]
+                  - cell "Empty" [ref=e221]:
+                    - generic [ref=e222]: Empty
+                  - cell "0/100 (0%)" [ref=e223]
+                  - cell "-" [ref=e224]
+                  - cell "Detail" [ref=e225]:
+                    - link "Detail" [ref=e226] [cursor=pointer]:
+                      - /url: /inventory/warehouse/12
+                      - button "Detail" [ref=e227]:
+                        - img
+                        - text: Detail
+  - button "Open Next.js Dev Tools" [ref=e233] [cursor=pointer]:
+    - img [ref=e234]

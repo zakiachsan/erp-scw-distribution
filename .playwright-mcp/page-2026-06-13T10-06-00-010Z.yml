@@ -1,0 +1,117 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e8]: SCW Distribution
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: Warehouse / Rak
+          - img [ref=e46]
+          - generic [ref=e48]: "2"
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e54]
+          - separator [ref=e55]
+          - button "3" [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e62]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - link [ref=e69] [cursor=pointer]:
+                - /url: /inventory/warehouse
+                - button [ref=e70]:
+                  - img
+              - generic [ref=e71]:
+                - heading "Rak A-02" [level=1] [ref=e72]
+                - generic [ref=e73]:
+                  - img [ref=e74]
+                  - generic [ref=e77]: Gudang Utama
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - img
+                - text: Occupied
+              - button "Hapus Rak" [ref=e80]:
+                - img
+                - text: Hapus Rak
+          - paragraph [ref=e81]: Rak hanya bisa dihapus setelah semua produk dipindahkan.
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - img [ref=e85]
+                - text: Informasi Rak
+              - generic [ref=e88]: Kapasitas dan penggunaan rak saat ini.
+            - generic [ref=e89]:
+              - generic [ref=e90]:
+                - generic [ref=e91]: Capacity
+                - generic [ref=e92]: 75/200
+              - paragraph [ref=e95]: 38% used
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e99]
+                - text: Produk di Dalam Rak
+              - generic [ref=e103]: Daftar produk beserta quantity yang tersimpan di rak ini.
+            - table [ref=e106]:
+              - rowgroup [ref=e107]:
+                - row "Produk Quantity Aksi" [ref=e108]:
+                  - columnheader "Produk" [ref=e109]
+                  - columnheader "Quantity" [ref=e110]
+                  - columnheader "Aksi" [ref=e111]
+              - rowgroup [ref=e112]:
+                - row "SCW Ceramic Coating 40 Pindah" [ref=e113]:
+                  - cell "SCW Ceramic Coating" [ref=e114]
+                  - cell "40" [ref=e115]
+                  - cell "Pindah" [ref=e116]:
+                    - button "Pindah" [ref=e117]:
+                      - img
+                      - text: Pindah
+                - row "SCW Spray Wax 35 Pindah" [ref=e118]:
+                  - cell "SCW Spray Wax" [ref=e119]
+                  - cell "35" [ref=e120]
+                  - cell "Pindah" [ref=e121]:
+                    - button "Pindah" [ref=e122]:
+                      - img
+                      - text: Pindah
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - img [ref=e126]
+                - text: Riwayat Pergerakan Barang
+              - generic [ref=e130]: Log barang masuk dan keluar dari rak ini.
+            - paragraph [ref=e132]: Belum ada pergerakan barang di rak ini.
+  - button "Open Next.js Dev Tools" [ref=e138] [cursor=pointer]:
+    - img [ref=e139]

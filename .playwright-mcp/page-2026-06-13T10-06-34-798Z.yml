@@ -1,0 +1,176 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - generic [ref=e8]: SCW Distribution
+            - generic [ref=e142]: Operasional
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e143] [cursor=pointer]:
+          - /url: /operasional
+          - img [ref=e144]
+          - generic [ref=e149]: Dashboard
+        - generic [ref=e150]:
+          - button "Inventory" [ref=e151]:
+            - img [ref=e152]
+            - generic [ref=e156]: Inventory
+            - img [ref=e157]
+          - generic [ref=e159]:
+            - link "Products" [ref=e160] [cursor=pointer]:
+              - /url: /inventory
+            - link "Warehouse / Rak" [ref=e161] [cursor=pointer]:
+              - /url: /inventory/warehouse
+            - link "Stock Opname" [ref=e162] [cursor=pointer]:
+              - /url: /inventory/stock-opname
+            - link "Stock Alert" [ref=e163] [cursor=pointer]:
+              - /url: /inventory/stock-alert
+            - link "Packing Materials" [ref=e164] [cursor=pointer]:
+              - /url: /inventory/packing-materials
+            - link "Stock Ledger" [ref=e165] [cursor=pointer]:
+              - /url: /inventory/stock-ledger
+            - link "Estimasi Harga" [ref=e166] [cursor=pointer]:
+              - /url: /inventory/estimasi-harga
+            - link "Inbound" [ref=e167] [cursor=pointer]:
+              - /url: /inventory/inbound
+        - generic [ref=e168]:
+          - button "Purchasing" [ref=e169]:
+            - img [ref=e170]
+            - generic [ref=e174]: Purchasing
+            - img [ref=e175]
+          - generic [ref=e177]:
+            - link "Purchase Orders" [ref=e178] [cursor=pointer]:
+              - /url: /purchasing
+            - link "Create PO" [ref=e179] [cursor=pointer]:
+              - /url: /purchasing/create
+            - link "Suppliers" [ref=e180] [cursor=pointer]:
+              - /url: /purchasing/suppliers
+            - link "USD Rate" [ref=e181] [cursor=pointer]:
+              - /url: /purchasing/usd-rate
+        - generic [ref=e182]:
+          - button "Shipping" [ref=e183]:
+            - img [ref=e184]
+            - generic [ref=e189]: Shipping
+            - img [ref=e190]
+          - generic [ref=e192]:
+            - link "Shipments" [ref=e193] [cursor=pointer]:
+              - /url: /shipping
+            - link "Couriers" [ref=e194] [cursor=pointer]:
+              - /url: /shipping/couriers
+        - generic [ref=e195]:
+          - button "Packing" [ref=e196]:
+            - img [ref=e197]
+            - generic [ref=e200]: Packing
+            - img [ref=e201]
+          - generic [ref=e203]:
+            - link "Packing Queue" [ref=e204] [cursor=pointer]:
+              - /url: /packing
+            - link "Video Gallery" [ref=e205] [cursor=pointer]:
+              - /url: /packing/videos
+            - link "Materials Stock" [ref=e206] [cursor=pointer]:
+              - /url: /packing/materials
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: Warehouse / Rak
+          - img [ref=e46]
+          - generic [ref=e48]: "1"
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e54]
+          - separator [ref=e55]
+          - button "3" [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e62]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - link [ref=e69] [cursor=pointer]:
+                - /url: /inventory/warehouse
+                - button [ref=e70]:
+                  - img
+              - generic [ref=e71]:
+                - heading "Rak A-01" [level=1] [ref=e72]
+                - generic [ref=e73]:
+                  - img [ref=e74]
+                  - generic [ref=e77]: Gudang Utama
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - img
+                - text: Empty
+              - button "Hapus Rak" [ref=e80]:
+                - img
+                - text: Hapus Rak
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - img [ref=e85]
+                - text: Informasi Rak
+              - generic [ref=e88]: Kapasitas dan penggunaan rak saat ini.
+            - generic [ref=e89]:
+              - generic [ref=e90]:
+                - generic [ref=e91]: Capacity
+                - generic [ref=e92]: 0/200
+              - paragraph [ref=e95]: 0% used
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e99]
+                - text: Produk di Dalam Rak
+              - generic [ref=e103]: Daftar produk beserta quantity yang tersimpan di rak ini.
+            - paragraph [ref=e207]: Rak ini kosong. Tidak ada produk untuk ditampilkan.
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - img [ref=e126]
+                - text: Riwayat Pergerakan Barang
+              - generic [ref=e130]: Log barang masuk dan keluar dari rak ini.
+            - table [ref=e209]:
+              - rowgroup [ref=e210]:
+                - row "Waktu Produk Qty Jenis Sumber / Tujuan" [ref=e211]:
+                  - columnheader "Waktu" [ref=e212]
+                  - columnheader "Produk" [ref=e213]
+                  - columnheader "Qty" [ref=e214]
+                  - columnheader "Jenis" [ref=e215]
+                  - columnheader "Sumber / Tujuan" [ref=e216]
+              - rowgroup [ref=e217]:
+                - row "13 Jun 2026 17:00 SCW Snow Foam 150 Keluar Rak C-01" [ref=e218]:
+                  - cell "13 Jun 2026 17:00" [ref=e219]
+                  - cell "SCW Snow Foam" [ref=e220]
+                  - cell "150" [ref=e221]
+                  - cell "Keluar" [ref=e222]:
+                    - generic [ref=e223]: Keluar
+                  - cell "Rak C-01" [ref=e224]
+  - button "Open Next.js Dev Tools" [ref=e138] [cursor=pointer]:
+    - img [ref=e139]
+  - alert [ref=e225]

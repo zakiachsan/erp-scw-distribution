@@ -1,12 +1,14 @@
-"use client"
+﻿"use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,284 +31,410 @@ import {
 import {
   Package,
   Truck,
-  CheckCircle,
+  Plus,
+  Minus,
   ArrowRight,
-  Warehouse,
-  Store,
 } from "lucide-react"
+import {
+  useWarehouseStore,
+  inboundPOSources,
+} from "@/lib/warehouse-store"
 
-interface POItem {
-  id: string
-  name: string
-  sku: string
-  orderedQty: number
-  receivedQty: string
-  storageType: string
-}
-
-interface POData {
-  poNumber: string
-  supplier: string
-  shipDate: string
-  expectedArrival: string
-  items: POItem[]
-}
-
-const initialPOData: POData = {
-  poNumber: "PO-001",
-  supplier: "PT Autocare Indonesia",
-  shipDate: "2026-06-01",
-  expectedArrival: "2026-06-10",
-  items: [
-    {
-      id: "1",
-      name: "SCW Snow Foam",
-      sku: "SCW-SF-001",
-      orderedQty: 100,
-      receivedQty: "",
-      storageType: "",
-    },
-    {
-      id: "2",
-      name: "SCW Ceramic Coating",
-      sku: "SCW-CC-002",
-      orderedQty: 50,
-      receivedQty: "",
-      storageType: "",
-    },
-    {
-      id: "3",
-      name: "SCW Interior Detailer",
-      sku: "SCW-ID-003",
-      orderedQty: 30,
-      receivedQty: "",
-      storageType: "",
-    },
-  ],
+function formatScanTime(ts: number): string {
+  const d = new Date(ts)
+  return d.toLocaleString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
 }
 
 export default function ReceivePOPage() {
+  const params = useParams()
   const router = useRouter()
-  const [poData, setPoData] = useState<POData>(initialPOData)
-  const [showSuccess, setShowSuccess] = useState(false)
+  const poId = params["po-id"] as string
 
-  const handleQtyChange = (itemId: string, qty: string) => {
-    setPoData((prev) => ({
-      ...prev,
-      items: prev.items.map((item) =>
-        item.id === itemId ? { ...item, receivedQty: qty } : item
-      ),
-    }))
-  }
+  const {
+    inboundReceipts,
+    startReceipt,
+    scanProductBarcode,
+    adjustReceivedQty,
+  } = useWarehouseStore()
 
-  const handleStorageChange = (itemId: string, storageType: string) => {
-    setPoData((prev) => ({
-      ...prev,
-      items: prev.items.map((item) =>
-        item.id === itemId ? { ...item, storageType } : item
-      ),
-    }))
-  }
+  const [barcode, setBarcode] = useState("")
+  const [scanMessage, setScanMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
 
-  const handleConfirmReceipt = () => {
-    const incomplete = poData.items.find(
-      (item) => !item.receivedQty || !item.storageType
-    )
-    if (incomplete) {
-      alert(
-        `Please fill in received quantity and storage type for all items.\nMissing for: ${incomplete.name}`
-      )
-      return
-    }
+  const [scanLogProduct, setScanLogProduct] = useState<string>("all")
 
-    setShowSuccess(true)
-
-    setTimeout(() => {
-      router.push(`/inventory/inbound/${poData.poNumber}/assign`)
-    }, 1500)
-  }
-
-  const allFilled = poData.items.every(
-    (item) => item.receivedQty && item.storageType
+  const source = useMemo(
+    () => inboundPOSources.find((p) => p.id === poId),
+    [poId]
   )
+
+  const poData = useMemo(
+    () => inboundReceipts.find((r) => r.poId === poId) ?? null,
+    [inboundReceipts, poId]
+  )
+
+  useEffect(() => {
+    if (!source) {
+      router.push("/inventory/inbound")
+    }
+  }, [source, router])
+
+  const handleStartReceipt = () => {
+    if (!source) return
+    startReceipt(source)
+  }
+
+  // Data for scan log filters
+  const allScanLogs = useMemo(() => {
+    if (!poData) return []
+    return poData.items.flatMap((item) =>
+      (item.scanLogs ?? []).map((log) => ({
+        ...log,
+        productName: item.productName,
+        orderedQty: item.orderedQty,
+      }))
+    )
+  }, [poData])
+
+  const filteredScanLogs = useMemo(() => {
+    if (scanLogProduct === "all") return allScanLogs
+    return allScanLogs.filter((log) => log.productName === scanLogProduct)
+  }, [allScanLogs, scanLogProduct])
+
+  const productsWithLogs = useMemo(() => {
+    if (!poData) return []
+    return poData.items.filter((item) => (item.scanLogs ?? []).length > 0)
+  }, [poData])
+
+  const allCompleted = useMemo(() => {
+    if (!poData) return false
+    return poData.items.every((i) => i.receivedQty >= i.orderedQty)
+  }, [poData])
+
+  if (!source) {
+    return (
+      <div className="flex h-96 items-center justify-center text-muted-foreground">
+        Memuat data PO...
+      </div>
+    )
+  }
+
+  if (!poData) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center gap-4 text-muted-foreground">
+        <p>Belum ada sesi receiving untuk PO ini.</p>
+        <Button onClick={handleStartReceipt}>Mulai Receive</Button>
+      </div>
+    )
+  }
+
+  const handleScan = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!barcode.trim()) return
+    const result = scanProductBarcode(poId, barcode.trim())
+    setScanMessage({
+      text: result.message,
+      type: result.ok ? "success" : "error",
+    })
+    setBarcode("")
+  }
+
+  const handleAdjust = (productName: string, delta: number) => {
+    const result = adjustReceivedQty(poId, productName, delta)
+    setScanMessage({
+      text: result.message,
+      type: result.ok ? "success" : "error",
+    })
+  }
 
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
             <Truck className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-bold">
-              Receive {poData.poNumber}
+              Receive{" "}
+              <Link
+                href={`/purchasing/${source.id}`}
+                className="text-primary hover:underline"
+              >
+                {poData.poNumber}
+              </Link>
             </h1>
-            <p className="text-muted-foreground">
-              {poData.supplier}
-            </p>
+            <p className="text-muted-foreground">{poData.supplier}</p>
           </div>
         </div>
-        <Badge variant="outline" className="text-sm">
+        <Badge variant="outline" className="w-fit text-sm">
           <Package className="mr-1 h-4 w-4" />
-          Pending Receipt
+          {poData.status === "assigned" ? "Assigned" : "Receiving"}
         </Badge>
       </div>
 
       {/* PO Info Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">PO Information</CardTitle>
+          <CardTitle className="text-lg">Informasi PO</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Supplier</p>
               <p className="font-medium">{poData.supplier}</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Ship Date</p>
-              <p className="font-medium">{poData.shipDate}</p>
+              <p className="font-medium">{source?.shipDate ?? "-"}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Expected Arrival
-              </p>
-              <p className="font-medium">{poData.expectedArrival}</p>
+              <p className="text-sm text-muted-foreground">Expected Arrival</p>
+              <p className="font-medium">{source?.expectedArrival ?? "-"}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Items Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">PO Items</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead className="text-center">Ordered Qty</TableHead>
-                <TableHead className="text-center">Received Qty</TableHead>
-                <TableHead className="text-center">Storage Type</TableHead>
-                <TableHead className="text-center">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {poData.items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{item.sku}</Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {item.orderedQty}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={item.orderedQty}
-                      value={item.receivedQty}
-                      onChange={(e) =>
-                        handleQtyChange(item.id, e.target.value)
-                      }
-                      className="w-24 text-center"
-                      placeholder="0"
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Select
-                      value={item.storageType}
-                      onValueChange={(val) =>
-                        handleStorageChange(item.id, val)
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select storage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="rak-items">
-                          <div className="flex items-center gap-2">
-                            <Store className="h-4 w-4" />
-                            <span>Rak Items</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="rak-kardus">
-                          <div className="flex items-center gap-2">
-                            <Warehouse className="h-4 w-4" />
-                            <span>Rak Kardus</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant={
-                        item.receivedQty && item.storageType
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      {item.receivedQty && item.storageType ? (
-                        <span className="flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" /> Ready
-                        </span>
-                      ) : (
-                        "Pending"
-                      )}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Success Alert */}
-      {showSuccess && (
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="flex items-center gap-3 py-4">
-            <CheckCircle className="h-6 w-6 text-green-600" />
-            <div>
-              <p className="font-medium text-green-800">
-                Receipt Confirmed Successfully!
+      {/* Scan Input */}
+      {poData.status === "receiving" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Scan Barcode</CardTitle>
+            <CardDescription>
+              Scan barcode produk untuk menambah received qty.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleScan} className="flex gap-2">
+              <Input
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                placeholder="Masukkan atau scan barcode"
+                className="flex-1"
+                autoFocus
+              />
+              <Button type="submit">Scan</Button>
+            </form>
+            {scanMessage && (
+              <p
+                className={`mt-2 text-sm ${
+                  scanMessage.type === "success"
+                    ? "text-green-600"
+                    : "text-destructive"
+                }`}
+              >
+                {scanMessage.text}
               </p>
-              <p className="text-sm text-green-600">
-                Redirecting to rack assignment page...
-              </p>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
 
-      {/* Confirm Button */}
-      <div className="flex justify-end">
-        <Button
-          size="lg"
-          onClick={handleConfirmReceipt}
-          disabled={!allFilled}
-          className="gap-2"
-        >
-          {allFilled ? (
-            <>
-              <CheckCircle className="h-5 w-5" />
-              Confirm Receipt
-            </>
+      {/* Item PO */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Item PO</CardTitle>
+          <CardDescription>
+            Daftar barang yang dipesan dalam PO ini. Tambah atau kurangi received qty secara manual atau via scan barcode.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead className="text-center">Ordered</TableHead>
+                  <TableHead className="text-center">Received</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {poData.items.map((item) => {
+                  const productCartons = poData.cartons.filter(
+                    (c) => c.productName === item.productName
+                  )
+                  const isBoxed = productCartons.length > 0
+                  return (
+                    <TableRow key={item.productName}>
+                      <TableCell className="font-medium">
+                        {item.productName}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{item.sku}</Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.orderedQty}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {isBoxed ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <Badge variant="outline" className="text-xs">
+                              <Package className="mr-1 h-3 w-3" />
+                              Masih di Box
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {productCartons[0]?.barcode ?? "-"}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-7 w-7"
+                              disabled={poData.status === "assigned"}
+                              onClick={() =>
+                                handleAdjust(item.productName, -1)
+                              }
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="w-10 text-center font-sans font-medium">
+                              {item.receivedQty}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-7 w-7"
+                              disabled={poData.status === "assigned"}
+                              onClick={() => handleAdjust(item.productName, 1)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {isBoxed ? (
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
+                            Di Box
+                          </Badge>
+                        ) : item.receivedQty === 0 ? (
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
+                            Belum
+                          </Badge>
+                        ) : item.receivedQty < item.orderedQty ? (
+                          <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
+                            Kurang
+                          </Badge>
+                        ) : item.receivedQty === item.orderedQty ? (
+                          <Badge variant="default" className="text-xs bg-green-600 text-white">
+                            Lengkap
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs text-red-600 border-red-300">
+                            Lebih
+                          </Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {allCompleted && poData.status === "receiving" && (
+        <div className="flex justify-end">
+          <Link href={`/inventory/put-away/${poId}`}>
+            <Button size="lg" className="gap-2">
+              Proses Put Away
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Scan Log */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Scan Log</CardTitle>
+          <CardDescription>
+            Riwayat scan dan perubahan received qty untuk PO ini.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {productsWithLogs.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada scan log.</p>
           ) : (
-            <>
-              <Package className="h-5 w-5" />
-              Fill All Items First
-            </>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={scanLogProduct === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setScanLogProduct("all")}
+                >
+                  Semua
+                </Button>
+                {productsWithLogs.map((item) => (
+                  <Button
+                    key={item.productName}
+                    variant={
+                      scanLogProduct === item.productName ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => setScanLogProduct(item.productName)}
+                  >
+                    {item.productName}
+                  </Button>
+                ))}
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Waktu</TableHead>
+                      {scanLogProduct === "all" && <TableHead>Produk</TableHead>}
+                      <TableHead className="text-center">Qty</TableHead>
+                      <TableHead className="text-center">Total / Ordered</TableHead>
+                      <TableHead>Catatan</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[...filteredScanLogs]
+                      .sort((a, b) => b.timestamp - a.timestamp)
+                      .slice(0, 20)
+                      .map((log) => {
+                        return (
+                          <TableRow key={log.id}>
+                            <TableCell className="text-muted-foreground whitespace-nowrap">
+                              {formatScanTime(log.timestamp)}
+                            </TableCell>
+                            {scanLogProduct === "all" && (
+                              <TableCell>{log.productName}</TableCell>
+                            )}
+                            <TableCell className="text-center font-sans font-medium">
+                              {log.qty > 0 ? `+${log.qty}` : log.qty} pcs
+                            </TableCell>
+                            <TableCell className="text-center text-xs text-muted-foreground">
+                              {log.orderedQty}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {log.note ?? "-"}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           )}
-          {allFilled && <ArrowRight className="h-5 w-5" />}
-        </Button>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

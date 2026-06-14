@@ -298,7 +298,7 @@ export default function StockAlertPage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">{product.name}</p>
-                      <p className="font-mono text-xs text-muted-foreground">
+                      <p className="font-sans text-xs text-muted-foreground">
                         {product.sku}
                       </p>
                     </div>
@@ -319,7 +319,7 @@ export default function StockAlertPage() {
                       {product.currentStock}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right font-mono text-muted-foreground">
+                  <TableCell className="text-right font-sans text-muted-foreground">
                     {product.threshold}
                   </TableCell>
                   <TableCell>

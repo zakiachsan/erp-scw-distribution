@@ -67,27 +67,26 @@ export const MODULES: ModuleInfo[] = [
     menuItems: [
       { label: "Dashboard", icon: "LayoutDashboard", href: "/operasional" },
       {
-        label: "Inventory",
-        icon: "Package",
-        children: [
-          { label: "Products", href: "/inventory" },
-          { label: "Warehouse / Rak", href: "/inventory/warehouse" },
-          { label: "Stock Opname", href: "/inventory/stock-opname" },
-          { label: "Stock Alert", href: "/inventory/stock-alert" },
-          { label: "Packing Materials", href: "/inventory/packing-materials" },
-          { label: "Stock Ledger", href: "/inventory/stock-ledger" },
-          { label: "Estimasi Harga", href: "/inventory/estimasi-harga" },
-          { label: "Inbound", href: "/inventory/inbound" },
-        ],
-      },
-      {
         label: "Purchasing",
         icon: "ShoppingCart",
         children: [
           { label: "Purchase Orders", href: "/purchasing" },
-          { label: "Create PO", href: "/purchasing/create" },
           { label: "Suppliers", href: "/purchasing/suppliers" },
           { label: "USD Rate", href: "/purchasing/usd-rate" },
+        ],
+      },
+      {
+        label: "Inventory",
+        icon: "Package",
+        children: [
+          { label: "Products", href: "/inventory" },
+          { label: "Inbound", href: "/inventory/inbound" },
+          { label: "Put Away", href: "/inventory/put-away" },
+          { label: "Warehouse / Rak", href: "/inventory/warehouse" },
+          { label: "Outbond", href: "/inventory/outbond" },
+          { label: "Stock Opname", href: "/inventory/stock-opname" },
+          { label: "Packing Materials", href: "/inventory/packing-materials" },
+          { label: "Stock Alert", href: "/inventory/stock-alert" },
         ],
       },
       {
@@ -187,4 +186,30 @@ export const useModuleStore = create<ModuleState>((set) => ({
 
 export function getModuleById(id: ModuleId): ModuleInfo | undefined {
   return MODULES.find((m) => m.id === id)
+}
+
+export function getModuleIdByPathname(pathname: string): ModuleId | null {
+  if (
+    pathname.startsWith("/sales") ||
+    pathname === "/tiering" ||
+    pathname.startsWith("/tiering/")
+  ) {
+    return "sales"
+  }
+  if (
+    pathname.startsWith("/operasional") ||
+    pathname.startsWith("/inventory") ||
+    pathname.startsWith("/purchasing") ||
+    pathname.startsWith("/shipping") ||
+    pathname.startsWith("/packing")
+  ) {
+    return "operasional"
+  }
+  if (pathname.startsWith("/accounting")) {
+    return "accounting"
+  }
+  if (pathname.startsWith("/ecommerce")) {
+    return "ecommerce"
+  }
+  return null
 }

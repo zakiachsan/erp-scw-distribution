@@ -123,10 +123,12 @@ export default function CreatePOPage() {
     setItems(items.filter((i) => i.productId !== productId))
   }
 
+  const [shipping, setShipping] = useState("500000")
+  const shippingValue = parseInt(shipping) || 0
+
   const subtotal = items.reduce((sum, item) => sum + item.total, 0)
   const tax = Math.round(subtotal * 0.1)
-  const shipping = 500000
-  const grandTotal = subtotal + tax + shipping
+  const grandTotal = subtotal + tax + shippingValue
 
   const totalCogs = items.reduce((sum, item) => {
     const product = products.find((p) => p.id === item.productId)
@@ -176,7 +178,12 @@ export default function CreatePOPage() {
                   <Label>Select Supplier</Label>
                   <Select value={selectedSupplier} onValueChange={(v) => setSelectedSupplier(v ?? "")}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Choose a supplier..." />
+                      <SelectValue placeholder="Choose a supplier...">
+                        {selectedSupplier ? (() => {
+                          const s = suppliers.find((sup) => sup.id === selectedSupplier);
+                          return s ? s.name : selectedSupplier;
+                        })() : "Choose a supplier..."}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {suppliers.map((s) => (
@@ -217,12 +224,17 @@ export default function CreatePOPage() {
               <CardDescription>Add products to this purchase order</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-4">
-                <div className="space-y-2">
+              <div className="grid gap-3 md:grid-cols-[2fr_1fr_1fr_auto]">
+                <div className="space-y-2 min-w-0">
                   <Label>Product</Label>
                   <Select value={selectedProduct} onValueChange={(v) => setSelectedProduct(v ?? "")}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select product" />
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select product">
+                        {selectedProduct ? (() => {
+                          const p = products.find((pr) => pr.id === selectedProduct);
+                          return p ? <span className="truncate">{p.sku} - {p.name}</span> : selectedProduct;
+                        })() : "Select product"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((p) => (
@@ -276,14 +288,14 @@ export default function CreatePOPage() {
                     {items.map((item) => (
                       <TableRow key={item.productId}>
                         <TableCell className="font-medium">{item.productName}</TableCell>
-                        <TableCell className="font-mono text-xs">{item.sku}</TableCell>
+                        <TableCell className="font-sans text-xs">{item.sku}</TableCell>
                         <TableCell className="text-right">{item.qty}</TableCell>
-                        <TableCell className="text-right font-mono">
+                        <TableCell className="text-right font-sans">
                           {item.currency === "USD"
                             ? `$${item.unitPrice.toLocaleString()}`
                             : `Rp ${item.unitPrice.toLocaleString()}`}
                         </TableCell>
-                        <TableCell className="text-right font-mono font-bold">
+                        <TableCell className="text-right font-sans">
                           {item.currency === "USD"
                             ? `$${item.total.toLocaleString()}`
                             : `Rp ${item.total.toLocaleString()}`}
@@ -334,20 +346,29 @@ export default function CreatePOPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-mono font-medium">Rp {subtotal.toLocaleString()}</span>
+                <span className="font-sans">Rp {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Tax (PPN 10%)</span>
-                <span className="font-mono">Rp {tax.toLocaleString()}</span>
+                <span className="font-sans">Rp {tax.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="font-mono">Rp {shipping.toLocaleString()}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <Label className="text-xs text-muted-foreground">Shipping</Label>
+                  <Input
+                    type="number"
+                    placeholder="Shipping cost"
+                    value={shipping}
+                    onChange={(e) => setShipping(e.target.value)}
+                    className="mt-1 h-8 text-sm"
+                  />
+                </div>
+                <span className="font-sans text-sm pt-5">Rp {shippingValue.toLocaleString()}</span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold">Grand Total</span>
-                  <span className="text-xl font-bold font-mono">
+                  <span className="font-medium">Grand Total</span>
+                  <span className="text-lg font-semibold font-sans">
                     Rp {grandTotal.toLocaleString()}
                   </span>
                 </div>
@@ -363,11 +384,11 @@ export default function CreatePOPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Total COGS</span>
-                <span className="font-mono font-medium">Rp {totalCogs.toLocaleString()}</span>
+                <span className="font-sans">Rp {totalCogs.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Selling Price (Est.)</span>
-                <span className="font-mono">Rp {subtotal.toLocaleString()}</span>
+                <span className="font-sans">Rp {subtotal.toLocaleString()}</span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex items-center justify-between">

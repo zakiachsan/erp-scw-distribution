@@ -64,59 +64,52 @@ export default function SalesDashboardPage() {
       </div>
 
       {/* Monthly Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <DollarSign className="h-5 w-5 text-indigo-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Sales</p>
-                <p className="text-2xl font-bold">Rp {(monthlySummary.totalSales / 1000000).toFixed(1)}M</p>
-                <p className="text-xs text-emerald-600">+{monthlySummary.growthPercent}% vs last month</p>
-              </div>
+          <CardContent className="flex h-full items-center gap-2 p-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+              <DollarSign className="h-4 w-4 text-indigo-600" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Total Sales</p>
+              <p className="text-lg font-bold lg:text-xl">Rp {(monthlySummary.totalSales / 1000000).toFixed(1)}M</p>
+              <p className="text-[10px] text-emerald-600">+{monthlySummary.growthPercent}% vs last month</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                <ShoppingCart className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold">{monthlySummary.totalOrders}</p>
-                <p className="text-xs text-emerald-600">+8 vs last month</p>
-              </div>
+          <CardContent className="flex h-full items-center gap-2 p-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
+              <ShoppingCart className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Total Orders</p>
+              <p className="text-lg font-bold lg:text-xl">{monthlySummary.totalOrders}</p>
+              <p className="text-[10px] text-emerald-600">+8 vs last month</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/30">
-                <TrendingUp className="h-5 w-5 text-violet-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Avg Order Value</p>
-                <p className="text-2xl font-bold">Rp {(monthlySummary.avgOrderValue / 1000000).toFixed(1)}M</p>
-              </div>
+          <CardContent className="flex h-full items-center gap-2 p-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/30">
+              <TrendingUp className="h-4 w-4 text-violet-600" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Avg Order Value</p>
+              <p className="text-lg font-bold lg:text-xl">Rp {(monthlySummary.avgOrderValue / 1000000).toFixed(1)}M</p>
+              <p className="text-[10px] text-transparent">+0 vs last month</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Users className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Active Customers</p>
-                <p className="text-2xl font-bold">32</p>
-                <p className="text-xs text-emerald-600">+3 new this month</p>
-              </div>
+          <CardContent className="flex h-full items-center gap-2 p-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+              <Users className="h-4 w-4 text-emerald-600" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Active Customers</p>
+              <p className="text-lg font-bold lg:text-xl">32</p>
+              <p className="text-[10px] text-emerald-600">+3 new this month</p>
             </div>
           </CardContent>
         </Card>
@@ -129,12 +122,13 @@ export default function SalesDashboardPage() {
           <CardDescription>Current pipeline stage distribution</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             {pipelineStages.map((stage, idx) => {
               const Icon = stage.icon
+              const isLast = idx === pipelineStages.length - 1
               return (
-                <div key={stage.stage} className="relative">
-                  <div className={`rounded-xl border p-4 ${stage.color}`}>
+                <div key={stage.stage} className="flex items-center gap-2 lg:gap-3">
+                  <div className={`flex-1 rounded-xl border p-4 ${stage.color}`}>
                     <div className="flex items-center justify-between">
                       <Icon className="h-5 w-5" />
                       <span className="text-2xl font-bold">{stage.count}</span>
@@ -142,10 +136,8 @@ export default function SalesDashboardPage() {
                     <p className="mt-2 text-sm font-medium">{stage.stage}</p>
                     <p className="text-xs opacity-75">Rp {(stage.value / 1000000).toFixed(1)}M</p>
                   </div>
-                  {idx < pipelineStages.length - 1 && (
-                    <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 translate-x-1/2 md:block">
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
+                  {!isLast && (
+                    <ArrowRight className="hidden h-5 w-5 shrink-0 text-muted-foreground lg:block" />
                   )}
                 </div>
               )

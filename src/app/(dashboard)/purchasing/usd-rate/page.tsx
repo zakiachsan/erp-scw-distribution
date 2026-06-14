@@ -235,7 +235,7 @@ export default function UsdRatePage() {
                 {rateHistory.map((entry, i) => (
                   <TableRow key={i}>
                     <TableCell className="text-sm">{entry.date}</TableCell>
-                    <TableCell className="text-right font-mono font-bold">
+                    <TableCell className="text-right font-sans font-bold">
                       Rp {entry.rate.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-right">
@@ -246,7 +246,7 @@ export default function UsdRatePage() {
                           <ArrowDown className="h-3 w-3 text-red-600" />
                         )}
                         <span
-                          className={`font-mono text-sm ${
+                          className={`font-sans text-sm ${
                             entry.change >= 0 ? "text-emerald-600" : "text-red-600"
                           }`}
                         >

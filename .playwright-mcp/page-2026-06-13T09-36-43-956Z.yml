@@ -1,0 +1,89 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e8]: SCW Distribution
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: Warehouse / Rak
+          - img [ref=e46]
+          - generic [ref=e48]: "6"
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e54]
+          - separator [ref=e55]
+          - button "3" [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e62]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - link [ref=e69] [cursor=pointer]:
+                - /url: /inventory/warehouse
+                - button [ref=e70]:
+                  - img
+              - generic [ref=e71]:
+                - heading "Rak C-01" [level=1] [ref=e72]
+                - generic [ref=e73]:
+                  - img [ref=e74]
+                  - generic [ref=e77]: Gudang Utama
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - img
+                - text: Empty
+              - button "Hapus Rak" [ref=e80]:
+                - img
+                - text: Hapus Rak
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - text: Informasi Rak
+              - generic [ref=e87]: Kapasitas dan penggunaan rak saat ini.
+            - generic [ref=e88]:
+              - generic [ref=e89]:
+                - generic [ref=e90]: Capacity
+                - generic [ref=e91]: 0/200
+              - paragraph [ref=e93]: 0% used
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - img [ref=e97]
+                - text: Produk di Dalam Rak
+              - generic [ref=e101]: Daftar produk beserta quantity yang tersimpan di rak ini.
+            - paragraph [ref=e103]: Rak ini kosong. Tidak ada produk untuk ditampilkan.
+  - button "Open Next.js Dev Tools" [ref=e109] [cursor=pointer]:
+    - img [ref=e110]

@@ -265,7 +265,7 @@ export default function BudgetPage() {
                     <div key={div}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-slate-600">{div}</span>
-                        <span className="font-mono text-slate-500">
+                        <span className="font-sans text-slate-500">
                           {pct.toFixed(0)}%
                         </span>
                       </div>
@@ -315,13 +315,13 @@ export default function BudgetPage() {
                 <TableRow key={idx}>
                   <TableCell className="font-medium">{item.division}</TableCell>
                   <TableCell className="text-slate-600">{item.category}</TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     {formatIDR(item.allocated)}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     {formatIDR(item.spent)}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     <span
                       className={
                         item.remaining === 0
@@ -364,13 +364,13 @@ export default function BudgetPage() {
                 <TableCell colSpan={2} className="font-bold text-slate-700">
                   Total
                 </TableCell>
-                <TableCell className="text-right font-mono font-bold text-slate-700">
+                <TableCell className="text-right font-sans font-bold text-slate-700">
                   {formatIDR(totalAllocated)}
                 </TableCell>
-                <TableCell className="text-right font-mono font-bold text-slate-700">
+                <TableCell className="text-right font-sans font-bold text-slate-700">
                   {formatIDR(totalSpent)}
                 </TableCell>
-                <TableCell className="text-right font-mono font-bold text-green-600">
+                <TableCell className="text-right font-sans font-bold text-green-600">
                   {formatIDR(totalRemaining)}
                 </TableCell>
                 <TableCell className="text-center font-bold">

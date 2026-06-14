@@ -1,0 +1,221 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - generic [ref=e8]: SCW Distribution
+            - generic [ref=e161]: Operasional
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e286] [cursor=pointer]:
+          - /url: /operasional
+          - img [ref=e163]
+          - generic [ref=e168]: Dashboard
+        - generic [ref=e169]:
+          - button "Inventory" [ref=e287]:
+            - img [ref=e171]
+            - generic [ref=e175]: Inventory
+            - img [ref=e176]
+          - generic [ref=e178]:
+            - link "Products" [ref=e288] [cursor=pointer]:
+              - /url: /inventory
+            - link "Inbound" [ref=e289] [cursor=pointer]:
+              - /url: /inventory/inbound
+            - link "Warehouse / Rak" [ref=e290] [cursor=pointer]:
+              - /url: /inventory/warehouse
+            - link "Stock Opname" [ref=e291] [cursor=pointer]:
+              - /url: /inventory/stock-opname
+            - link "Stock Alert" [ref=e292] [cursor=pointer]:
+              - /url: /inventory/stock-alert
+            - link "Packing Materials" [ref=e293] [cursor=pointer]:
+              - /url: /inventory/packing-materials
+            - link "Stock Ledger" [ref=e294] [cursor=pointer]:
+              - /url: /inventory/stock-ledger
+            - link "Estimasi Harga" [ref=e295] [cursor=pointer]:
+              - /url: /inventory/estimasi-harga
+        - generic [ref=e187]:
+          - button "Purchasing" [ref=e296]:
+            - img [ref=e189]
+            - generic [ref=e193]: Purchasing
+            - img [ref=e194]
+          - generic [ref=e196]:
+            - link "Purchase Orders" [ref=e297] [cursor=pointer]:
+              - /url: /purchasing
+            - link "Create PO" [ref=e298] [cursor=pointer]:
+              - /url: /purchasing/create
+            - link "Suppliers" [ref=e299] [cursor=pointer]:
+              - /url: /purchasing/suppliers
+            - link "USD Rate" [ref=e300] [cursor=pointer]:
+              - /url: /purchasing/usd-rate
+        - generic [ref=e201]:
+          - button "Shipping" [ref=e301]:
+            - img [ref=e203]
+            - generic [ref=e208]: Shipping
+            - img [ref=e209]
+          - generic [ref=e211]:
+            - link "Shipments" [ref=e302] [cursor=pointer]:
+              - /url: /shipping
+            - link "Couriers" [ref=e303] [cursor=pointer]:
+              - /url: /shipping/couriers
+        - generic [ref=e214]:
+          - button "Packing" [ref=e304]:
+            - img [ref=e216]
+            - generic [ref=e219]: Packing
+            - img [ref=e220]
+          - generic [ref=e222]:
+            - link "Packing Queue" [ref=e305] [cursor=pointer]:
+              - /url: /packing
+            - link "Video Gallery" [ref=e306] [cursor=pointer]:
+              - /url: /packing/videos
+            - link "Materials Stock" [ref=e307] [cursor=pointer]:
+              - /url: /packing/materials
+        - link "Notifications" [ref=e308] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e309] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e310] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e311] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: inbound
+          - img [ref=e46]
+          - generic [ref=e48]: po-002
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e312]
+          - separator [ref=e55]
+          - button "3" [ref=e313]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e314]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - img [ref=e70]
+              - generic [ref=e75]:
+                - heading "Receive PO-2026-0052" [level=1] [ref=e315]
+                - paragraph [ref=e77]: ChemPro Asia
+            - generic [ref=e78]:
+              - img
+              - text: Pending Receipt
+          - generic [ref=e79]:
+            - generic [ref=e81]: PO Information
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - paragraph [ref=e85]: Supplier
+                - paragraph [ref=e86]: ChemPro Asia
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Ship Date
+                - paragraph [ref=e89]: 2026-06-08
+              - generic [ref=e90]:
+                - paragraph [ref=e91]: Expected Arrival
+                - paragraph [ref=e92]: 2026-06-13
+          - generic [ref=e93]:
+            - generic [ref=e95]: PO Items
+            - table [ref=e98]:
+              - rowgroup [ref=e99]:
+                - row "Product SKU Ordered Qty Received Qty Storage Type Barcode Scan Actions" [ref=e316]:
+                  - columnheader "Product" [ref=e317]
+                  - columnheader "SKU" [ref=e318]
+                  - columnheader "Ordered Qty" [ref=e319]
+                  - columnheader "Received Qty" [ref=e320]
+                  - columnheader "Storage Type" [ref=e321]
+                  - columnheader "Barcode Scan" [ref=e322]
+                  - columnheader "Actions" [ref=e323]
+              - rowgroup [ref=e108]:
+                - row "SCW Ceramic Coating SCW-CC-002 20 - 1 kardus terdaftar Kardus berhasil ditambahkan Kardus" [ref=e324]:
+                  - cell "SCW Ceramic Coating" [ref=e325]
+                  - cell "SCW-CC-002" [ref=e326]:
+                    - generic [ref=e112]: SCW-CC-002
+                  - cell "20" [ref=e327]
+                  - cell "-" [ref=e328]
+                  - cell [ref=e115]:
+                    - combobox [ref=e116]:
+                      - generic [ref=e117]: carton
+                      - img: ▼
+                    - textbox [ref=e118]: carton
+                  - cell "1 kardus terdaftar Kardus berhasil ditambahkan" [ref=e329]:
+                    - generic [ref=e120]:
+                      - generic [ref=e121]: 1 kardus terdaftar
+                      - paragraph [ref=e330]: Kardus berhasil ditambahkan
+                  - cell "Kardus" [ref=e331]:
+                    - button "Kardus" [ref=e332]:
+                      - img
+                      - text: Kardus
+                - row "SCW Spray Wax SCW-SW-008 40 0 Scan" [ref=e333]:
+                  - cell "SCW Spray Wax" [ref=e334]
+                  - cell "SCW-SW-008" [ref=e335]:
+                    - generic [ref=e133]: SCW-SW-008
+                  - cell "40" [ref=e336]
+                  - cell "0" [ref=e337]
+                  - cell [ref=e136]:
+                    - combobox [ref=e137]:
+                      - generic [ref=e138]: items
+                      - img: ▼
+                    - textbox [ref=e139]: items
+                  - cell "Scan" [ref=e338]:
+                    - generic [ref=e142]:
+                      - img [ref=e143]
+                      - textbox "Scan barcode" [ref=e339]
+                      - button "Scan" [ref=e340]
+                  - cell [ref=e150]
+          - generic [ref=e151]:
+            - button "Lengkapi Penerimaan" [disabled]:
+              - img
+              - text: Lengkapi Penerimaan
+  - button "Open Next.js Dev Tools" [ref=e157] [cursor=pointer]:
+    - img [ref=e158]
+  - alert [ref=e257]
+  - dialog "Tambah Kardus" [ref=e261]:
+    - generic [ref=e262]:
+      - heading "Tambah Kardus" [level=2] [ref=e263]
+      - paragraph [ref=e264]: Kartu kardus untuk SCW Ceramic Coating. Isi di bawah hanya estimasi dan tidak akan dihitung sebagai barang masuk.
+    - generic [ref=e265]:
+      - generic [ref=e266]:
+        - generic [ref=e267]: Barcode Kardus
+        - textbox "Scan atau generate barcode" [ref=e268]: CTN-1781347054823
+      - generic [ref=e269]:
+        - generic [ref=e270]:
+          - generic [ref=e271]: Estimasi Isi Kardus
+          - button "Tambah Item" [ref=e272]:
+            - img
+            - text: Tambah Item
+        - generic [ref=e273]:
+          - generic [ref=e274]:
+            - generic [ref=e275]: Nama Produk
+            - textbox [ref=e276]: SCW Ceramic Coating
+          - generic [ref=e277]:
+            - generic [ref=e278]: Qty Estimasi
+            - spinbutton [ref=e279]: "1"
+          - button [disabled]:
+            - img
+    - generic [ref=e280]:
+      - button "Batal" [ref=e281]
+      - button "Simpan Kardus" [active] [ref=e282]
+    - button "Close" [ref=e283]:
+      - img
+      - generic [ref=e284]: Close

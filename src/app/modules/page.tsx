@@ -146,15 +146,6 @@ export default function ModulesPage() {
             })}
           </div>
 
-          {/* Quick Access */}
-          <div className="mt-5 flex items-center justify-center gap-4">
-            <button
-              onClick={() => router.push("/")}
-              className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              ← Kembali ke Dashboard
-            </button>
-          </div>
         </div>
       </main>
 

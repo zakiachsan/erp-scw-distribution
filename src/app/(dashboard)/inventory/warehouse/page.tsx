@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Dialog,
   DialogContent,
@@ -18,260 +20,109 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   Warehouse,
-  Package,
   Plus,
-  Grid3X3,
-  Box,
-  ArrowUpDown,
+  Pencil,
+  Trash2,
+  MapPin,
+  AlertCircle,
 } from "lucide-react"
-
-interface Rack {
-  id: string
-  name: string
-  warehouse: string
-  status: "empty" | "occupied" | "full"
-  capacity: number
-  used: number
-  products: { name: string; qty: number }[]
-}
-
-const racks: Rack[] = [
-  {
-    id: "1",
-    name: "Rak A-01",
-    warehouse: "Gudang Utama",
-    status: "full",
-    capacity: 200,
-    used: 185,
-    products: [
-      { name: "SCW Snow Foam", qty: 150 },
-      { name: "SCW Shampoo Plus", qty: 35 },
-    ],
-  },
-  {
-    id: "2",
-    name: "Rak A-02",
-    warehouse: "Gudang Utama",
-    status: "occupied",
-    capacity: 200,
-    used: 75,
-    products: [
-      { name: "SCW Ceramic Coating", qty: 40 },
-      { name: "SCW Spray Wax", qty: 35 },
-    ],
-  },
-  {
-    id: "3",
-    name: "Rak A-03",
-    warehouse: "Gudang Utama",
-    status: "occupied",
-    capacity: 200,
-    used: 120,
-    products: [{ name: "SCW Microfiber Wash", qty: 120 }],
-  },
-  {
-    id: "4",
-    name: "Rak B-01",
-    warehouse: "Gudang Utama",
-    status: "full",
-    capacity: 200,
-    used: 180,
-    products: [{ name: "SCW Interior Detailer", qty: 180 }],
-  },
-  {
-    id: "5",
-    name: "Rak B-02",
-    warehouse: "Gudang Utama",
-    status: "occupied",
-    capacity: 200,
-    used: 95,
-    products: [{ name: "SCW Tire Gel", qty: 95 }],
-  },
-  {
-    id: "6",
-    name: "Rak C-01",
-    warehouse: "Gudang Utama",
-    status: "empty",
-    capacity: 200,
-    used: 0,
-    products: [],
-  },
-  {
-    id: "7",
-    name: "Rak C-02",
-    warehouse: "Gudang Utama",
-    status: "occupied",
-    capacity: 200,
-    used: 45,
-    products: [
-      { name: "SCW Polish Compound", qty: 25 },
-      { name: "SCW Clay Bar", qty: 20 },
-    ],
-  },
-  {
-    id: "8",
-    name: "Rak D-01",
-    warehouse: "Gudang Cabang",
-    status: "occupied",
-    capacity: 150,
-    used: 100,
-    products: [{ name: "SCW Glass Cleaner", qty: 100 }],
-  },
-  {
-    id: "9",
-    name: "Rak D-02",
-    warehouse: "Gudang Cabang",
-    status: "full",
-    capacity: 150,
-    used: 140,
-    products: [
-      { name: "SCW Leather Conditioner", qty: 45 },
-      { name: "SCW Dashboard Coating", qty: 95 },
-    ],
-  },
-  {
-    id: "10",
-    name: "Rak E-01",
-    warehouse: "Gudang Cabang",
-    status: "occupied",
-    capacity: 150,
-    used: 67,
-    products: [{ name: "SCW Trim Restorer", qty: 67 }],
-  },
-  {
-    id: "11",
-    name: "Rak F-01",
-    warehouse: "Gudang Display",
-    status: "occupied",
-    capacity: 100,
-    used: 55,
-    products: [
-      { name: "SCW Foam Pad", qty: 30 },
-      { name: "SCW Microfiber Towel", qty: 25 },
-    ],
-  },
-  {
-    id: "12",
-    name: "Rak F-02",
-    warehouse: "Gudang Display",
-    status: "empty",
-    capacity: 100,
-    used: 0,
-    products: [],
-  },
-]
-
-const statusConfig = {
-  empty: {
-    label: "Empty",
-    className: "bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400",
-    icon: Box,
-  },
-  occupied: {
-    label: "Occupied",
-    className: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
-    icon: Package,
-  },
-  full: {
-    label: "Full",
-    className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-    icon: Warehouse,
-  },
-}
-
-function RackCard({ rack }: { rack: Rack }) {
-  const cfg = statusConfig[rack.status]
-  const Icon = cfg.icon
-  const pct = Math.round((rack.used / rack.capacity) * 100)
-
-  return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/20">
-              <Icon className="h-5 w-5 text-indigo-600" />
-            </div>
-            <div>
-              <p className="font-medium">{rack.name}</p>
-              <p className="text-xs text-muted-foreground">{rack.warehouse}</p>
-            </div>
-          </div>
-          <Badge variant="outline" className={cfg.className}>
-            {cfg.label}
-          </Badge>
-        </div>
-
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Capacity</span>
-            <span className="font-medium">
-              {rack.used}/{rack.capacity}
-            </span>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${pct}%`,
-                backgroundColor:
-                  pct >= 90
-                    ? "rgb(245, 158, 11)"
-                    : pct >= 50
-                      ? "rgb(99, 102, 241)"
-                      : "rgb(34, 197, 94)",
-              }}
-            />
-          </div>
-          <p className="text-right text-xs text-muted-foreground">{pct}% used</p>
-        </div>
-
-        {rack.products.length > 0 && (
-          <div className="mt-4 space-y-1.5 border-t pt-3">
-            <p className="text-xs font-medium text-muted-foreground">Products:</p>
-            {rack.products.map((p, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="truncate">{p.name}</span>
-                <span className="ml-2 shrink-0 font-mono text-xs">{p.qty}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
+import { useWarehouseStore } from "@/lib/warehouse-store"
 
 export default function WarehousePage() {
-  const [addOpen, setAddOpen] = useState(false)
+  const router = useRouter()
+  const {
+    locations,
+    racks,
+    addLocation,
+    updateLocation,
+    deleteLocation,
+    addRack,
+  } = useWarehouseStore()
+
+  // Add rack dialog state
+  const [addRackOpen, setAddRackOpen] = useState(false)
   const [rackName, setRackName] = useState("")
   const [capacity, setCapacity] = useState("")
-  const [rackList, setRackList] = useState(racks)
+  const [selectedLocationId, setSelectedLocationId] = useState("")
 
-  const addRack = () => {
-    if (!rackName.trim()) return
-    const newRack = {
-      id: String(rackList.length + 1),
-      name: rackName,
-      warehouse: "Gudang Utama",
-      status: "empty" as const,
+  // Location management dialog state
+  const [manageLocationsOpen, setManageLocationsOpen] = useState(false)
+  const [locationName, setLocationName] = useState("")
+  const [editingLocation, setEditingLocation] = useState<{ id: string; name: string } | null>(null)
+  const [activeFilter, setActiveFilter] = useState<string>("All")
+
+  const handleAddRack = () => {
+    if (!rackName.trim() || !selectedLocationId) return
+    addRack({
+      name: rackName.trim(),
+      locationId: selectedLocationId,
       capacity: Number(capacity) || 100,
-      used: 0,
-      products: [],
-    }
-    setRackList([...rackList, newRack])
+    })
     setRackName("")
     setCapacity("")
-    setAddOpen(false)
+    setSelectedLocationId("")
+    setAddRackOpen(false)
   }
 
-  const warehouses = ["All", "Gudang Utama", "Gudang Cabang", "Gudang Display"]
-  const emptyCount = rackList.filter((r) => r.status === "empty").length
-  const occupiedCount = rackList.filter((r) => r.status === "occupied").length
-  const fullCount = rackList.filter((r) => r.status === "full").length
+  const openAddRack = () => {
+    setSelectedLocationId(locations[0]?.id ?? "")
+    setAddRackOpen(true)
+  }
+
+  const saveLocation = () => {
+    if (!locationName.trim()) return
+    if (editingLocation) {
+      updateLocation(editingLocation.id, locationName.trim())
+    } else {
+      addLocation(locationName.trim())
+    }
+    setLocationName("")
+    setEditingLocation(null)
+  }
+
+  const startEditLocation = (loc: { id: string; name: string }) => {
+    setEditingLocation(loc)
+    setLocationName(loc.name)
+  }
+
+  const cancelEditLocation = () => {
+    setEditingLocation(null)
+    setLocationName("")
+  }
+
+  const handleDeleteLocation = (id: string) => {
+    const hasRacks = racks.some((r) => r.locationId === id)
+    if (hasRacks) {
+      alert("Cannot delete location that still has racks assigned to it.")
+      return
+    }
+    deleteLocation(id)
+  }
+
+  const getLocationName = (id: string) =>
+    locations.find((loc) => loc.id === id)?.name ?? "Unknown"
+
+  const filteredRacks =
+    activeFilter === "All"
+      ? racks
+      : racks.filter((r) => r.locationId === activeFilter)
 
   return (
     <div className="space-y-6 p-6">
@@ -279,89 +130,283 @@ export default function WarehousePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Warehouse & Rak</h1>
           <p className="text-muted-foreground">
-            Manage rack assignments and warehouse layout
+            Manage warehouse locations first, then assign racks
           </p>
         </div>
-        <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogTrigger render={<Button />}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Rack
-                    </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Rack</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <Input placeholder="Rack Name" value={rackName} onChange={(e) => setRackName(e.target.value)} />
-              <Input placeholder="Capacity" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} />
-              <Button onClick={addRack} className="w-full">Add Rack</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          <Dialog open={manageLocationsOpen} onOpenChange={setManageLocationsOpen}>
+            <DialogTrigger render={<Button variant="outline" />}>
+              <MapPin className="mr-2 h-4 w-4" />
+              Manage Locations
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Warehouse Locations</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location-name">
+                    {editingLocation ? "Edit Location" : "New Location"}
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="location-name"
+                      placeholder="e.g. Gudang Utama"
+                      value={locationName}
+                      onChange={(e) => setLocationName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveLocation()
+                      }}
+                    />
+                    {editingLocation ? (
+                      <>
+                        <Button onClick={saveLocation}>Save</Button>
+                        <Button variant="outline" onClick={cancelEditLocation}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button onClick={saveLocation}>
+                        <Plus className="h-4 w-4" />
+                        <span className="sr-only">Add</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Saved Locations</Label>
+                  {locations.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      No locations yet. Create one above to get started.
+                    </p>
+                  ) : (
+                    <div className="divide-y rounded-lg border">
+                      {locations.map((loc) => {
+                        const rackCount = racks.filter(
+                          (r) => r.locationId === loc.id
+                        ).length
+                        return (
+                          <div
+                            key={loc.id}
+                            className="flex items-center justify-between p-3"
+                          >
+                            <div>
+                              <p className="font-medium">{loc.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {rackCount} rack{rackCount !== 1 ? "s" : ""}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => startEditLocation(loc)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteLocation(loc.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                                <span className="sr-only">Delete</span>
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={addRackOpen} onOpenChange={setAddRackOpen}>
+            <DialogTrigger
+              render={
+                <Button disabled={locations.length === 0} onClick={openAddRack} />
+              }
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Rack
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Rack</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="rack-location">Location</Label>
+                  <Select
+                    value={selectedLocationId}
+                    onValueChange={(v) => setSelectedLocationId(v ?? "")}
+                  >
+                    <SelectTrigger id="rack-location" className="w-full">
+                      <SelectValue placeholder="Select location">
+                        {getLocationName(selectedLocationId)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.id}>
+                          {loc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Input
+                  placeholder="Rack Name"
+                  value={rackName}
+                  onChange={(e) => setRackName(e.target.value)}
+                />
+                <Input
+                  placeholder="Capacity"
+                  type="number"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+                <Button onClick={handleAddRack} className="w-full">
+                  Add Rack
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Package className="h-5 w-5 text-indigo-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Racks</p>
-                <p className="text-2xl font-bold">{rackList.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Grid3X3 className="h-5 w-5 text-indigo-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Occupied</p>
-                <p className="text-2xl font-bold">{occupiedCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Warehouse className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Full</p>
-                <p className="text-2xl font-bold">{fullCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {locations.length === 0 && (
+        <div className="flex items-center gap-3 rounded-lg border bg-amber-50 p-4 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <div>
+            <p className="font-medium">No warehouse locations found</p>
+            <p className="text-sm">
+              Create at least one location category before you can add racks.
+            </p>
+          </div>
+        </div>
+      )}
 
-      <Tabs defaultValue="All">
-        <TabsList>
-          {warehouses.map((wh) => (
-            <TabsTrigger key={wh} value={wh}>
-              {wh}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {warehouses.map((wh) => (
-          <TabsContent key={wh} value={wh}>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {rackList
-                .filter((r) => wh === "All" || r.warehouse === wh)
-                .map((rack) => (
-                  <RackCard key={rack.id} rack={rack} />
-                ))}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <MapPin className="h-4 w-4" />
+            Warehouse Locations
+          </CardTitle>
+          <CardDescription>
+            Click a location to filter racks. Manage categories using the button
+            above.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {locations.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No locations defined yet. Click “Manage Locations” to create one.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              <Badge
+                variant={activeFilter === "All" ? "default" : "secondary"}
+                className="cursor-pointer gap-1 px-2.5 py-1 text-sm"
+                onClick={() => setActiveFilter("All")}
+              >
+                All
+                <span className="opacity-75">({racks.length})</span>
+              </Badge>
+              {locations.map((loc) => {
+                const rackCount = racks.filter(
+                  (r) => r.locationId === loc.id
+                ).length
+                return (
+                  <Badge
+                    key={loc.id}
+                    variant={activeFilter === loc.id ? "default" : "secondary"}
+                    className="cursor-pointer gap-1 px-2.5 py-1 text-sm"
+                    onClick={() => setActiveFilter(loc.id)}
+                  >
+                    <Warehouse className="h-3.5 w-3.5" />
+                    {loc.name}
+                    <span className="opacity-75">({rackCount})</span>
+                  </Badge>
+                )
+              })}
             </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Warehouse className="h-4 w-4" />
+            Daftar Rak
+          </CardTitle>
+          <CardDescription>
+            Klik baris rak untuk masuk ke halaman detail.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          {filteredRacks.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Tidak ada rak untuk lokasi ini.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama Rak</TableHead>
+                  <TableHead>Lokasi</TableHead>
+                  <TableHead>Kapasitas</TableHead>
+                  <TableHead>Isi Rak</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRacks.map((rack) => {
+                  const pct = Math.round((rack.used / rack.capacity) * 100)
+
+                  const productPart =
+                    rack.products.length === 0
+                      ? ""
+                      : rack.products.length === 1
+                        ? `${rack.products[0].name} (${rack.products[0].qty})`
+                        : `${rack.products[0].name} & ${rack.products.length - 1} produk lainnya`
+
+                  const cartonPart =
+                    (rack.cartons?.length ?? 0) === 0
+                      ? ""
+                      : `${rack.cartons.length} kardus`
+
+                  const productSummary =
+                    productPart && cartonPart
+                      ? `${productPart}; ${cartonPart}`
+                      : productPart || cartonPart || "-"
+
+                  return (
+                    <TableRow
+                      key={rack.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => router.push(`/inventory/warehouse/${rack.id}`)}
+                    >
+                      <TableCell className="font-medium">{rack.name}</TableCell>
+                      <TableCell>{getLocationName(rack.locationId)}</TableCell>
+                      <TableCell>
+                        {rack.used}/{rack.capacity} ({pct}%)
+                      </TableCell>
+                      <TableCell className="max-w-xs truncate text-muted-foreground">
+                        {productSummary}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

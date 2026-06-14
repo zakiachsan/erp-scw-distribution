@@ -225,19 +225,19 @@ export default function LedgerPage() {
                 {entries.map((entry, idx) => (
                   <TableRow key={idx}>
                     <TableCell className="text-slate-600">{entry.date}</TableCell>
-                    <TableCell className="font-mono text-sm font-medium">
+                    <TableCell className="font-sans text-sm font-medium">
                       {entry.reference}
                     </TableCell>
                     <TableCell className="max-w-[350px] truncate text-slate-600">
                       {entry.description}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {entry.debit > 0 ? formatIDR(entry.debit) : "-"}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {entry.credit > 0 ? formatIDR(entry.credit) : "-"}
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold text-slate-900">
+                    <TableCell className="text-right font-sans font-bold text-slate-900">
                       {formatIDR(entry.balance)}
                     </TableCell>
                   </TableRow>
@@ -247,13 +247,13 @@ export default function LedgerPage() {
                   <TableCell colSpan={3} className="font-bold text-slate-700">
                     Total
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-blue-600">
+                  <TableCell className="text-right font-sans font-bold text-blue-600">
                     {formatIDR(totalDebit)}
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-indigo-600">
+                  <TableCell className="text-right font-sans font-bold text-indigo-600">
                     {formatIDR(totalCredit)}
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-slate-900">
+                  <TableCell className="text-right font-sans font-bold text-slate-900">
                     {formatIDR(currentBalance)}
                   </TableCell>
                 </TableRow>

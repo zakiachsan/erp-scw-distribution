@@ -220,7 +220,7 @@ export default function OrdersPage() {
             <TableBody>
               {filtered.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="font-mono text-sm font-medium">{order.id}</TableCell>
+                  <TableCell className="font-sans text-sm font-medium">{order.id}</TableCell>
                   <TableCell>
                     <div>
                       <p className="font-medium">{order.customer}</p>

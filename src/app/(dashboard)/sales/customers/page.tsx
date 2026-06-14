@@ -235,7 +235,7 @@ export default function CustomerListPage() {
             <TableBody>
               {filtered.map((customer) => (
                 <TableRow key={customer.id}>
-                  <TableCell className="font-mono text-xs">{customer.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{customer.id}</TableCell>
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell className="text-muted-foreground">{customer.company}</TableCell>
                   <TableCell className="text-right">

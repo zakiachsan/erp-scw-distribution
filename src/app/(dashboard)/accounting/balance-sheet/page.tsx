@@ -165,7 +165,7 @@ export default function BalanceSheetPage() {
                     <TableCell className="pl-8 text-slate-600">
                       {item.account}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatIDR(item.amount)}
                     </TableCell>
                   </TableRow>
@@ -174,7 +174,7 @@ export default function BalanceSheetPage() {
                   <TableCell className="pl-8 font-bold text-slate-700">
                     Total Current Assets
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-blue-700">
+                  <TableCell className="text-right font-sans font-bold text-blue-700">
                     {formatIDR(totalCurrentAssets)}
                   </TableCell>
                 </TableRow>
@@ -192,7 +192,7 @@ export default function BalanceSheetPage() {
                     <TableCell className="pl-8 text-slate-600">
                       {item.account}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatIDR(item.amount)}
                     </TableCell>
                   </TableRow>
@@ -201,7 +201,7 @@ export default function BalanceSheetPage() {
                   <TableCell className="pl-8 font-bold text-slate-700">
                     Total Fixed Assets
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-blue-700">
+                  <TableCell className="text-right font-sans font-bold text-blue-700">
                     {formatIDR(totalFixedAssets)}
                   </TableCell>
                 </TableRow>
@@ -213,7 +213,7 @@ export default function BalanceSheetPage() {
                 <span className="font-bold text-blue-800 text-lg">
                   TOTAL ASSETS
                 </span>
-                <span className="font-mono font-bold text-blue-800 text-lg">
+                <span className="font-sans font-bold text-blue-800 text-lg">
                   {formatIDR(totalAssets)}
                 </span>
               </div>
@@ -234,7 +234,7 @@ export default function BalanceSheetPage() {
                     <TableCell className="pl-8 text-slate-600">
                       {item.account}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatIDR(item.amount)}
                     </TableCell>
                   </TableRow>
@@ -243,7 +243,7 @@ export default function BalanceSheetPage() {
                   <TableCell className="pl-8 font-bold text-slate-700">
                     Total Liabilities
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-amber-700">
+                  <TableCell className="text-right font-sans font-bold text-amber-700">
                     {formatIDR(totalLiabilities)}
                   </TableCell>
                 </TableRow>
@@ -263,7 +263,7 @@ export default function BalanceSheetPage() {
                     <TableCell className="pl-8 text-slate-600">
                       {item.account}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatIDR(item.amount)}
                     </TableCell>
                   </TableRow>
@@ -272,7 +272,7 @@ export default function BalanceSheetPage() {
                   <TableCell className="pl-8 font-bold text-slate-700">
                     Total Equity
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold text-green-700">
+                  <TableCell className="text-right font-sans font-bold text-green-700">
                     {formatIDR(totalEquity)}
                   </TableCell>
                 </TableRow>
@@ -285,7 +285,7 @@ export default function BalanceSheetPage() {
               <span className="font-bold text-slate-800 text-lg">
                 TOTAL LIABILITIES & EQUITY
               </span>
-              <span className="font-mono font-bold text-slate-800 text-lg">
+              <span className="font-sans font-bold text-slate-800 text-lg">
                 {formatIDR(totalLiabilitiesAndEquity)}
               </span>
             </div>

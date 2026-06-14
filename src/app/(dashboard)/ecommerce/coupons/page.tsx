@@ -226,7 +226,7 @@ export default function CouponsPage() {
                           <Ticket className="h-4 w-4 text-orange-600" />
                         </div>
                         <div>
-                          <span className="font-mono font-semibold text-sm">{coupon.code}</span>
+                          <span className="font-sans font-semibold text-sm">{coupon.code}</span>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -315,7 +315,7 @@ export default function CouponsPage() {
               <Input
                 id="coupon-code"
                 placeholder="Contoh: SCW10"
-                className="font-mono"
+                className="font-sans"
                 value={formData.code}
                 onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))}
               />

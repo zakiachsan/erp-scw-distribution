@@ -1,6 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import {
+  useState,
+  useMemo,
+} from "react"
+import Link from "next/link"
 import {
   Dialog,
   DialogContent,
@@ -33,7 +37,7 @@ import {
   Phone,
   Mail,
   MapPin,
-  ExternalLink,
+  ArrowUpDown,
 } from "lucide-react"
 
 interface Supplier {
@@ -45,9 +49,7 @@ interface Supplier {
   address: string
   city: string
   country: string
-  status: "active" | "inactive"
   productCategories: string[]
-  leadTimeDays: number
   lastOrder: string
 }
 
@@ -61,9 +63,7 @@ const suppliers: Supplier[] = [
     address: "Jl. Industri Raya No. 88",
     city: "Tangerang",
     country: "Indonesia",
-    status: "active",
     productCategories: ["Exterior", "Wash", "Interior"],
-    leadTimeDays: 7,
     lastOrder: "2025-12-10",
   },
   {
@@ -75,9 +75,7 @@ const suppliers: Supplier[] = [
     address: "Jl. Teknologi No. 45",
     city: "Bandung",
     country: "Indonesia",
-    status: "active",
     productCategories: ["Decon", "Wheel", "Wash"],
-    leadTimeDays: 14,
     lastOrder: "2025-12-12",
   },
   {
@@ -89,9 +87,7 @@ const suppliers: Supplier[] = [
     address: "78 Innovation Drive",
     city: "Singapore",
     country: "Singapore",
-    status: "active",
     productCategories: ["Coating", "Protection"],
-    leadTimeDays: 21,
     lastOrder: "2025-12-13",
   },
   {
@@ -103,9 +99,7 @@ const suppliers: Supplier[] = [
     address: "Jl. Raya Bogor KM 30",
     city: "Jakarta",
     country: "Indonesia",
-    status: "active",
     productCategories: ["Correction", "Prep", "Tools"],
-    leadTimeDays: 10,
     lastOrder: "2025-12-14",
   },
   {
@@ -117,9 +111,7 @@ const suppliers: Supplier[] = [
     address: "1200 Industrial Blvd",
     city: "Los Angeles",
     country: "United States",
-    status: "active",
     productCategories: ["Interior", "Protection"],
-    leadTimeDays: 30,
     lastOrder: "2025-12-08",
   },
   {
@@ -131,22 +123,52 @@ const suppliers: Supplier[] = [
     address: "Jl. Raya Semarang No. 12",
     city: "Semarang",
     country: "Indonesia",
-    status: "inactive",
     productCategories: ["Chemical"],
-    leadTimeDays: 14,
     lastOrder: "2025-08-20",
   },
 ]
 
-const statusConfig = {
-  active: {
-    label: "Active",
-    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
-  },
-  inactive: {
-    label: "Inactive",
-    className: "bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400",
-  },
+interface POTransaction {
+  id: string
+  status: "Draft" | "Sent" | "Received" | "Paid"
+  itemCount: number
+}
+
+const poTransactions: POTransaction[] = [
+  { id: "1", status: "Paid", itemCount: 6 },
+  { id: "2", status: "Received", itemCount: 3 },
+  { id: "3", status: "Sent", itemCount: 4 },
+  { id: "4", status: "Draft", itemCount: 2 },
+  { id: "5", status: "Paid", itemCount: 5 },
+  { id: "6", status: "Sent", itemCount: 3 },
+  { id: "7", status: "Draft", itemCount: 1 },
+  { id: "8", status: "Paid", itemCount: 7 },
+  { id: "9", status: "Received", itemCount: 3 },
+  { id: "10", status: "Sent", itemCount: 4 },
+]
+
+const supplierPOMap: Record<string, string[]> = {
+  "1": ["1", "2", "3", "4", "5"],
+  "2": ["6", "7"],
+  "3": ["8", "9"],
+  "4": ["10"],
+  "5": [],
+  "6": [],
+}
+
+function getSupplierStats(supplierId: string) {
+  const poIds = supplierPOMap[supplierId] || []
+  const orders = poIds
+    .map((poId) => poTransactions.find((po) => po.id === poId))
+    .filter(Boolean) as POTransaction[]
+
+  const shippedOrders = orders.filter((o) => o.status === "Received" || o.status === "Paid")
+  const shippedQty = shippedOrders.reduce((sum, o) => sum + o.itemCount, 0)
+
+  return {
+    qtyShipped: shippedQty,
+    ordersShipped: shippedOrders.length,
+  }
 }
 
 export default function SuppliersPage() {
@@ -168,15 +190,20 @@ export default function SuppliersPage() {
   }
 
   const filtered = useMemo(() => {
-    return suppliers.filter(
+    const result = suppliers.filter(
       (s) =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.contactPerson.toLowerCase().includes(search.toLowerCase()) ||
         s.city.toLowerCase().includes(search.toLowerCase())
     )
+    // Sort by qty items shipped (descending)
+    return result.sort((a, b) => {
+      const statsA = getSupplierStats(a.id)
+      const statsB = getSupplierStats(b.id)
+      return statsB.qtyShipped - statsA.qtyShipped
+    })
   }, [search])
 
-  const activeCount = suppliers.filter((s) => s.status === "active").length
   const totalSuppliers = suppliers.length
 
   return (
@@ -223,29 +250,16 @@ export default function SuppliersPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Building2 className="h-5 w-5 text-indigo-600" />
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total Suppliers</p>
+                <p className="mt-1 text-lg font-semibold font-sans truncate">{totalSuppliers}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Suppliers</p>
-                <p className="text-2xl font-bold">{totalSuppliers}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Building2 className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Active Suppliers</p>
-                <p className="text-2xl font-bold text-emerald-600">{activeCount}</p>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-50 dark:bg-indigo-900/20">
+                <Building2 className="h-4 w-4 text-indigo-600" />
               </div>
             </div>
           </CardContent>
@@ -280,21 +294,28 @@ export default function SuppliersPage() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Categories</TableHead>
-                <TableHead className="text-right">Lead Time</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    Shipped
+                    <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                </TableHead>
+                <TableHead className="text-right">Qty Items</TableHead>
                 <TableHead>Last Order</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((supplier) => (
-                <TableRow key={supplier.id}>
+                <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50">
                   <TableCell>
-                    <div>
-                      <p className="font-medium">{supplier.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {supplier.contactPerson}
-                      </p>
-                    </div>
+                    <Link href={`/purchasing/suppliers/${supplier.id}`} className="block">
+                      <div>
+                        <p className="font-medium hover:text-indigo-600 transition-colors">{supplier.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {supplier.contactPerson}
+                        </p>
+                      </div>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-0.5">
@@ -315,21 +336,34 @@ export default function SuppliersPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {supplier.productCategories.map((cat) => (
+                    <div className="flex flex-wrap gap-1 max-h-[2.6rem] overflow-hidden">
+                      {supplier.productCategories.slice(0, 4).map((cat) => (
                         <Badge key={cat} variant="outline" className="text-xs">
                           {cat}
                         </Badge>
                       ))}
+                      {supplier.productCategories.length > 4 && (
+                        <Badge variant="outline" className="text-xs text-muted-foreground">
+                          +{supplier.productCategories.length - 4}
+                        </Badge>
+                      )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right text-sm">
-                    {supplier.leadTimeDays} days
+                  <TableCell className="text-right">
+                    <span className="font-sans text-sm text-muted-foreground">
+                      {(() => {
+                        const stats = getSupplierStats(supplier.id)
+                        return stats.ordersShipped
+                      })()}
+                    </span>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusConfig[supplier.status].className}>
-                      {statusConfig[supplier.status].label}
-                    </Badge>
+                  <TableCell className="text-right">
+                    <span className="font-sans font-semibold text-sm">
+                      {(() => {
+                        const stats = getSupplierStats(supplier.id)
+                        return stats.qtyShipped
+                      })()}
+                    </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {supplier.lastOrder}

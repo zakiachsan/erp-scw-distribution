@@ -1,0 +1,185 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - generic [ref=e8]: SCW Distribution
+            - generic [ref=e182]: Operasional
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e183] [cursor=pointer]:
+          - /url: /operasional
+          - img [ref=e184]
+          - generic [ref=e189]: Dashboard
+        - generic [ref=e190]:
+          - button "Inventory" [ref=e191]:
+            - img [ref=e192]
+            - generic [ref=e196]: Inventory
+            - img [ref=e197]
+          - generic [ref=e199]:
+            - link "Products" [ref=e200] [cursor=pointer]:
+              - /url: /inventory
+            - link "Inbound" [ref=e201] [cursor=pointer]:
+              - /url: /inventory/inbound
+            - link "Warehouse / Rak" [ref=e202] [cursor=pointer]:
+              - /url: /inventory/warehouse
+            - link "Stock Opname" [ref=e203] [cursor=pointer]:
+              - /url: /inventory/stock-opname
+            - link "Stock Alert" [ref=e204] [cursor=pointer]:
+              - /url: /inventory/stock-alert
+            - link "Packing Materials" [ref=e205] [cursor=pointer]:
+              - /url: /inventory/packing-materials
+            - link "Stock Ledger" [ref=e206] [cursor=pointer]:
+              - /url: /inventory/stock-ledger
+            - link "Estimasi Harga" [ref=e207] [cursor=pointer]:
+              - /url: /inventory/estimasi-harga
+        - generic [ref=e208]:
+          - button "Purchasing" [ref=e209]:
+            - img [ref=e210]
+            - generic [ref=e214]: Purchasing
+            - img [ref=e215]
+          - generic [ref=e217]:
+            - link "Purchase Orders" [ref=e218] [cursor=pointer]:
+              - /url: /purchasing
+            - link "Create PO" [ref=e219] [cursor=pointer]:
+              - /url: /purchasing/create
+            - link "Suppliers" [ref=e220] [cursor=pointer]:
+              - /url: /purchasing/suppliers
+            - link "USD Rate" [ref=e221] [cursor=pointer]:
+              - /url: /purchasing/usd-rate
+        - generic [ref=e222]:
+          - button "Shipping" [ref=e223]:
+            - img [ref=e224]
+            - generic [ref=e229]: Shipping
+            - img [ref=e230]
+          - generic [ref=e232]:
+            - link "Shipments" [ref=e233] [cursor=pointer]:
+              - /url: /shipping
+            - link "Couriers" [ref=e234] [cursor=pointer]:
+              - /url: /shipping/couriers
+        - generic [ref=e235]:
+          - button "Packing" [ref=e236]:
+            - img [ref=e237]
+            - generic [ref=e240]: Packing
+            - img [ref=e241]
+          - generic [ref=e243]:
+            - link "Packing Queue" [ref=e244] [cursor=pointer]:
+              - /url: /packing
+            - link "Video Gallery" [ref=e245] [cursor=pointer]:
+              - /url: /packing/videos
+            - link "Materials Stock" [ref=e246] [cursor=pointer]:
+              - /url: /packing/materials
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: inbound
+          - img [ref=e46]
+          - generic [ref=e48] [cursor=pointer]: po-001
+          - img [ref=e261]
+          - generic [ref=e263]: assign
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e54]
+          - separator [ref=e55]
+          - button "3" [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e62]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e264]:
+          - generic [ref=e265]:
+            - generic [ref=e266]:
+              - heading "Rack Assignment" [level=1] [ref=e267]
+              - paragraph [ref=e268]: PO PO-2026-0051 - Assign received items to storage racks
+            - generic [ref=e269]: Pending Assignment
+          - generic [ref=e272]:
+            - img [ref=e273]
+            - generic [ref=e276]:
+              - paragraph [ref=e277]: Rack Assignment Process
+              - paragraph [ref=e278]: Pilih rak tujuan dari data warehouse. Item langsung akan menambah stok produk di rak. Kardus akan tersimpan sebagai kardus terpisah dan isinya tidak dihitung sebagai stok.
+          - generic [ref=e279]:
+            - generic [ref=e281]:
+              - img [ref=e282]
+              - text: Item Langsung
+              - generic [ref=e286]: 3 items
+            - generic [ref=e287]:
+              - paragraph [ref=e288]: Item yang sudah di-scan dan langsung masuk ke stok rak.
+              - generic [ref=e289]:
+                - generic [ref=e290]:
+                  - img [ref=e292]
+                  - generic [ref=e296]:
+                    - paragraph [ref=e297]: SCW Snow Foam
+                    - paragraph [ref=e298]: 1 pcs
+                - generic [ref=e299]:
+                  - img [ref=e300]
+                  - combobox [ref=e302]:
+                    - generic [ref=e303]: Select rack
+                    - img: ▼
+                  - textbox [ref=e304]
+              - generic [ref=e305]:
+                - generic [ref=e306]:
+                  - img [ref=e308]
+                  - generic [ref=e312]:
+                    - paragraph [ref=e313]: SCW Shampoo Plus
+                    - paragraph [ref=e314]: 1 pcs
+                - generic [ref=e315]:
+                  - img [ref=e316]
+                  - combobox [ref=e318]:
+                    - generic [ref=e319]: Select rack
+                    - img: ▼
+                  - textbox [ref=e320]
+              - generic [ref=e321]:
+                - generic [ref=e322]:
+                  - img [ref=e324]
+                  - generic [ref=e328]:
+                    - paragraph [ref=e329]: SCW Microfiber Towel
+                    - paragraph [ref=e330]: 1 pcs
+                - generic [ref=e331]:
+                  - img [ref=e332]
+                  - combobox [ref=e334]:
+                    - generic [ref=e335]: Select rack
+                    - img: ▼
+                  - textbox [ref=e336]
+          - generic [ref=e337]:
+            - generic [ref=e339]:
+              - img [ref=e340]
+              - text: Kardus
+              - generic [ref=e343]: 0 kardus
+            - generic [ref=e344]:
+              - paragraph [ref=e345]: Kardus yang diterima. Isi kardus hanya estimasi dan belum dihitung sebagai stok.
+              - paragraph [ref=e346]: Tidak ada kardus untuk PO ini.
+          - generic [ref=e347]:
+            - button "Confirm Assignment" [disabled]:
+              - img
+              - text: Confirm Assignment
+  - button "Open Next.js Dev Tools" [ref=e178] [cursor=pointer]:
+    - img [ref=e179]
+  - alert [ref=e247]

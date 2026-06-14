@@ -1,0 +1,123 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - generic [ref=e8]: SCW Distribution
+            - generic [ref=e182]: Operasional
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e183] [cursor=pointer]:
+          - /url: /operasional
+          - img [ref=e184]
+          - generic [ref=e189]: Dashboard
+        - generic [ref=e190]:
+          - button "Inventory" [ref=e191]:
+            - img [ref=e192]
+            - generic [ref=e196]: Inventory
+            - img [ref=e197]
+          - generic [ref=e199]:
+            - link "Products" [ref=e200] [cursor=pointer]:
+              - /url: /inventory
+            - link "Inbound" [ref=e201] [cursor=pointer]:
+              - /url: /inventory/inbound
+            - link "Warehouse / Rak" [ref=e202] [cursor=pointer]:
+              - /url: /inventory/warehouse
+            - link "Stock Opname" [ref=e203] [cursor=pointer]:
+              - /url: /inventory/stock-opname
+            - link "Stock Alert" [ref=e204] [cursor=pointer]:
+              - /url: /inventory/stock-alert
+            - link "Packing Materials" [ref=e205] [cursor=pointer]:
+              - /url: /inventory/packing-materials
+            - link "Stock Ledger" [ref=e206] [cursor=pointer]:
+              - /url: /inventory/stock-ledger
+            - link "Estimasi Harga" [ref=e207] [cursor=pointer]:
+              - /url: /inventory/estimasi-harga
+        - generic [ref=e208]:
+          - button "Purchasing" [ref=e209]:
+            - img [ref=e210]
+            - generic [ref=e214]: Purchasing
+            - img [ref=e215]
+          - generic [ref=e217]:
+            - link "Purchase Orders" [ref=e218] [cursor=pointer]:
+              - /url: /purchasing
+            - link "Create PO" [ref=e219] [cursor=pointer]:
+              - /url: /purchasing/create
+            - link "Suppliers" [ref=e220] [cursor=pointer]:
+              - /url: /purchasing/suppliers
+            - link "USD Rate" [ref=e221] [cursor=pointer]:
+              - /url: /purchasing/usd-rate
+        - generic [ref=e222]:
+          - button "Shipping" [ref=e223]:
+            - img [ref=e224]
+            - generic [ref=e229]: Shipping
+            - img [ref=e230]
+          - generic [ref=e232]:
+            - link "Shipments" [ref=e233] [cursor=pointer]:
+              - /url: /shipping
+            - link "Couriers" [ref=e234] [cursor=pointer]:
+              - /url: /shipping/couriers
+        - generic [ref=e235]:
+          - button "Packing" [ref=e236]:
+            - img [ref=e237]
+            - generic [ref=e240]: Packing
+            - img [ref=e241]
+          - generic [ref=e243]:
+            - link "Packing Queue" [ref=e244] [cursor=pointer]:
+              - /url: /packing
+            - link "Video Gallery" [ref=e245] [cursor=pointer]:
+              - /url: /packing/videos
+            - link "Materials Stock" [ref=e246] [cursor=pointer]:
+              - /url: /packing/materials
+        - link "Notifications" [ref=e15] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e20] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e27] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e39] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45] [cursor=pointer]: inbound
+          - img [ref=e46]
+          - generic [ref=e48] [cursor=pointer]: po-001
+          - img [ref=e261]
+          - generic [ref=e263]: assign
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - img [ref=e51]
+            - textbox "Search..." [ref=e54]
+          - separator [ref=e55]
+          - button "3" [ref=e57]:
+            - img [ref=e58]
+            - generic [ref=e61]: "3"
+          - button "AD" [ref=e62]:
+            - generic [ref=e64]: AD
+      - main [ref=e65]:
+        - generic [ref=e350]:
+          - img [ref=e353]
+          - heading "Assignment Confirmed!" [level=2] [ref=e356]
+          - paragraph [ref=e357]: PO ini sudah ditempatkan ke rak. Mengalihkan ke daftar inbound...
+  - button "Open Next.js Dev Tools" [ref=e178] [cursor=pointer]:
+    - img [ref=e179]
+  - alert [ref=e247]

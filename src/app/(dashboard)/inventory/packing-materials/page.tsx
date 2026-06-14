@@ -334,7 +334,7 @@ export default function PackingMaterialsPage() {
                   <TableCell>
                     <Badge variant="outline">{material.type}</Badge>
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     {material.stockQty} {material.unit}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
@@ -382,7 +382,7 @@ export default function PackingMaterialsPage() {
                     {entry.date}
                   </TableCell>
                   <TableCell className="font-medium">{entry.material}</TableCell>
-                  <TableCell className="text-right font-mono">{entry.qty}</TableCell>
+                  <TableCell className="text-right font-sans">{entry.qty}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {entry.purpose}
                   </TableCell>

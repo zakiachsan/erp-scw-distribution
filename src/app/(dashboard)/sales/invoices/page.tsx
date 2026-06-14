@@ -174,8 +174,8 @@ export default function InvoiceListPage() {
             <TableBody>
               {filtered.map((invoice) => (
                 <TableRow key={invoice.id}>
-                  <TableCell className="font-mono text-xs font-medium">{invoice.id}</TableCell>
-                  <TableCell className="font-mono text-xs">{invoice.soRef}</TableCell>
+                  <TableCell className="font-sans text-xs font-medium">{invoice.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{invoice.soRef}</TableCell>
                   <TableCell>{invoice.customer}</TableCell>
                   <TableCell>{invoice.issueDate}</TableCell>
                   <TableCell>{invoice.dueDate}</TableCell>

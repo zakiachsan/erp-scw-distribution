@@ -293,7 +293,7 @@ export default function CustomerDetailPage() {
                     <TableBody>
                       {orders.map((order) => (
                         <TableRow key={order.id}>
-                          <TableCell className="font-mono text-sm font-medium">
+                          <TableCell className="font-sans text-sm font-medium">
                             <Link href={`/ecommerce/orders/${order.id}`} className="text-orange-600 hover:underline">
                               {order.id}
                             </Link>

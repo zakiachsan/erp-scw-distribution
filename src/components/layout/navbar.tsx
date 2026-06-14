@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Search,
@@ -11,8 +12,6 @@ import {
   Settings,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
   DropdownMenu,
@@ -83,15 +82,25 @@ export function Navbar() {
       {/* Left side - Breadcrumb */}
       <div className="flex items-center gap-2">
         <nav className="flex items-center gap-1.5 text-sm">
-          <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="/"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             Home
-          </a>
+          </Link>
           {breadcrumbs.map((crumb) => (
             <React.Fragment key={crumb.href}>
               <ChevronRight className="h-3 w-3 text-muted-foreground" />
-              <span className={crumb.isLast ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground transition-colors cursor-pointer"}>
-                {crumb.label}
-              </span>
+              {crumb.isLast ? (
+                <span className="font-medium text-foreground">{crumb.label}</span>
+              ) : (
+                <Link
+                  href={crumb.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {crumb.label}
+                </Link>
+              )}
             </React.Fragment>
           ))}
         </nav>

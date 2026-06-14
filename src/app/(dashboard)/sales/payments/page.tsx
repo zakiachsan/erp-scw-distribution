@@ -272,9 +272,9 @@ export default function PaymentsPage() {
             <TableBody>
               {filtered.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell className="font-mono text-xs font-medium">{payment.id}</TableCell>
+                  <TableCell className="font-sans text-xs font-medium">{payment.id}</TableCell>
                   <TableCell>{payment.customer}</TableCell>
-                  <TableCell className="font-mono text-xs">{payment.invoice}</TableCell>
+                  <TableCell className="font-sans text-xs">{payment.invoice}</TableCell>
                   <TableCell className="text-right font-medium">
                     Rp {(payment.amount / 1000000).toFixed(1)}M
                   </TableCell>

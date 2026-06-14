@@ -191,11 +191,11 @@ function FlashSaleSection() {
             <Clock className="h-4 w-4" />
             <span>Berakhir dalam</span>
             <div className="flex items-center gap-1">
-              <span className="bg-white/20 rounded px-2 py-0.5 font-mono">{pad(timeLeft.hours)}</span>
+              <span className="bg-white/20 rounded px-2 py-0.5 font-sans">{pad(timeLeft.hours)}</span>
               <span>:</span>
-              <span className="bg-white/20 rounded px-2 py-0.5 font-mono">{pad(timeLeft.minutes)}</span>
+              <span className="bg-white/20 rounded px-2 py-0.5 font-sans">{pad(timeLeft.minutes)}</span>
               <span>:</span>
-              <span className="bg-white/20 rounded px-2 py-0.5 font-mono">{pad(timeLeft.seconds)}</span>
+              <span className="bg-white/20 rounded px-2 py-0.5 font-sans">{pad(timeLeft.seconds)}</span>
             </div>
           </div>
         </div>

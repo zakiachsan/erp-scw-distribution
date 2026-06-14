@@ -103,7 +103,7 @@ export default function InvoiceDetailPage() {
             </div>
             <div className="text-right">
               <h2 className="text-2xl font-bold text-indigo-600">INVOICE</h2>
-              <p className="font-mono text-lg mt-1">{invoiceData.id}</p>
+              <p className="font-sans text-lg mt-1">{invoiceData.id}</p>
               <Badge variant="outline" className={`mt-2 ${(statusConfig as Record<string, { label: string; className: string }>)[invoiceData.status]?.className ?? ""}`}>
                 {invoiceData.status === "Paid" && <CheckCircle2 className="mr-1 h-3 w-3" />}
                 {invoiceData.status !== "Paid" && <Clock className="mr-1 h-3 w-3" />}

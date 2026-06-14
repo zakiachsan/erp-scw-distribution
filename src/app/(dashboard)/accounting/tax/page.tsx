@@ -192,7 +192,7 @@ export default function TaxPage() {
             </div>
             <div className="space-y-2">
               <Label>Tax Amount</Label>
-              <div className="flex items-center h-10 px-3 rounded-md border bg-slate-50 font-mono font-bold text-indigo-700">
+              <div className="flex items-center h-10 px-3 rounded-md border bg-slate-50 font-sans font-bold text-indigo-700">
                 Rp 0
               </div>
             </div>
@@ -242,10 +242,10 @@ export default function TaxPage() {
                 <TableBody>
                   {employees.map((emp) => (
                     <TableRow key={emp.id}>
-                      <TableCell className="font-mono text-sm">{emp.id}</TableCell>
+                      <TableCell className="font-sans text-sm">{emp.id}</TableCell>
                       <TableCell className="font-medium">{emp.name}</TableCell>
                       <TableCell className="text-slate-600">{emp.position}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right font-sans">
                         {formatIDR(emp.monthlySalary)}
                       </TableCell>
                       <TableCell className="text-center">
@@ -253,7 +253,7 @@ export default function TaxPage() {
                           {emp.taxRate}%
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-blue-700">
+                      <TableCell className="text-right font-sans font-bold text-blue-700">
                         {formatIDR(emp.taxAmount)}
                       </TableCell>
                       <TableCell>
@@ -273,7 +273,7 @@ export default function TaxPage() {
                     <TableCell colSpan={5} className="font-bold text-slate-700">
                       Total PPh 21
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold text-blue-700">
+                    <TableCell className="text-right font-sans font-bold text-blue-700">
                       {formatIDR(totalPPh21)}
                     </TableCell>
                     <TableCell></TableCell>
@@ -310,13 +310,13 @@ export default function TaxPage() {
                 <TableBody>
                   {vendors.map((ven) => (
                     <TableRow key={ven.id}>
-                      <TableCell className="font-mono text-sm">{ven.id}</TableCell>
+                      <TableCell className="font-sans text-sm">{ven.id}</TableCell>
                       <TableCell className="font-medium">{ven.name}</TableCell>
                       <TableCell className="text-slate-600 max-w-[180px] truncate">
                         {ven.service}
                       </TableCell>
-                      <TableCell className="font-mono text-sm">{ven.invoiceNo}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="font-sans text-sm">{ven.invoiceNo}</TableCell>
+                      <TableCell className="text-right font-sans">
                         {formatIDR(ven.fee)}
                       </TableCell>
                       <TableCell className="text-center">
@@ -324,7 +324,7 @@ export default function TaxPage() {
                           {ven.taxRate}%
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-green-700">
+                      <TableCell className="text-right font-sans font-bold text-green-700">
                         {formatIDR(ven.taxAmount)}
                       </TableCell>
                       <TableCell>
@@ -344,7 +344,7 @@ export default function TaxPage() {
                     <TableCell colSpan={6} className="font-bold text-slate-700">
                       Total PPh 23
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold text-green-700">
+                    <TableCell className="text-right font-sans font-bold text-green-700">
                       {formatIDR(totalPPh23)}
                     </TableCell>
                     <TableCell></TableCell>

@@ -286,7 +286,7 @@ export default function CreateJournalEntryPage() {
                         parseInt(e.target.value) || 0
                       )
                     }
-                    className="mt-1 font-mono"
+                    className="mt-1 font-sans"
                     min={0}
                   />
                 </div>
@@ -303,7 +303,7 @@ export default function CreateJournalEntryPage() {
                         parseInt(e.target.value) || 0
                       )
                     }
-                    className="mt-1 font-mono"
+                    className="mt-1 font-sans"
                     min={0}
                   />
                 </div>
@@ -329,7 +329,7 @@ export default function CreateJournalEntryPage() {
                 <span className="text-sm font-medium text-slate-600">
                   Total Debit:
                 </span>
-                <span className="font-mono font-bold text-slate-900">
+                <span className="font-sans font-bold text-slate-900">
                   {formatIDR(totalDebit)}
                 </span>
               </div>
@@ -337,7 +337,7 @@ export default function CreateJournalEntryPage() {
                 <span className="text-sm font-medium text-slate-600">
                   Total Credit:
                 </span>
-                <span className="font-mono font-bold text-slate-900">
+                <span className="font-sans font-bold text-slate-900">
                   {formatIDR(totalCredit)}
                 </span>
               </div>
@@ -346,7 +346,7 @@ export default function CreateJournalEntryPage() {
                   Difference:
                 </span>
                 <span
-                  className={`font-mono font-bold ${
+                  className={`font-sans font-bold ${
                     isBalanced ? "text-green-600" : "text-red-600"
                   }`}
                 >

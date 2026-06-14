@@ -138,7 +138,7 @@ export default function ShipmentDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-muted-foreground uppercase">Tracking Number</p>
-                  <p className="font-mono text-lg font-bold">{shipmentData.courier.trackingNumber}</p>
+                  <p className="font-sans text-lg font-bold">{shipmentData.courier.trackingNumber}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">

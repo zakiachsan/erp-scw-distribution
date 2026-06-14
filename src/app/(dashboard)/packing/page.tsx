@@ -188,8 +188,8 @@ export default function PackingPage() {
                 const ChannelIcon = channelConfig[order.channel].icon
                 return (
                   <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs font-medium">{order.id}</TableCell>
-                    <TableCell className="font-mono text-xs">{order.soRef}</TableCell>
+                    <TableCell className="font-sans text-xs font-medium">{order.id}</TableCell>
+                    <TableCell className="font-sans text-xs">{order.soRef}</TableCell>
                     <TableCell className="font-medium">{order.customer}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={channelConfig[order.channel].className}>

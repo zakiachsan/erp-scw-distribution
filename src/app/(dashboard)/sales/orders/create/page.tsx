@@ -137,7 +137,12 @@ export default function CreateSalesOrderPage() {
               <Label>Select Customer</Label>
               <Select value={selectedCustomer} onValueChange={(v) => setSelectedCustomer(v ?? "")}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a customer" />
+                  <SelectValue placeholder="Choose a customer">
+                    {selectedCustomer ? (() => {
+                      const c = customers.find((cust) => cust.id === selectedCustomer);
+                      return c ? `${c.name} (${c.tier})` : selectedCustomer;
+                    })() : "Choose a customer"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {customers.map((c) => (
@@ -201,7 +206,12 @@ export default function CreateSalesOrderPage() {
                     <TableCell>
                       <Select value={item.productId} onValueChange={(v) => updateItem(index, "productId", v)}>
                         <SelectTrigger className="w-64">
-                          <SelectValue placeholder="Select product" />
+                          <SelectValue placeholder="Select product">
+                            {item.productId ? (() => {
+                              const p = products.find((pr) => pr.id === item.productId);
+                              return p ? `${p.name} (${p.sku})` : item.productId;
+                            })() : "Select product"}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {products.map((p) => (

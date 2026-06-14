@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Dialog,
   DialogContent,
@@ -38,8 +39,6 @@ import {
   Search,
   Plus,
   Package,
-  ArrowUpDown,
-  Eye,
   Filter,
 } from "lucide-react"
 
@@ -52,6 +51,7 @@ interface Product {
   location: string
   status: "in-stock" | "low-stock" | "out-of-stock"
   unit: string
+  barcode?: string
 }
 
 const products: Product[] = [
@@ -75,7 +75,8 @@ const products: Product[] = [
   { id: "18", sku: "SCW-SP-018", name: "SCW Shampoo Plus", category: "Wash", stockQty: 275, location: "Rak A-05", status: "in-stock", unit: "pcs" },
 ]
 
-const categories = ["All", "Exterior", "Interior", "Wash", "Coating", "Prep", "Correction", "Protection", "Wheel", "Tools", "Decon"]
+const categories = ["Exterior", "Interior", "Wash", "Coating", "Prep", "Correction", "Protection", "Wheel", "Tools", "Decon"]
+const categoryFilterOptions = ["All", ...categories]
 
 const statusConfig = {
   "in-stock": { label: "In Stock", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
@@ -86,13 +87,27 @@ const statusConfig = {
 export default function InventoryPage() {
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
+  const [statusFilter, setStatusFilter] = useState<"all" | "in-stock" | "low-stock" | "out-of-stock">("all")
   const [addOpen, setAddOpen] = useState(false)
   const [prodName, setProdName] = useState("")
   const [prodSku, setProdSku] = useState("")
   const [prodCategory, setProdCategory] = useState("")
   const [prodStock, setProdStock] = useState("")
   const [prodLocation, setProdLocation] = useState("")
+  const [prodBarcode, setProdBarcode] = useState("")
   const [productList, setProductList] = useState(products)
+  const [categoryOptions, setCategoryOptions] = useState(categories)
+  const [newCategory, setNewCategory] = useState("")
+
+  const handleAddCategory = () => {
+    const trimmed = newCategory.trim()
+    if (!trimmed) return
+    if (!categoryOptions.includes(trimmed)) {
+      setCategoryOptions([trimmed, ...categoryOptions])
+    }
+    setProdCategory(trimmed)
+    setNewCategory("")
+  }
 
   const addProduct = () => {
     if (!prodName || !prodSku) return
@@ -105,6 +120,7 @@ export default function InventoryPage() {
       location: prodLocation || "Gudang Utama",
       status: parseInt(prodStock) > 10 ? "in-stock" : parseInt(prodStock) > 0 ? "low-stock" : "out-of-stock",
       unit: "pcs",
+      barcode: prodBarcode.trim() || `SCW-${prodSku}`,
     }
     setProductList([newProduct, ...productList])
     setProdName("")
@@ -112,6 +128,7 @@ export default function InventoryPage() {
     setProdCategory("")
     setProdStock("")
     setProdLocation("")
+    setProdBarcode("")
     setAddOpen(false)
     alert("Produk berhasil ditambahkan!")
   }
@@ -123,9 +140,11 @@ export default function InventoryPage() {
         p.sku.toLowerCase().includes(search.toLowerCase())
       const matchesCategory =
         categoryFilter === "All" || p.category === categoryFilter
-      return matchesSearch && matchesCategory
+      const matchesStatus =
+        statusFilter === "all" || p.status === statusFilter
+      return matchesSearch && matchesCategory && matchesStatus
     })
-  }, [search, categoryFilter])
+  }, [search, categoryFilter, productList, statusFilter])
 
   const totalProducts = products.length
   const inStockCount = products.filter((p) => p.status === "in-stock").length
@@ -151,11 +170,62 @@ export default function InventoryPage() {
               <DialogTitle>Add New Product</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Input placeholder="Product Name" value={prodName} onChange={(e) => setProdName(e.target.value)} />
-              <Input placeholder="SKU" value={prodSku} onChange={(e) => setProdSku(e.target.value)} />
-              <Input placeholder="Category" value={prodCategory} onChange={(e) => setProdCategory(e.target.value)} />
-              <Input type="number" placeholder="Stock Qty" value={prodStock} onChange={(e) => setProdStock(e.target.value)} />
-              <Input placeholder="Location (e.g. Rak A-01)" value={prodLocation} onChange={(e) => setProdLocation(e.target.value)} />
+              <div className="space-y-1">
+                <Label>Product Name</Label>
+                <Input placeholder="Product Name" value={prodName} onChange={(e) => setProdName(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>SKU</Label>
+                <Input placeholder="SKU" value={prodSku} onChange={(e) => setProdSku(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>Category</Label>
+                <Select value={prodCategory} onValueChange={(v) => setProdCategory(v ?? "")}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select or create category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <div className="flex items-center gap-2 p-2">
+                      <Input
+                        placeholder="New category"
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        className="h-8 text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault()
+                            handleAddCategory()
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleAddCategory}
+                        disabled={!newCategory.trim()}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    {categoryOptions.map((cat) => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Stock Qty</Label>
+                <Input type="number" placeholder="Stock Qty" value={prodStock} onChange={(e) => setProdStock(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>Location</Label>
+                <Input placeholder="Location (e.g. Rak A-01)" value={prodLocation} onChange={(e) => setProdLocation(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>Barcode</Label>
+                <Input placeholder="Barcode number" value={prodBarcode} onChange={(e) => setProdBarcode(e.target.value)} />
+              </div>
               <Button onClick={addProduct} className="w-full">Add Product</Button>
             </div>
           </DialogContent>
@@ -163,7 +233,10 @@ export default function InventoryPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          onClick={() => setStatusFilter("all")}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
@@ -176,7 +249,10 @@ export default function InventoryPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "in-stock" ? "ring-2 ring-emerald-500" : ""}`}
+          onClick={() => setStatusFilter("in-stock")}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
@@ -189,7 +265,10 @@ export default function InventoryPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "low-stock" ? "ring-2 ring-amber-500" : ""}`}
+          onClick={() => setStatusFilter("low-stock")}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
@@ -202,7 +281,10 @@ export default function InventoryPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "out-of-stock" ? "ring-2 ring-red-500" : ""}`}
+          onClick={() => setStatusFilter("out-of-stock")}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
@@ -224,9 +306,17 @@ export default function InventoryPage() {
               <CardTitle>Product List</CardTitle>
               <CardDescription>
                 {filtered.length} product{filtered.length !== 1 ? "s" : ""} found
+                {statusFilter !== "all" && (
+                  <span className="ml-1 capitalize">({statusFilter.replace("-", " ")})</span>
+                )}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3">
+              {statusFilter !== "all" && (
+                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                  Clear filter
+                </Button>
+              )}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -242,7 +332,7 @@ export default function InventoryPage() {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
+                  {categoryFilterOptions.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
@@ -260,23 +350,34 @@ export default function InventoryPage() {
                 <TableHead>Product Name</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Stock Qty</TableHead>
-                <TableHead>Location</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-mono text-xs">{product.sku}</TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-sans text-xs">
+                    <Link
+                      href={`/inventory/${product.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      {product.sku}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/inventory/${product.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      {product.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline">{product.category}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     {product.stockQty} {product.unit}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{product.location}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -284,13 +385,6 @@ export default function InventoryPage() {
                     >
                       {statusConfig[product.status].label}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Link href={`/inventory/${product.id}`}>
-                      <Button variant="ghost" size="icon-sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

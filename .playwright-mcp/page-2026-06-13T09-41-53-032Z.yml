@@ -1,0 +1,397 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: SCW
+          - generic [ref=e7]:
+            - generic [ref=e8]: SCW Distribution
+            - generic [ref=e411]: Operasional
+        - button [ref=e9]:
+          - img [ref=e10]
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e634] [cursor=pointer]:
+          - /url: /operasional
+          - img [ref=e413]
+          - generic [ref=e418]: Dashboard
+        - generic [ref=e419]:
+          - button "Inventory" [ref=e635]:
+            - img [ref=e421]
+            - generic [ref=e425]: Inventory
+            - img [ref=e426]
+          - generic [ref=e428]:
+            - link "Products" [ref=e636] [cursor=pointer]:
+              - /url: /inventory
+            - link "Warehouse / Rak" [ref=e637] [cursor=pointer]:
+              - /url: /inventory/warehouse
+            - link "Stock Opname" [ref=e638] [cursor=pointer]:
+              - /url: /inventory/stock-opname
+            - link "Stock Alert" [ref=e639] [cursor=pointer]:
+              - /url: /inventory/stock-alert
+            - link "Packing Materials" [ref=e640] [cursor=pointer]:
+              - /url: /inventory/packing-materials
+            - link "Stock Ledger" [ref=e641] [cursor=pointer]:
+              - /url: /inventory/stock-ledger
+            - link "Estimasi Harga" [ref=e642] [cursor=pointer]:
+              - /url: /inventory/estimasi-harga
+            - link "Inbound" [ref=e643] [cursor=pointer]:
+              - /url: /inventory/inbound
+        - generic [ref=e437]:
+          - button "Purchasing" [ref=e644]:
+            - img [ref=e439]
+            - generic [ref=e443]: Purchasing
+            - img [ref=e444]
+          - generic [ref=e446]:
+            - link "Purchase Orders" [ref=e645] [cursor=pointer]:
+              - /url: /purchasing
+            - link "Create PO" [ref=e646] [cursor=pointer]:
+              - /url: /purchasing/create
+            - link "Suppliers" [ref=e647] [cursor=pointer]:
+              - /url: /purchasing/suppliers
+            - link "USD Rate" [ref=e648] [cursor=pointer]:
+              - /url: /purchasing/usd-rate
+        - generic [ref=e451]:
+          - button "Shipping" [ref=e649]:
+            - img [ref=e453]
+            - generic [ref=e458]: Shipping
+            - img [ref=e459]
+          - generic [ref=e461]:
+            - link "Shipments" [ref=e650] [cursor=pointer]:
+              - /url: /shipping
+            - link "Couriers" [ref=e651] [cursor=pointer]:
+              - /url: /shipping/couriers
+        - generic [ref=e464]:
+          - button "Packing" [ref=e652]:
+            - img [ref=e466]
+            - generic [ref=e469]: Packing
+            - img [ref=e470]
+          - generic [ref=e472]:
+            - link "Packing Queue" [ref=e653] [cursor=pointer]:
+              - /url: /packing
+            - link "Video Gallery" [ref=e654] [cursor=pointer]:
+              - /url: /packing/videos
+            - link "Materials Stock" [ref=e655] [cursor=pointer]:
+              - /url: /packing/materials
+        - link "Notifications" [ref=e656] [cursor=pointer]:
+          - /url: /notifications
+          - img [ref=e16]
+          - generic [ref=e19]: Notifications
+        - link "Settings" [ref=e657] [cursor=pointer]:
+          - /url: /settings/users
+          - img [ref=e21]
+          - generic [ref=e24]: Settings
+      - generic [ref=e26]:
+        - link "Ganti Modul" [ref=e658] [cursor=pointer]:
+          - /url: /modules
+          - img [ref=e28]
+          - text: Ganti Modul
+        - generic [ref=e30]:
+          - generic [ref=e31]: AD
+          - generic [ref=e32]:
+            - generic [ref=e33]: Admin User
+            - generic [ref=e34]: admin@scw.co.id
+    - generic [ref=e35]:
+      - banner [ref=e36]:
+        - navigation [ref=e38]:
+          - link "Home" [ref=e659] [cursor=pointer]:
+            - /url: /
+          - img [ref=e40]
+          - generic [ref=e42] [cursor=pointer]: Inventory
+          - img [ref=e43]
+          - generic [ref=e45]: Warehouse / Rak
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - img [ref=e48]
+            - textbox "Search..." [ref=e660]
+          - separator [ref=e52]
+          - button "3" [ref=e661]:
+            - img [ref=e55]
+            - generic [ref=e58]: "3"
+          - button "AD" [ref=e662]:
+            - generic [ref=e61]: AD
+      - main [ref=e62]:
+        - generic [ref=e673]:
+          - generic [ref=e674]:
+            - generic [ref=e675]:
+              - heading "Warehouse & Rak" [level=1] [ref=e676]
+              - paragraph [ref=e677]: Manage warehouse locations first, then assign racks
+            - generic [ref=e678]:
+              - button "Manage Locations" [ref=e679]:
+                - img
+                - text: Manage Locations
+              - button "Add Rack" [ref=e680]:
+                - img
+                - text: Add Rack
+          - generic [ref=e681]:
+            - generic [ref=e682]:
+              - generic [ref=e683]:
+                - img [ref=e684]
+                - text: Warehouse Locations
+              - generic [ref=e687]: Click a location to filter racks. Manage categories using the button above.
+            - generic [ref=e689]:
+              - generic [ref=e690] [cursor=pointer]:
+                - text: All
+                - generic [ref=e691]: (12)
+              - generic [ref=e692] [cursor=pointer]:
+                - img
+                - text: Gudang Utama
+                - generic [ref=e693]: (7)
+              - generic [ref=e694] [cursor=pointer]:
+                - img
+                - text: Gudang Cabang
+                - generic [ref=e695]: (3)
+              - generic [ref=e696] [cursor=pointer]:
+                - img
+                - text: Gudang Display
+                - generic [ref=e697]: (2)
+          - generic [ref=e698]:
+            - 'link "Rak A-01 Gudang Utama Occupied Capacity 150/200 75% used Products: SCW Snow Foam 150" [ref=e699] [cursor=pointer]':
+              - /url: /inventory/warehouse/1
+              - generic [ref=e701]:
+                - generic [ref=e702]:
+                  - generic [ref=e703]:
+                    - img [ref=e705]
+                    - generic [ref=e709]:
+                      - paragraph [ref=e710]: Rak A-01
+                      - paragraph [ref=e711]: Gudang Utama
+                  - generic [ref=e712]: Occupied
+                - generic [ref=e713]:
+                  - generic [ref=e714]:
+                    - generic [ref=e715]: Capacity
+                    - generic [ref=e716]: 150/200
+                  - paragraph [ref=e719]: 75% used
+                - generic [ref=e720]:
+                  - paragraph [ref=e721]: "Products:"
+                  - generic [ref=e722]:
+                    - generic [ref=e723]: SCW Snow Foam
+                    - generic [ref=e724]: "150"
+            - 'link "Rak A-02 Gudang Utama Occupied Capacity 75/200 38% used Products: SCW Ceramic Coating 40 SCW Spray Wax 35" [ref=e725] [cursor=pointer]':
+              - /url: /inventory/warehouse/2
+              - generic [ref=e727]:
+                - generic [ref=e728]:
+                  - generic [ref=e729]:
+                    - img [ref=e731]
+                    - generic [ref=e735]:
+                      - paragraph [ref=e736]: Rak A-02
+                      - paragraph [ref=e737]: Gudang Utama
+                  - generic [ref=e738]: Occupied
+                - generic [ref=e739]:
+                  - generic [ref=e740]:
+                    - generic [ref=e741]: Capacity
+                    - generic [ref=e742]: 75/200
+                  - paragraph [ref=e745]: 38% used
+                - generic [ref=e746]:
+                  - paragraph [ref=e747]: "Products:"
+                  - generic [ref=e748]:
+                    - generic [ref=e749]: SCW Ceramic Coating
+                    - generic [ref=e750]: "40"
+                  - generic [ref=e751]:
+                    - generic [ref=e752]: SCW Spray Wax
+                    - generic [ref=e753]: "35"
+            - 'link "Rak A-03 Gudang Utama Occupied Capacity 120/200 60% used Products: SCW Microfiber Wash 120" [ref=e754] [cursor=pointer]':
+              - /url: /inventory/warehouse/3
+              - generic [ref=e756]:
+                - generic [ref=e757]:
+                  - generic [ref=e758]:
+                    - img [ref=e760]
+                    - generic [ref=e764]:
+                      - paragraph [ref=e765]: Rak A-03
+                      - paragraph [ref=e766]: Gudang Utama
+                  - generic [ref=e767]: Occupied
+                - generic [ref=e768]:
+                  - generic [ref=e769]:
+                    - generic [ref=e770]: Capacity
+                    - generic [ref=e771]: 120/200
+                  - paragraph [ref=e774]: 60% used
+                - generic [ref=e775]:
+                  - paragraph [ref=e776]: "Products:"
+                  - generic [ref=e777]:
+                    - generic [ref=e778]: SCW Microfiber Wash
+                    - generic [ref=e779]: "120"
+            - 'link "Rak B-01 Gudang Utama Occupied Capacity 180/200 90% used Products: SCW Interior Detailer 180" [ref=e780] [cursor=pointer]':
+              - /url: /inventory/warehouse/4
+              - generic [ref=e782]:
+                - generic [ref=e783]:
+                  - generic [ref=e784]:
+                    - img [ref=e786]
+                    - generic [ref=e790]:
+                      - paragraph [ref=e791]: Rak B-01
+                      - paragraph [ref=e792]: Gudang Utama
+                  - generic [ref=e793]: Occupied
+                - generic [ref=e794]:
+                  - generic [ref=e795]:
+                    - generic [ref=e796]: Capacity
+                    - generic [ref=e797]: 180/200
+                  - paragraph [ref=e800]: 90% used
+                - generic [ref=e801]:
+                  - paragraph [ref=e802]: "Products:"
+                  - generic [ref=e803]:
+                    - generic [ref=e804]: SCW Interior Detailer
+                    - generic [ref=e805]: "180"
+            - 'link "Rak B-02 Gudang Utama Occupied Capacity 95/200 48% used Products: SCW Tire Gel 95" [ref=e806] [cursor=pointer]':
+              - /url: /inventory/warehouse/5
+              - generic [ref=e808]:
+                - generic [ref=e809]:
+                  - generic [ref=e810]:
+                    - img [ref=e812]
+                    - generic [ref=e816]:
+                      - paragraph [ref=e817]: Rak B-02
+                      - paragraph [ref=e818]: Gudang Utama
+                  - generic [ref=e819]: Occupied
+                - generic [ref=e820]:
+                  - generic [ref=e821]:
+                    - generic [ref=e822]: Capacity
+                    - generic [ref=e823]: 95/200
+                  - paragraph [ref=e826]: 48% used
+                - generic [ref=e827]:
+                  - paragraph [ref=e828]: "Products:"
+                  - generic [ref=e829]:
+                    - generic [ref=e830]: SCW Tire Gel
+                    - generic [ref=e831]: "95"
+            - 'link "Rak C-01 Gudang Utama Occupied Capacity 35/200 18% used Products: SCW Shampoo Plus 35" [ref=e832] [cursor=pointer]':
+              - /url: /inventory/warehouse/6
+              - generic [ref=e834]:
+                - generic [ref=e835]:
+                  - generic [ref=e836]:
+                    - img [ref=e838]
+                    - generic [ref=e842]:
+                      - paragraph [ref=e843]: Rak C-01
+                      - paragraph [ref=e844]: Gudang Utama
+                  - generic [ref=e845]: Occupied
+                - generic [ref=e846]:
+                  - generic [ref=e847]:
+                    - generic [ref=e848]: Capacity
+                    - generic [ref=e849]: 35/200
+                  - paragraph [ref=e852]: 18% used
+                - generic [ref=e853]:
+                  - paragraph [ref=e854]: "Products:"
+                  - generic [ref=e855]:
+                    - generic [ref=e856]: SCW Shampoo Plus
+                    - generic [ref=e857]: "35"
+            - 'link "Rak C-02 Gudang Utama Occupied Capacity 45/200 23% used Products: SCW Polish Compound 25 SCW Clay Bar 20" [ref=e858] [cursor=pointer]':
+              - /url: /inventory/warehouse/7
+              - generic [ref=e860]:
+                - generic [ref=e861]:
+                  - generic [ref=e862]:
+                    - img [ref=e864]
+                    - generic [ref=e868]:
+                      - paragraph [ref=e869]: Rak C-02
+                      - paragraph [ref=e870]: Gudang Utama
+                  - generic [ref=e871]: Occupied
+                - generic [ref=e872]:
+                  - generic [ref=e873]:
+                    - generic [ref=e874]: Capacity
+                    - generic [ref=e875]: 45/200
+                  - paragraph [ref=e878]: 23% used
+                - generic [ref=e879]:
+                  - paragraph [ref=e880]: "Products:"
+                  - generic [ref=e881]:
+                    - generic [ref=e882]: SCW Polish Compound
+                    - generic [ref=e883]: "25"
+                  - generic [ref=e884]:
+                    - generic [ref=e885]: SCW Clay Bar
+                    - generic [ref=e886]: "20"
+            - 'link "Rak D-01 Gudang Cabang Occupied Capacity 100/150 67% used Products: SCW Glass Cleaner 100" [ref=e887] [cursor=pointer]':
+              - /url: /inventory/warehouse/8
+              - generic [ref=e889]:
+                - generic [ref=e890]:
+                  - generic [ref=e891]:
+                    - img [ref=e893]
+                    - generic [ref=e897]:
+                      - paragraph [ref=e898]: Rak D-01
+                      - paragraph [ref=e899]: Gudang Cabang
+                  - generic [ref=e900]: Occupied
+                - generic [ref=e901]:
+                  - generic [ref=e902]:
+                    - generic [ref=e903]: Capacity
+                    - generic [ref=e904]: 100/150
+                  - paragraph [ref=e907]: 67% used
+                - generic [ref=e908]:
+                  - paragraph [ref=e909]: "Products:"
+                  - generic [ref=e910]:
+                    - generic [ref=e911]: SCW Glass Cleaner
+                    - generic [ref=e912]: "100"
+            - 'link "Rak D-02 Gudang Cabang Occupied Capacity 140/150 93% used Products: SCW Leather Conditioner 45 SCW Dashboard Coating 95" [ref=e913] [cursor=pointer]':
+              - /url: /inventory/warehouse/9
+              - generic [ref=e915]:
+                - generic [ref=e916]:
+                  - generic [ref=e917]:
+                    - img [ref=e919]
+                    - generic [ref=e923]:
+                      - paragraph [ref=e924]: Rak D-02
+                      - paragraph [ref=e925]: Gudang Cabang
+                  - generic [ref=e926]: Occupied
+                - generic [ref=e927]:
+                  - generic [ref=e928]:
+                    - generic [ref=e929]: Capacity
+                    - generic [ref=e930]: 140/150
+                  - paragraph [ref=e933]: 93% used
+                - generic [ref=e934]:
+                  - paragraph [ref=e935]: "Products:"
+                  - generic [ref=e936]:
+                    - generic [ref=e937]: SCW Leather Conditioner
+                    - generic [ref=e938]: "45"
+                  - generic [ref=e939]:
+                    - generic [ref=e940]: SCW Dashboard Coating
+                    - generic [ref=e941]: "95"
+            - 'link "Rak E-01 Gudang Cabang Occupied Capacity 67/150 45% used Products: SCW Trim Restorer 67" [ref=e942] [cursor=pointer]':
+              - /url: /inventory/warehouse/10
+              - generic [ref=e944]:
+                - generic [ref=e945]:
+                  - generic [ref=e946]:
+                    - img [ref=e948]
+                    - generic [ref=e952]:
+                      - paragraph [ref=e953]: Rak E-01
+                      - paragraph [ref=e954]: Gudang Cabang
+                  - generic [ref=e955]: Occupied
+                - generic [ref=e956]:
+                  - generic [ref=e957]:
+                    - generic [ref=e958]: Capacity
+                    - generic [ref=e959]: 67/150
+                  - paragraph [ref=e962]: 45% used
+                - generic [ref=e963]:
+                  - paragraph [ref=e964]: "Products:"
+                  - generic [ref=e965]:
+                    - generic [ref=e966]: SCW Trim Restorer
+                    - generic [ref=e967]: "67"
+            - 'link "Rak F-01 Gudang Display Occupied Capacity 55/100 55% used Products: SCW Foam Pad 30 SCW Microfiber Towel 25" [ref=e968] [cursor=pointer]':
+              - /url: /inventory/warehouse/11
+              - generic [ref=e970]:
+                - generic [ref=e971]:
+                  - generic [ref=e972]:
+                    - img [ref=e974]
+                    - generic [ref=e978]:
+                      - paragraph [ref=e979]: Rak F-01
+                      - paragraph [ref=e980]: Gudang Display
+                  - generic [ref=e981]: Occupied
+                - generic [ref=e982]:
+                  - generic [ref=e983]:
+                    - generic [ref=e984]: Capacity
+                    - generic [ref=e985]: 55/100
+                  - paragraph [ref=e988]: 55% used
+                - generic [ref=e989]:
+                  - paragraph [ref=e990]: "Products:"
+                  - generic [ref=e991]:
+                    - generic [ref=e992]: SCW Foam Pad
+                    - generic [ref=e993]: "30"
+                  - generic [ref=e994]:
+                    - generic [ref=e995]: SCW Microfiber Towel
+                    - generic [ref=e996]: "25"
+            - link "Rak F-02 Gudang Display Empty Capacity 0/100 0% used" [ref=e997] [cursor=pointer]:
+              - /url: /inventory/warehouse/12
+              - generic [ref=e999]:
+                - generic [ref=e1000]:
+                  - generic [ref=e1001]:
+                    - img [ref=e1003]
+                    - generic [ref=e1006]:
+                      - paragraph [ref=e1007]: Rak F-02
+                      - paragraph [ref=e1008]: Gudang Display
+                  - generic [ref=e1009]: Empty
+                - generic [ref=e1010]:
+                  - generic [ref=e1011]:
+                    - generic [ref=e1012]: Capacity
+                    - generic [ref=e1013]: 0/100
+                  - paragraph [ref=e1015]: 0% used
+  - button "Open Next.js Dev Tools" [ref=e407] [cursor=pointer]:
+    - img [ref=e408]
+  - alert [ref=e535]

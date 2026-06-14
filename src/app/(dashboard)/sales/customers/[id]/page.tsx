@@ -204,7 +204,7 @@ export default function CustomerDetailPage() {
             <TableBody>
               {purchaseHistory.map((purchase) => (
                 <TableRow key={purchase.id}>
-                  <TableCell className="font-mono text-xs">{purchase.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{purchase.id}</TableCell>
                   <TableCell>{purchase.date}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">{purchase.items}</TableCell>
                   <TableCell className="text-right font-medium">

@@ -291,7 +291,7 @@ export default function ActivityLogPage() {
                 const Icon = actionIcons[log.type] || Activity
                 return (
                   <TableRow key={log.id}>
-                    <TableCell className="text-xs text-muted-foreground font-mono">
+                    <TableCell className="text-xs text-muted-foreground font-sans">
                       {log.timestamp}
                     </TableCell>
                     <TableCell>

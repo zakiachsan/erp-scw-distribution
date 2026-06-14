@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,8 +25,6 @@ import {
   Printer,
   CheckCircle2,
   Clock,
-  FileText,
-  DollarSign,
   Send,
   Package,
   CreditCard,
@@ -54,7 +51,6 @@ interface POData {
   tax: number
   shipping: number
   grandTotal: number
-  timeline: { date: string; event: string; status: "completed" | "current" | "pending" }[]
   invoiceNumber?: string
   paymentDate?: string
   paymentMethod?: string
@@ -83,13 +79,6 @@ const poDataMap: Record<string, POData> = {
     tax: 1879000,
     shipping: 500000,
     grandTotal: 21169000,
-    timeline: [
-      { date: "2025-12-10", event: "PO Created", status: "completed" },
-      { date: "2025-12-10", event: "PO Sent to Supplier", status: "completed" },
-      { date: "2025-12-13", event: "Supplier Confirmed", status: "completed" },
-      { date: "2025-12-15", event: "Goods Received", status: "completed" },
-      { date: "2025-12-15", event: "Payment Processed", status: "completed" },
-    ],
     invoiceNumber: "INV-ACI-2025-0156",
     paymentDate: "2025-12-15",
     paymentMethod: "Bank Transfer (BCA)",
@@ -114,12 +103,6 @@ const defaultPO: POData = {
   tax: 0,
   shipping: 320,
   grandTotal: 2155,
-  timeline: [
-    { date: "2025-12-13", event: "PO Created", status: "completed" },
-    { date: "2025-12-13", event: "PO Sent to Supplier", status: "current" },
-    { date: "2025-12-20", event: "Supplier Confirmation", status: "pending" },
-    { date: "2026-01-05", event: "Expected Delivery", status: "pending" },
-  ],
 }
 
 const statusConfig = {
@@ -127,6 +110,50 @@ const statusConfig = {
   Sent: { label: "Sent", className: "bg-blue-100 text-blue-800" },
   Received: { label: "Received", className: "bg-amber-100 text-amber-800" },
   Paid: { label: "Paid", className: "bg-emerald-100 text-emerald-800" },
+}
+
+const timelineColorConfig = {
+  created: {
+    completed: "bg-gray-100 text-gray-600",
+    current: "bg-gray-100 text-gray-600",
+    pending: "bg-gray-100 text-gray-400",
+    border: "bg-gray-200",
+  },
+  sent: {
+    completed: "bg-blue-100 text-blue-600",
+    current: "bg-blue-100 text-blue-600",
+    pending: "bg-gray-100 text-gray-400",
+    border: "bg-blue-200",
+  },
+  received: {
+    completed: "bg-amber-100 text-amber-600",
+    current: "bg-amber-100 text-amber-600",
+    pending: "bg-gray-100 text-gray-400",
+    border: "bg-amber-200",
+  },
+  paid: {
+    completed: "bg-emerald-100 text-emerald-600",
+    current: "bg-emerald-100 text-emerald-600",
+    pending: "bg-gray-100 text-gray-400",
+    border: "bg-emerald-200",
+  },
+}
+
+function generateTimeline(status: "Draft" | "Sent" | "Received" | "Paid", date: string) {
+  const events = [
+    { key: "created" as const, label: "PO Created", date },
+    { key: "sent" as const, label: "PO Sent to Supplier", date },
+    { key: "received" as const, label: "Goods Received", date },
+    { key: "paid" as const, label: "Payment Processed", date },
+  ]
+
+  const statusIndex = { Draft: 0, Sent: 1, Received: 2, Paid: 3 }[status]
+
+  return events.map((event, i) => {
+    if (i < statusIndex) return { ...event, status: "completed" as const }
+    if (i === statusIndex) return { ...event, status: "current" as const }
+    return { ...event, status: "pending" as const }
+  })
 }
 
 function formatCurrency(amount: number, currency: string) {
@@ -138,8 +165,13 @@ function formatCurrency(amount: number, currency: string) {
 
 export default function PurchaseOrderDetailPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const id = params.id as string
-  const po = poDataMap[id] || defaultPO
+  const statusOverride = searchParams.get("status") as POData["status"] | null
+  const poBase = poDataMap[id] || defaultPO
+  const po: POData = statusOverride && statusConfig[statusOverride]
+    ? { ...poBase, status: statusOverride }
+    : poBase
 
   const cfg = statusConfig[po.status]
 
@@ -188,7 +220,7 @@ export default function PurchaseOrderDetailPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">PO Number</p>
-                  <p className="font-mono font-medium">{po.poNumber}</p>
+                  <p className="font-sans font-medium">{po.poNumber}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Date</p>
@@ -233,12 +265,12 @@ export default function PurchaseOrderDetailPage() {
                   {po.items.map((item, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-medium">{item.product}</TableCell>
-                      <TableCell className="font-mono text-xs">{item.sku}</TableCell>
+                      <TableCell className="font-sans text-xs">{item.sku}</TableCell>
                       <TableCell className="text-right">{item.qty}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right font-sans">
                         {formatCurrency(item.unitPrice, po.currency)}
                       </TableCell>
-                      <TableCell className="text-right font-mono font-bold">
+                      <TableCell className="text-right font-sans font-bold">
                         {formatCurrency(item.total, po.currency)}
                       </TableCell>
                     </TableRow>
@@ -247,7 +279,7 @@ export default function PurchaseOrderDetailPage() {
                     <TableCell colSpan={4} className="text-right font-medium">
                       Subtotal
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold">
+                    <TableCell className="text-right font-sans font-bold">
                       {formatCurrency(po.subtotal, po.currency)}
                     </TableCell>
                   </TableRow>
@@ -255,7 +287,7 @@ export default function PurchaseOrderDetailPage() {
                     <TableCell colSpan={4} className="text-right text-muted-foreground">
                       Tax (PPN 10%)
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatCurrency(po.tax, po.currency)}
                     </TableCell>
                   </TableRow>
@@ -263,7 +295,7 @@ export default function PurchaseOrderDetailPage() {
                     <TableCell colSpan={4} className="text-right text-muted-foreground">
                       Shipping
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-right font-sans">
                       {formatCurrency(po.shipping, po.currency)}
                     </TableCell>
                   </TableRow>
@@ -271,7 +303,7 @@ export default function PurchaseOrderDetailPage() {
                     <TableCell colSpan={4} className="text-right">
                       Grand Total
                     </TableCell>
-                    <TableCell className="text-right font-mono text-lg">
+                    <TableCell className="text-right font-sans text-lg">
                       {formatCurrency(po.grandTotal, po.currency)}
                     </TableCell>
                   </TableRow>
@@ -292,7 +324,7 @@ export default function PurchaseOrderDetailPage() {
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Invoice Number</p>
-                    <p className="font-mono font-medium">{po.invoiceNumber}</p>
+                    <p className="font-sans font-medium">{po.invoiceNumber}</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Payment Date</p>
@@ -318,38 +350,33 @@ export default function PurchaseOrderDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {po.timeline.map((step, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                          step.status === "completed"
-                            ? "bg-indigo-100 text-indigo-600"
-                            : step.status === "current"
-                              ? "bg-amber-100 text-amber-600"
-                              : "bg-gray-100 text-gray-400"
-                        }`}
-                      >
-                        {step.status === "completed" ? (
-                          <CheckCircle2 className="h-4 w-4" />
-                        ) : (
-                          <Clock className="h-4 w-4" />
-                        )}
+                {(() => {
+                  const timeline = generateTimeline(po.status, po.date)
+                  return timeline.map((step, i) => {
+                    const colors = timelineColorConfig[step.key][step.status]
+                    const borderColor = timelineColorConfig[step.key].border
+                    return (
+                      <div key={step.key} className="flex gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className={`flex h-8 w-8 items-center justify-center rounded-full ${colors}`}>
+                            {step.status === "completed" ? (
+                              <CheckCircle2 className="h-4 w-4" />
+                            ) : (
+                              <Clock className="h-4 w-4" />
+                            )}
+                          </div>
+                          {i < timeline.length - 1 && (
+                            <div className={`w-0.5 flex-1 ${step.status === "completed" ? borderColor : "bg-gray-200"}`} />
+                          )}
+                        </div>
+                        <div className="pb-4">
+                          <p className="text-sm font-medium">{step.label}</p>
+                          <p className="text-xs text-muted-foreground">{step.date}</p>
+                        </div>
                       </div>
-                      {i < po.timeline.length - 1 && (
-                        <div
-                          className={`w-0.5 flex-1 ${
-                            step.status === "completed" ? "bg-indigo-200" : "bg-gray-200"
-                          }`}
-                        />
-                      )}
-                    </div>
-                    <div className="pb-4">
-                      <p className="text-sm font-medium">{step.event}</p>
-                      <p className="text-xs text-muted-foreground">{step.date}</p>
-                    </div>
-                  </div>
-                ))}
+                    )
+                  })
+                })()}
               </div>
             </CardContent>
           </Card>

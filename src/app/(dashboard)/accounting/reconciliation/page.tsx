@@ -192,7 +192,7 @@ export default function ReconciliationPage() {
                     <TableCell className="text-sm max-w-[200px] truncate">
                       {entry.description}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
+                    <TableCell className="text-right font-sans text-sm">
                       <span
                         className={
                           entry.type === "credit"
@@ -254,10 +254,10 @@ export default function ReconciliationPage() {
                     <TableCell className="text-sm text-slate-600">
                       {entry.date}
                     </TableCell>
-                    <TableCell className="text-sm font-mono">
+                    <TableCell className="text-sm font-sans">
                       {entry.reference}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
+                    <TableCell className="text-right font-sans text-sm">
                       {formatIDR(entry.amount)}
                     </TableCell>
                     <TableCell>
@@ -310,7 +310,7 @@ export default function ReconciliationPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`font-mono text-sm font-medium ${
+                          className={`font-sans text-sm font-medium ${
                             entry.type === "credit"
                               ? "text-green-600"
                               : "text-red-600"
@@ -343,7 +343,7 @@ export default function ReconciliationPage() {
                         <p className="text-xs text-slate-500">{entry.reference}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm font-medium text-blue-600">
+                        <span className="font-sans text-sm font-medium text-blue-600">
                           {formatIDR(entry.amount)}
                         </span>
                         <Button size="sm" variant="outline">

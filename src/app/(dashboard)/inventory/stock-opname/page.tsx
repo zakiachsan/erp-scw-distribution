@@ -1,25 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -28,315 +18,246 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ClipboardCheck, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown } from "lucide-react"
+import {
+  ClipboardCheck,
+  Plus,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react"
+import Link from "next/link"
 
-interface ProductOption {
+interface OpnameRecord {
   id: string
-  sku: string
-  name: string
-  systemQty: number
-  location: string
+  tanggal: string
+  waktu: string
+  petugas: string
+  totalRacks: number
+  totalProducts: number
+  firstProduct: string
+  totalSystem: number
+  totalPhysical: number
+  status: "draft" | "kurang" | "lebih" | "selesai"
 }
 
-const productOptions: ProductOption[] = [
-  { id: "1", sku: "SCW-SF-001", name: "SCW Snow Foam", systemQty: 245, location: "Rak A-01" },
-  { id: "2", sku: "SCW-CC-002", name: "SCW Ceramic Coating", systemQty: 12, location: "Rak A-02" },
-  { id: "3", sku: "SCW-ID-003", name: "SCW Interior Detailer", systemQty: 180, location: "Rak B-01" },
-  { id: "4", sku: "SCW-TG-004", name: "SCW Tire Gel", systemQty: 95, location: "Rak B-02" },
-  { id: "5", sku: "SCW-MW-006", name: "SCW Microfiber Wash", systemQty: 312, location: "Rak A-03" },
-  { id: "6", sku: "SCW-SW-008", name: "SCW Spray Wax", systemQty: 156, location: "Rak B-03" },
-  { id: "7", sku: "SCW-GC-009", name: "SCW Glass Cleaner", systemQty: 200, location: "Rak D-01" },
-  { id: "8", sku: "SCW-LC-010", name: "SCW Leather Conditioner", systemQty: 45, location: "Rak D-02" },
+const OPNAME_HISTORY: OpnameRecord[] = [
+  {
+    id: "op-001",
+    tanggal: "2026-06-14",
+    waktu: "10:30",
+    petugas: "Admin User",
+    totalRacks: 5,
+    totalProducts: 5,
+    firstProduct: "SCW Snow Foam",
+    totalSystem: 688,
+    totalPhysical: 682,
+    status: "kurang",
+  },
+  {
+    id: "op-002",
+    tanggal: "2026-06-10",
+    waktu: "14:15",
+    petugas: "Admin User",
+    totalRacks: 5,
+    totalProducts: 8,
+    firstProduct: "SCW Snow Foam",
+    totalSystem: 1143,
+    totalPhysical: 1172,
+    status: "lebih",
+  },
+  {
+    id: "op-003",
+    tanggal: "2026-06-01",
+    waktu: "09:00",
+    petugas: "Admin User",
+    totalRacks: 1,
+    totalProducts: 3,
+    firstProduct: "SCW Snow Foam",
+    totalSystem: 320,
+    totalPhysical: 320,
+    status: "selesai",
+  },
+  {
+    id: "op-004",
+    tanggal: "2026-05-25",
+    waktu: "11:45",
+    petugas: "Admin User",
+    totalRacks: 5,
+    totalProducts: 6,
+    firstProduct: "SCW Snow Foam",
+    totalSystem: 1005,
+    totalPhysical: 985,
+    status: "kurang",
+  },
+  {
+    id: "op-005",
+    tanggal: "2026-06-15",
+    waktu: "08:00",
+    petugas: "Admin User",
+    totalRacks: 1,
+    totalProducts: 2,
+    firstProduct: "SCW Snow Foam",
+    totalSystem: 305,
+    totalPhysical: 0,
+    status: "draft",
+  },
 ]
 
-interface OpnameEntry {
-  productId: string
-  physicalCount: number
-  notes: string
+const statusConfig: Record<string, { label: string; className: string }> = {
+  draft: { label: "Draft", className: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300" },
+  kurang: { label: "Stok Kurang", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  lebih: { label: "Stok Lebih", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+  selesai: { label: "Selesai", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
 }
 
 export default function StockOpnamePage() {
-  const [entries, setEntries] = useState<OpnameEntry[]>([])
-  const [selectedProduct, setSelectedProduct] = useState("")
-  const [physicalCount, setPhysicalCount] = useState("")
-  const [notes, setNotes] = useState("")
-
-  const addEntry = () => {
-    if (!selectedProduct || physicalCount === "") return
-    const existing = entries.find((e) => e.productId === selectedProduct)
-    if (existing) {
-      setEntries(
-        entries.map((e) =>
-          e.productId === selectedProduct
-            ? { ...e, physicalCount: parseInt(physicalCount), notes }
-            : e
-        )
-      )
-    } else {
-      setEntries([
-        ...entries,
-        {
-          productId: selectedProduct,
-          physicalCount: parseInt(physicalCount),
-          notes,
-        },
-      ])
-    }
-    setSelectedProduct("")
-    setPhysicalCount("")
-    setNotes("")
-  }
-
-  const removeEntry = (id: string) => {
-    setEntries(entries.filter((e) => e.productId !== id))
-  }
-
-  const getProduct = (id: string) => productOptions.find((p) => p.id === id)
-
-  const totalVariance = entries.reduce((sum, entry) => {
-    const product = getProduct(entry.productId)
-    if (!product) return sum
-    return sum + (entry.physicalCount - product.systemQty)
-  }, 0)
+  const router = useRouter()
 
   return (
     <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Stock Opname</h1>
-        <p className="text-muted-foreground">
-          Record physical inventory counts and reconcile with system data
-        </p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Stock Opname</h1>
+          <p className="text-muted-foreground">
+            Riwayat stock opname yang telah dilakukan.
+          </p>
+        </div>
+        <Link href="/inventory/stock-opname/create">
+          <Button>
+            <Plus className="mr-1.5 h-4 w-4" />
+            Stock Opname Baru
+          </Button>
+        </Link>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-indigo-600" />
-              Add Product Count
-            </CardTitle>
-            <CardDescription>
-              Select a product and enter the physical count from the warehouse
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Select Product</Label>
-                <Select value={selectedProduct} onValueChange={(v) => setSelectedProduct(v ?? "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a product..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productOptions.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.sku} - {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      {/* Stat Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                <ClipboardCheck className="h-5 w-5 text-indigo-600" />
               </div>
-              <div className="space-y-2">
-                <Label>Physical Count</Label>
-                <Input
-                  type="number"
-                  placeholder="Enter physical count"
-                  value={physicalCount}
-                  onChange={(e) => setPhysicalCount(e.target.value)}
-                />
+              <div>
+                <p className="text-sm text-muted-foreground">Total Opname</p>
+                <p className="text-2xl font-bold">{OPNAME_HISTORY.length}</p>
               </div>
             </div>
-
-            {selectedProduct && (
-              <div className="rounded-lg border bg-muted/30 p-3">
-                {(() => {
-                  const product = getProduct(selectedProduct)
-                  if (!product) return null
-                  const phys = parseInt(physicalCount) || 0
-                  const variance = phys - product.systemQty
-                  return (
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">System Count</p>
-                        <p className="text-lg font-bold">{product.systemQty}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Physical Count</p>
-                        <p className="text-lg font-bold">{phys || "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Variance</p>
-                        <p
-                          className={`text-lg font-bold ${variance > 0 ? "text-emerald-600" : variance < 0 ? "text-red-600" : "text-muted-foreground"}`}
-                        >
-                          {physicalCount === ""
-                            ? "-"
-                            : variance > 0
-                              ? `+${variance}`
-                              : variance}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })()}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Notes (Optional)</Label>
-              <Textarea
-                placeholder="Reason for variance, condition notes..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-
-            <Button onClick={addEntry} disabled={!selectedProduct || physicalCount === ""}>
-              <ClipboardCheck className="mr-2 h-4 w-4" />
-              Add to Opname
-            </Button>
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader>
-            <CardTitle>Opname Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border p-3 text-center">
-                <p className="text-sm text-muted-foreground">Items Checked</p>
-                <p className="text-3xl font-bold text-indigo-600">{entries.length}</p>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                <ArrowUp className="h-5 w-5 text-emerald-600" />
               </div>
-              <div className="rounded-lg border p-3 text-center">
-                <p className="text-sm text-muted-foreground">Total Variance</p>
-                <p
-                  className={`text-3xl font-bold ${
-                    totalVariance > 0
-                      ? "text-emerald-600"
-                      : totalVariance < 0
-                        ? "text-red-600"
-                        : "text-muted-foreground"
-                  }`}
-                >
-                  {totalVariance > 0 ? "+" : ""}
-                  {totalVariance}
+              <div>
+                <p className="text-sm text-muted-foreground">Produk Diperiksa</p>
+                <p className="text-2xl font-bold">
+                  {OPNAME_HISTORY.reduce((s, r) => s + r.totalProducts, 0)}
                 </p>
               </div>
             </div>
-
-            {entries.length > 0 && (
-              <div className="rounded-lg border bg-amber-50 p-3 dark:bg-amber-950/20">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                    {entries.filter((e) => {
-                      const p = getProduct(e.productId)
-                      return p && e.physicalCount !== p.systemQty
-                    }).length}{" "}
-                    item(s) have variances
-                  </p>
-                </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                <ArrowDown className="h-5 w-5 text-amber-600" />
               </div>
-            )}
-
-            <Button
-              className="w-full"
-              size="lg"
-              disabled={entries.length === 0}
-              onClick={() => {
-                alert("Stock Opname submitted successfully!")
-                setEntries([])
-              }}
-            >
-              Submit Stock Opname
-            </Button>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Variance</p>
+                <p className="text-2xl font-bold">
+                  {OPNAME_HISTORY.reduce((s, r) => s + (r.totalPhysical - r.totalSystem), 0) > 0 ? "+" : ""}
+                  {OPNAME_HISTORY.reduce((s, r) => s + (r.totalPhysical - r.totalSystem), 0)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                <ClipboardCheck className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Selesai</p>
+                <p className="text-2xl font-bold">
+                  {OPNAME_HISTORY.filter((r) => r.status === "selesai").length}
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {entries.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Opname Entries</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead className="text-right">System</TableHead>
-                  <TableHead className="text-right">Physical</TableHead>
-                  <TableHead className="text-right">Variance</TableHead>
-                  <TableHead>Notes</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {entries.map((entry) => {
-                  const product = getProduct(entry.productId)
-                  if (!product) return null
-                  const variance = entry.physicalCount - product.systemQty
-                  return (
-                    <TableRow key={entry.productId}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">{product.sku}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{product.location}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {product.systemQty}
-                      </TableCell>
-                      <TableCell className="text-right font-mono font-bold">
-                        {entry.physicalCount}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {variance > 0 ? (
-                            <ArrowUp className="h-3 w-3 text-emerald-600" />
-                          ) : variance < 0 ? (
-                            <ArrowDown className="h-3 w-3 text-red-600" />
-                          ) : null}
-                          <span
-                            className={`font-mono font-bold ${
-                              variance > 0
-                                ? "text-emerald-600"
-                                : variance < 0
-                                  ? "text-red-600"
-                                  : "text-muted-foreground"
-                            }`}
-                          >
-                            {variance > 0 ? "+" : ""}
-                            {variance}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
-                        {entry.notes || "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeEntry(entry.productId)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Remove
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      {/* History Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Riwayat Stock Opname</CardTitle>
+          <CardDescription>
+            Daftar stock opname yang sudah dilakukan beserta hasilnya.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tanggal</TableHead>
+                <TableHead>Petugas</TableHead>
+                <TableHead>Produk</TableHead>
+                <TableHead className="text-center">Total Sistem</TableHead>
+                <TableHead className="text-center">Total Fisik</TableHead>
+                <TableHead className="text-center">Selisih</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {OPNAME_HISTORY.map((op) => {
+                const variance = op.totalPhysical - op.totalSystem
+                const cfg = statusConfig[op.status] ?? statusConfig.draft
+                return (
+                  <TableRow
+                    key={op.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => router.push(`/inventory/stock-opname/${op.id}`)}
+                  >
+                    <TableCell className="whitespace-nowrap">
+                      <div className="text-sm">{op.tanggal}</div>
+                      <div className="text-xs text-muted-foreground">{op.waktu}</div>
+                    </TableCell>
+                    <TableCell>{op.petugas}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm">
+                          {op.firstProduct}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {op.totalRacks} rak &middot; {op.totalProducts} produk
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center font-sans font-medium">{op.totalSystem}</TableCell>
+                    <TableCell className="text-center font-sans font-medium">{op.totalPhysical}</TableCell>
+                    <TableCell className="text-center">
+                      <span className={`font-sans font-bold ${variance > 0 ? "text-emerald-600" : variance < 0 ? "text-red-600" : "text-muted-foreground"}`}>
+                        {variance > 0 ? "+" : ""}{variance}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={cfg.className}>
+                        {cfg.label}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }

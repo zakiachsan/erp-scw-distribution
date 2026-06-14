@@ -90,7 +90,7 @@ export default function PackingVideosPage() {
             </div>
             <CardContent className="p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="font-mono text-xs font-medium">{video.packingId}</p>
+                <p className="font-sans text-xs font-medium">{video.packingId}</p>
                 <p className="text-xs text-muted-foreground">{video.fileSize}</p>
               </div>
               <p className="text-sm font-medium truncate">{video.customer}</p>

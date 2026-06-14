@@ -254,7 +254,7 @@ export default function AccountingDashboardPage() {
             <TableBody>
               {recentEntries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell className="font-mono text-sm font-medium">
+                  <TableCell className="font-sans text-sm font-medium">
                     {entry.id}
                   </TableCell>
                   <TableCell>{entry.date}</TableCell>
@@ -264,10 +264,10 @@ export default function AccountingDashboardPage() {
                   <TableCell className="max-w-[300px] truncate text-slate-600">
                     {entry.description}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     {formatIDR(entry.debit)}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-sans">
                     {formatIDR(entry.credit)}
                   </TableCell>
                   <TableCell>
