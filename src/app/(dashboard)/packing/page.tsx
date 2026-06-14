@@ -32,8 +32,6 @@ import {
   Box,
   Package,
   Clock,
-  Globe,
-  Monitor,
 } from "lucide-react"
 
 interface PackingOrder {
@@ -60,11 +58,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   Queued: { label: "Queued", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
   "In Progress": { label: "In Progress", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
   Completed: { label: "Completed", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-}
-
-const channelConfig: Record<string, { label: string; icon: React.ElementType; className: string }> = {
-  Web: { label: "Web", icon: Globe, className: "bg-blue-100 text-blue-800" },
-  ERP: { label: "ERP", icon: Monitor, className: "bg-indigo-100 text-indigo-800" },
 }
 
 export default function PackingPage() {
@@ -176,7 +169,6 @@ export default function PackingPage() {
                 <TableHead>Packing ID</TableHead>
                 <TableHead>SO Ref</TableHead>
                 <TableHead>Customer</TableHead>
-                <TableHead>Channel</TableHead>
                 <TableHead>Items</TableHead>
                 <TableHead className="text-right">Qty</TableHead>
                 <TableHead>Status</TableHead>
@@ -185,18 +177,11 @@ export default function PackingPage() {
             </TableHeader>
             <TableBody>
               {filtered.map((order) => {
-                const ChannelIcon = channelConfig[order.channel].icon
                 return (
                   <TableRow key={order.id}>
                     <TableCell className="font-sans text-xs font-medium">{order.id}</TableCell>
                     <TableCell className="font-sans text-xs">{order.soRef}</TableCell>
                     <TableCell className="font-medium">{order.customer}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={channelConfig[order.channel].className}>
-                        <ChannelIcon className="mr-1 h-3 w-3" />
-                        {channelConfig[order.channel].label}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-muted-foreground text-xs max-w-48 truncate">{order.items}</TableCell>
                     <TableCell className="text-right">{order.itemQty}</TableCell>
                     <TableCell>
