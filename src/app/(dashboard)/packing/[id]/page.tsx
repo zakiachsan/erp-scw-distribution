@@ -247,6 +247,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                     type="number"
                     placeholder="0"
                     value={dimensions.length}
+                    disabled={detail.status === "Completed"}
                     onChange={(e) => setDimensions((d) => ({ ...d, length: e.target.value }))}
                   />
                 </div>
@@ -256,6 +257,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                     type="number"
                     placeholder="0"
                     value={dimensions.width}
+                    disabled={detail.status === "Completed"}
                     onChange={(e) => setDimensions((d) => ({ ...d, width: e.target.value }))}
                   />
                 </div>
@@ -265,6 +267,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                     type="number"
                     placeholder="0"
                     value={dimensions.height}
+                    disabled={detail.status === "Completed"}
                     onChange={(e) => setDimensions((d) => ({ ...d, height: e.target.value }))}
                   />
                 </div>
@@ -276,6 +279,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                   step="0.1"
                   placeholder="0"
                   value={dimensions.weight}
+                  disabled={detail.status === "Completed"}
                   onChange={(e) => setDimensions((d) => ({ ...d, weight: e.target.value }))}
                 />
               </div>
@@ -302,7 +306,11 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
               <CardDescription>Rekam video proses packing sebagai bukti dokumentasi.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {!cameraActive && !recordedBlob && (
+              {detail.status === "Completed" ? (
+                <div className="text-center py-4 text-sm text-muted-foreground">
+                  ✅ Packing sudah selesai. Rekaman video tidak dapat ditambahkan lagi.
+                </div>
+              ) : !cameraActive && !recordedBlob && (
                 <div className="flex flex-col items-center gap-3 py-6">
                   <Camera className="h-12 w-12 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">Klik untuk mengaktifkan kamera</p>
@@ -312,7 +320,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                   </Button>
                 </div>
               )}
-              {cameraActive && !recordedBlob && (
+              {detail.status !== "Completed" && cameraActive && !recordedBlob && (
                 <div className="space-y-3">
                   <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
                     <video ref={previewRef} autoPlay muted playsInline className="w-full h-full object-cover" />
@@ -339,7 +347,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 </div>
               )}
-              {recordedBlob && (
+              {detail.status !== "Completed" && recordedBlob && (
                 <div className="space-y-3">
                   <div className="rounded-lg overflow-hidden bg-black aspect-video">
                     <video ref={videoRef} src={URL.createObjectURL(recordedBlob)} controls playsInline className="w-full h-full object-cover" />
