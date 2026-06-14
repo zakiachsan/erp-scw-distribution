@@ -307,21 +307,57 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
             </CardHeader>
             <CardContent className="space-y-4">
               {detail.status === "Completed" ? (
-                <div className="text-center py-4 text-sm text-muted-foreground">
-                  ✅ Packing sudah selesai. Rekaman video tidak dapat ditambahkan lagi.
-                </div>
-              ) : !cameraActive && !recordedBlob && (
-                <div className="flex flex-col items-center gap-3 py-6">
-                  <Camera className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Klik untuk mengaktifkan kamera</p>
-                  <Button onClick={startCamera} className="gap-2">
-                    <Camera className="h-4 w-4" />
-                    Aktifkan Kamera
-                  </Button>
-                </div>
-              )}
-              {detail.status !== "Completed" && cameraActive && !recordedBlob && (
                 <div className="space-y-3">
+                  <div className="text-center text-sm text-muted-foreground pt-1">
+                    ✅ Packing sudah selesai. Rekaman video dokumentasi:
+                  </div>
+                  {videos.length === 0 ? (
+                    <>
+                      <div className="rounded-lg border overflow-hidden bg-muted/30">
+                        <div className="aspect-video bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                          <Video className="h-10 w-10 text-indigo-300" />
+                        </div>
+                        <div className="p-2.5 flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">3:45</Badge>
+                          <span className="text-[10px] text-muted-foreground">28 Mei 2026 11:00</span>
+                        </div>
+                      </div>
+                      <div className="rounded-lg border overflow-hidden bg-muted/30">
+                        <div className="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                          <Video className="h-10 w-10 text-blue-300" />
+                        </div>
+                        <div className="p-2.5 flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">2:15</Badge>
+                          <span className="text-[10px] text-muted-foreground">28 Mei 2026 10:30</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    videos.map((v) => (
+                      <div key={v.id} className="rounded-lg border overflow-hidden">
+                        <video src={v.blobUrl} controls playsInline className="w-full aspect-video bg-black" />
+                        <div className="p-2.5 flex items-center justify-between">
+                          <Badge variant="secondary" className="text-xs">{v.duration}</Badge>
+                          <span className="text-[10px] text-muted-foreground">{v.uploadedAt}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <>
+                  {!cameraActive && !recordedBlob && (
+                    <div className="flex flex-col items-center gap-3 py-6">
+                      <Camera className="h-12 w-12 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Klik untuk mengaktifkan kamera</p>
+                      <Button onClick={startCamera} className="gap-2">
+                        <Camera className="h-4 w-4" />
+                        Aktifkan Kamera
+                      </Button>
+                    </div>
+                  )}
+                  {cameraActive && !recordedBlob && (
+                    <div className="space-y-3">
                   <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
                     <video ref={previewRef} autoPlay muted playsInline className="w-full h-full object-cover" />
                     {isRecording && (
@@ -363,6 +399,8 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                     </Button>
                   </div>
                 </div>
+              )}
+                </>
               )}
             </CardContent>
           </Card>
