@@ -69,7 +69,7 @@ export default function CreatePage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create Invoice</h1>
+          <h1 className="text-2xl  text-gray-900">Create Invoice</h1>
           <p className="text-sm text-gray-500">Buat invoice baru</p>
         </div>
         <Card>
@@ -100,7 +100,7 @@ export default function CreatePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Create Invoice</h1>
+        <h1 className="text-2xl  text-gray-900">Create Invoice</h1>
         <p className="text-sm text-gray-500">Buat invoice baru</p>
       </div>
 

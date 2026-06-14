@@ -75,7 +75,7 @@ export default function MostBuyPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Most-Buy Customers</h1>
+          <h1 className="text-2xl  tracking-tight">Most-Buy Customers</h1>
           <p className="text-muted-foreground">
             Ranked list of top customers by purchase frequency and value
           </p>
@@ -92,7 +92,7 @@ export default function MostBuyPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Top Customer</p>
-                <p className="text-xl font-bold">{topCustomers[0].name}</p>
+                <p className="text-xl ">{topCustomers[0].name}</p>
                 <p className="text-xs text-muted-foreground">{topCustomers[0].company}</p>
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function MostBuyPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Value (Top 8)</p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl ">
                   Rp {(topCustomers.reduce((sum, c) => sum + c.totalPurchase, 0) / 1000000).toFixed(0)}M
                 </p>
               </div>
@@ -121,7 +121,7 @@ export default function MostBuyPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl ">
                   {topCustomers.reduce((sum, c) => sum + c.ordersCount, 0)}
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function MostBuyPage() {
                         {customer.rank <= 3 && (
                           <Crown className={`h-4 w-4 ${customer.rank === 1 ? "text-yellow-500" : customer.rank === 2 ? "text-gray-400" : "text-orange-400"}`} />
                         )}
-                        <span className="font-bold">{customer.rank}</span>
+                        <span className="">{customer.rank}</span>
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">{customer.name}</TableCell>
@@ -175,7 +175,7 @@ export default function MostBuyPage() {
                     <TableCell className="text-right text-sm">
                       Rp {(customer.avgOrderValue / 1000000).toFixed(1)}M
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className="text-right ">
                       Rp {(customer.totalPurchase / 1000000).toFixed(0)}M
                     </TableCell>
                     <TableCell className="text-right">

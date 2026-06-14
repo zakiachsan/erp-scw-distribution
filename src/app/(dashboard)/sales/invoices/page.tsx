@@ -144,7 +144,7 @@ export default function InvoiceListPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Invoices</h1>
+          <h1 className="text-2xl  tracking-tight">Invoices</h1>
           <p className="text-muted-foreground">
             Manage invoices and track payment status
           </p>
@@ -167,7 +167,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Invoices</p>
-                <p className="text-2xl font-bold">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl ">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -180,7 +180,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Paid</p>
-                <p className="text-2xl font-bold text-emerald-600">Rp {(paidAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl  text-emerald-600">Rp {(paidAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -193,7 +193,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Overdue</p>
-                <p className="text-2xl font-bold text-red-600">Rp {(overdueAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl  text-red-600">Rp {(overdueAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>

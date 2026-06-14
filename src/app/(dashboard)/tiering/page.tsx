@@ -188,7 +188,7 @@ export default function TieringPage() {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Tiering Discount Configuration</h1>
+          <h1 className="text-2xl  tracking-tight">Tiering Discount Configuration</h1>
           <p className="text-muted-foreground">
             Configure tier-based discount rules — Type A (Permanent) or Type B (Monthly Reset)
           </p>
@@ -693,7 +693,7 @@ export default function TieringPage() {
                     -Rp {formatRupiah(simDiscountAmount)}
                   </span>
                 </div>
-                <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                <div className="border-t pt-2 flex justify-between  text-lg">
                   <span>Final Amount</span>
                   <span className="text-indigo-600">Rp {formatRupiah(simFinal)}</span>
                 </div>

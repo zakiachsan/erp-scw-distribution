@@ -120,7 +120,7 @@ export default function PaymentsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Payments</h1>
+          <h1 className="text-2xl  tracking-tight">Payments</h1>
           <p className="text-muted-foreground">
             Kelola pembayaran dari customer
           </p>
@@ -199,7 +199,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Payments</p>
-                <p className="text-2xl font-bold">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl ">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -212,7 +212,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold text-emerald-600">Rp {(completedAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl  text-emerald-600">Rp {(completedAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -225,7 +225,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">Rp {(pendingAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl  text-yellow-600">Rp {(pendingAmount / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>

@@ -50,7 +50,7 @@ export default function SalesDashboardPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sales Dashboard</h1>
+          <h1 className="text-2xl  tracking-tight">Sales Dashboard</h1>
           <p className="text-muted-foreground">
             Overview of your sales pipeline and performance
           </p>
@@ -72,7 +72,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Total Sales</p>
-              <p className="text-lg font-bold lg:text-xl">Rp {(monthlySummary.totalSales / 1000000).toFixed(1)}M</p>
+              <p className="text-lg  lg:text-xl">Rp {(monthlySummary.totalSales / 1000000).toFixed(1)}M</p>
               <p className="text-[10px] text-emerald-600">+{monthlySummary.growthPercent}% vs last month</p>
             </div>
           </CardContent>
@@ -84,7 +84,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Total Orders</p>
-              <p className="text-lg font-bold lg:text-xl">{monthlySummary.totalOrders}</p>
+              <p className="text-lg  lg:text-xl">{monthlySummary.totalOrders}</p>
               <p className="text-[10px] text-emerald-600">+8 vs last month</p>
             </div>
           </CardContent>
@@ -96,7 +96,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Avg Order Value</p>
-              <p className="text-lg font-bold lg:text-xl">Rp {(monthlySummary.avgOrderValue / 1000000).toFixed(1)}M</p>
+              <p className="text-lg  lg:text-xl">Rp {(monthlySummary.avgOrderValue / 1000000).toFixed(1)}M</p>
               <p className="text-[10px] text-transparent">+0 vs last month</p>
             </div>
           </CardContent>
@@ -108,7 +108,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Active Customers</p>
-              <p className="text-lg font-bold lg:text-xl">32</p>
+              <p className="text-lg  lg:text-xl">32</p>
               <p className="text-[10px] text-emerald-600">+3 new this month</p>
             </div>
           </CardContent>
@@ -131,7 +131,7 @@ export default function SalesDashboardPage() {
                     <div className={`flex-1 rounded-xl border p-4 ${stage.color} cursor-pointer hover:shadow-md transition-shadow`}>
                     <div className="flex items-center justify-between">
                       <Icon className="h-5 w-5" />
-                      <span className="text-2xl font-bold">{stage.count}</span>
+                      <span className="text-2xl ">{stage.count}</span>
                     </div>
                     <p className="mt-2 text-sm font-medium">{stage.stage}</p>
                     <p className="text-xs opacity-75">Rp {(stage.value / 1000000).toFixed(1)}M</p>

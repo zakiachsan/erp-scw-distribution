@@ -229,7 +229,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl  tracking-tight">
             Estimasi Harga Real-Time
           </h1>
           <p className="text-muted-foreground">
@@ -506,8 +506,8 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
 
               {/* Grand Total */}
               <div className="flex items-center justify-between">
-                <span className="text-base font-bold">Grand Total</span>
-                <span className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                <span className="text-base ">Grand Total</span>
+                <span className="text-xl  font-mono text-indigo-600 dark:text-indigo-400">
                   Rp {formatRupiah(calculations.grandTotal)}
                 </span>
               </div>

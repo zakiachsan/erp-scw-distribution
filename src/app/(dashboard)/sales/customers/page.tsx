@@ -92,7 +92,7 @@ export default function CustomerListPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
+          <h1 className="text-2xl  tracking-tight">Customers</h1>
           <p className="text-muted-foreground">
             Manage your customer database and credit accounts
           </p>
@@ -125,7 +125,7 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Customers</p>
-                <p className="text-2xl font-bold">{customerList.length}</p>
+                <p className="text-2xl ">{customerList.length}</p>
               </div>
             </div>
           </CardContent>
@@ -138,7 +138,7 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Credit Limit</p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl ">
                   Rp {(customerList.reduce((sum, c) => sum + c.creditLimit, 0) / 1000000).toFixed(0)}M
                 </p>
               </div>
@@ -153,7 +153,7 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Remaining Credit</p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl ">
                   Rp {(customerList.reduce((sum, c) => sum + c.remainingCredit, 0) / 1000000).toFixed(0)}M
                 </p>
               </div>

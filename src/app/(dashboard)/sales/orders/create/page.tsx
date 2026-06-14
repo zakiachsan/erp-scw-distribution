@@ -121,7 +121,7 @@ export default function CreateSalesOrderPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Create Sales Order</h1>
+          <h1 className="text-2xl  tracking-tight">Create Sales Order</h1>
           <p className="text-muted-foreground">Fill in the details to create a new sales order</p>
         </div>
       </div>

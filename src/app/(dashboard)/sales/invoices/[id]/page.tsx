@@ -58,7 +58,7 @@ export default function InvoiceDetailPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{invoiceData.id}</h1>
+            <h1 className="text-2xl  tracking-tight">{invoiceData.id}</h1>
             <p className="text-muted-foreground">SO Reference: {invoiceData.soRef}</p>
           </div>
         </div>
@@ -87,11 +87,11 @@ export default function InvoiceDetailPage() {
           <div className="flex items-start justify-between mb-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-xs  text-white">
                   SCW
                 </div>
                 <div>
-                  <p className="text-lg font-bold">SCW Distribution</p>
+                  <p className="text-lg ">SCW Distribution</p>
                   <p className="text-xs text-muted-foreground">Car Detailing & Coating Products</p>
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function InvoiceDetailPage() {
               </p>
             </div>
             <div className="text-right">
-              <h2 className="text-2xl font-bold text-indigo-600">INVOICE</h2>
+              <h2 className="text-2xl  text-indigo-600">INVOICE</h2>
               <p className="font-sans text-lg mt-1">{invoiceData.id}</p>
               <Badge variant="outline" className={`mt-2 ${(statusConfig as Record<string, { label: string; className: string }>)[invoiceData.status]?.className ?? ""}`}>
                 {invoiceData.status === "Paid" && <CheckCircle2 className="mr-1 h-3 w-3" />}
@@ -188,7 +188,7 @@ export default function InvoiceDetailPage() {
                 <span className="text-emerald-600">-Rp {invoiceData.discount.toLocaleString()}</span>
               </div>
               <Separator />
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between  text-lg">
                 <span>Total</span>
                 <span className="text-indigo-600">Rp {invoiceData.total.toLocaleString()}</span>
               </div>

@@ -150,7 +150,7 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sales Pipeline</h1>
+          <h1 className="text-2xl  tracking-tight">Sales Pipeline</h1>
           <p className="text-muted-foreground">
             Kelola prospek penjualan dari estimasi hingga pengiriman
           </p>
@@ -221,7 +221,7 @@ export default function PipelinePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
-                <p className="text-2xl font-bold">{formatIDR(totalPipeline)}</p>
+                <p className="text-2xl ">{formatIDR(totalPipeline)}</p>
               </div>
             </div>
           </CardContent>
@@ -234,7 +234,7 @@ export default function PipelinePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Deals</p>
-                <p className="text-2xl font-bold">{totalDeals}</p>
+                <p className="text-2xl ">{totalDeals}</p>
               </div>
             </div>
           </CardContent>
@@ -247,7 +247,7 @@ export default function PipelinePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Won</p>
-                <p className="text-2xl font-bold">{wonDeals.length} deals</p>
+                <p className="text-2xl ">{wonDeals.length} deals</p>
               </div>
             </div>
           </CardContent>
@@ -260,7 +260,7 @@ export default function PipelinePage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Revenue</p>
-                <p className="text-2xl font-bold">{formatIDR(wonValue)}</p>
+                <p className="text-2xl ">{formatIDR(wonValue)}</p>
               </div>
             </div>
           </CardContent>
@@ -306,7 +306,7 @@ export default function PipelinePage() {
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-indigo-600">{formatIDR(deal.value)}</span>
+                          <span className="text-sm  text-indigo-600">{formatIDR(deal.value)}</span>
                           <span className="text-[10px] text-muted-foreground">{deal.salesName}</span>
                         </div>
                         <div className="flex gap-1 pt-1 border-t">
@@ -352,7 +352,7 @@ export default function PipelinePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Value</span>
-                <span className="font-bold">Rp {dealDetail.value.toLocaleString("id-ID")}</span>
+                <span className="">Rp {dealDetail.value.toLocaleString("id-ID")}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Stage</span>

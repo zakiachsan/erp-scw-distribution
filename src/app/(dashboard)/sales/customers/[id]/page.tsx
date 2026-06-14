@@ -69,7 +69,7 @@ export default function CustomerDetailPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{customerData.name}</h1>
+          <h1 className="text-2xl  tracking-tight">{customerData.name}</h1>
           <p className="text-muted-foreground">{customerData.company}</p>
         </div>
       </div>
@@ -125,17 +125,17 @@ export default function CustomerDetailPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Credit Limit</p>
-                <p className="text-xl font-bold">Rp {(customerData.creditLimit / 1000000).toFixed(0)}M</p>
+                <p className="text-xl ">Rp {(customerData.creditLimit / 1000000).toFixed(0)}M</p>
               </div>
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Used Credit</p>
-                <p className="text-xl font-bold text-amber-600">
+                <p className="text-xl  text-amber-600">
                   Rp {((customerData.creditLimit - customerData.remainingCredit) / 1000000).toFixed(0)}M
                 </p>
               </div>
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Remaining</p>
-                <p className="text-xl font-bold text-emerald-600">
+                <p className="text-xl  text-emerald-600">
                   Rp {(customerData.remainingCredit / 1000000).toFixed(0)}M
                 </p>
               </div>
@@ -175,7 +175,7 @@ export default function CustomerDetailPage() {
               >
                 <Badge variant="outline" className={tier.color}>{tier.tier}</Badge>
                 <p className="mt-2 text-xs text-muted-foreground">Min: {tier.minPurchase}</p>
-                <p className="text-lg font-bold">{tier.discount}</p>
+                <p className="text-lg ">{tier.discount}</p>
                 {customerData.tier === tier.tier && (
                   <Badge className="mt-1 bg-indigo-600 text-white">Current</Badge>
                 )}

@@ -69,7 +69,7 @@ export default function CommissionPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Commission Report</h1>
+          <h1 className="text-2xl  tracking-tight">Commission Report</h1>
           <p className="text-muted-foreground">
             Track sales commission by sales person and period
           </p>
@@ -100,7 +100,7 @@ export default function CommissionPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Sales ({period})</p>
-                <p className="text-2xl font-bold">Rp {(totalSales / 1000000).toFixed(0)}M</p>
+                <p className="text-2xl ">Rp {(totalSales / 1000000).toFixed(0)}M</p>
               </div>
             </div>
           </CardContent>
@@ -113,7 +113,7 @@ export default function CommissionPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Commission</p>
-                <p className="text-2xl font-bold text-emerald-600">Rp {(totalCommission / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl  text-emerald-600">Rp {(totalCommission / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -126,7 +126,7 @@ export default function CommissionPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Top Performer</p>
-                <p className="text-xl font-bold">{salesPersons[0].name}</p>
+                <p className="text-xl ">{salesPersons[0].name}</p>
                 <p className="text-xs text-muted-foreground">{salesPersons[0].zone}</p>
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function CommissionPage() {
                   <TableCell className="text-right">
                     <Badge variant="outline">{sp.rate}%</Badge>
                   </TableCell>
-                  <TableCell className="text-right font-bold text-emerald-600">
+                  <TableCell className="text-right  text-emerald-600">
                     Rp {(sp.totalCommission / 1000000).toFixed(1)}M
                   </TableCell>
                   <TableCell>
@@ -174,10 +174,10 @@ export default function CommissionPage() {
                 </TableRow>
               ))}
               <TableRow className="border-t-2">
-                <TableCell colSpan={3} className="font-bold">Total</TableCell>
-                <TableCell className="text-right font-bold">Rp {(totalSales / 1000000).toFixed(0)}M</TableCell>
+                <TableCell colSpan={3} className="">Total</TableCell>
+                <TableCell className="text-right ">Rp {(totalSales / 1000000).toFixed(0)}M</TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-right font-bold text-emerald-600 text-lg">
+                <TableCell className="text-right  text-emerald-600 text-lg">
                   Rp {(totalCommission / 1000000).toFixed(1)}M
                 </TableCell>
                 <TableCell></TableCell>

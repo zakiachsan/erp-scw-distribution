@@ -75,7 +75,7 @@ export default function SalesOrdersPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sales Orders</h1>
+          <h1 className="text-2xl  tracking-tight">Sales Orders</h1>
           <p className="text-muted-foreground">
             Manage sales orders and track fulfillment status
           </p>
@@ -98,7 +98,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold">{filtered.length}</p>
+                <p className="text-2xl ">{filtered.length}</p>
               </div>
             </div>
           </CardContent>
@@ -111,7 +111,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Value</p>
-                <p className="text-2xl font-bold">Rp {(totalValue / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl ">Rp {(totalValue / 1000000).toFixed(1)}M</p>
               </div>
             </div>
           </CardContent>
@@ -124,7 +124,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending Orders</p>
-                <p className="text-2xl font-bold">
+                <p className="text-2xl ">
                   {orders.filter((o) => ["Draft", "Confirmed", "Processing"].includes(o.status)).length}
                 </p>
               </div>
