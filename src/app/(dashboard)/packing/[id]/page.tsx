@@ -322,15 +322,6 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                           <span className="text-[10px] text-muted-foreground">28 Mei 2026 11:00</span>
                         </div>
                       </div>
-                      <div className="rounded-lg border overflow-hidden bg-muted/30">
-                        <div className="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
-                          <Video className="h-10 w-10 text-blue-300" />
-                        </div>
-                        <div className="p-2.5 flex items-center justify-between">
-                          <Badge variant="secondary" className="text-xs">2:15</Badge>
-                          <span className="text-[10px] text-muted-foreground">28 Mei 2026 10:30</span>
-                        </div>
-                      </div>
                     </>
                   ) : (
                     videos.map((v) => (
