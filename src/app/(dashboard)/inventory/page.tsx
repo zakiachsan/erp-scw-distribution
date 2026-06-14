@@ -358,7 +358,6 @@ export default function InventoryPage() {
                 <TableHead>Product Name</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Stock Qty</TableHead>
-                <TableHead>Weight</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -387,7 +386,6 @@ export default function InventoryPage() {
                   <TableCell className="text-right">
                     {product.stockQty} {product.unit}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{product.weight}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
