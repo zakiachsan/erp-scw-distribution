@@ -10,7 +10,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -27,7 +26,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  Play,
   Filter,
   Box,
   Package,
@@ -191,15 +189,12 @@ export default function PackingPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       {order.status === "Queued" ? (
-                        <Link href={`/packing/${order.id}`}>
-                          <Button size="sm">
-                            <Play className="mr-2 h-4 w-4" />
-                            Start Packing
-                          </Button>
+                        <Link href={`/packing/${order.id}`} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                          Start Packing
                         </Link>
                       ) : (
-                        <Link href={`/packing/${order.id}`}>
-                          <Button variant="ghost" size="sm">View</Button>
+                        <Link href={`/packing/${order.id}`} className="text-muted-foreground hover:text-foreground text-sm">
+                          View
                         </Link>
                       )}
                     </TableCell>
