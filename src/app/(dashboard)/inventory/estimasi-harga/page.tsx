@@ -355,7 +355,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                           onClick={() => addLineItem(p.id)}
                         >
                           <div>
-                            <span className="font-medium">{p.name}</span>
+                            <span className="">{p.name}</span>
                             <span className="ml-2 text-xs text-muted-foreground">
                               {p.sku}
                             </span>
@@ -398,7 +398,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                           <TableCell className="text-xs text-muted-foreground">
                             {idx + 1}
                           </TableCell>
-                          <TableCell className="font-medium">
+                          <TableCell className="">
                             {li.productName}
                           </TableCell>
                           <TableCell className="text-right font-mono text-sm">
@@ -415,7 +415,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                               className="h-8 w-20 text-right ml-auto"
                             />
                           </TableCell>
-                          <TableCell className="text-right font-mono text-sm font-semibold">
+                          <TableCell className="text-right font-mono text-sm ">
                             Rp {formatRupiah(li.basePrice * li.qty)}
                           </TableCell>
                           <TableCell>
@@ -456,7 +456,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
               {/* Subtotal */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-mono font-medium">
+                <span className="font-mono ">
                   Rp {formatRupiah(calculations.subtotal)}
                 </span>
               </div>
@@ -472,7 +472,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                     </Badge>
                   )}
                 </span>
-                <span className="font-mono text-emerald-600 font-medium">
+                <span className="font-mono text-emerald-600 ">
                   - Rp {formatRupiah(calculations.discountAmount)}
                 </span>
               </div>
@@ -480,7 +480,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
               {/* After Discount */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Setelah Diskon</span>
-                <span className="font-mono font-medium">
+                <span className="font-mono ">
                   Rp {formatRupiah(calculations.afterDiscount)}
                 </span>
               </div>
@@ -495,7 +495,7 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                 </span>
                 <span className="font-mono">
                   {calculations.shippingCost === 0 ? (
-                    <span className="text-emerald-600 font-medium">GRATIS</span>
+                    <span className="text-emerald-600 ">GRATIS</span>
                   ) : (
                     <span>Rp {formatRupiah(calculations.shippingCost)}</span>
                   )}
@@ -537,10 +537,10 @@ Total: Rp ${formatRupiah(calculations.grandTotal)}`
                     className="flex items-center justify-between rounded-md border bg-muted/30 px-3 py-2 text-sm"
                   >
                     <div>
-                      <p className="font-medium text-xs">{e.customer}</p>
+                      <p className=" text-xs">{e.customer}</p>
                       <p className="text-[10px] text-muted-foreground">{e.date}</p>
                     </div>
-                    <span className="font-mono text-sm font-semibold">
+                    <span className="font-mono text-sm ">
                       Rp {formatRupiah(e.total)}
                     </span>
                   </div>

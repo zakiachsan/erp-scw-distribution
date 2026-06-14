@@ -144,7 +144,7 @@ export default function InvoiceListPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Invoices</h1>
+          <h1 className="text-2xl tracking-tight">Invoices</h1>
           <p className="text-muted-foreground">
             Manage invoices and track payment status
           </p>
@@ -167,7 +167,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Invoices</p>
-                <p className="text-2xl ">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl">{formatIDR(totalAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -180,7 +180,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Paid</p>
-                <p className="text-2xl  text-emerald-600">Rp {(paidAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl text-emerald-600">{formatIDR(paidAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -193,7 +193,7 @@ export default function InvoiceListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Overdue</p>
-                <p className="text-2xl  text-red-600">Rp {(overdueAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl text-red-600">{formatIDR(overdueAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -242,7 +242,7 @@ export default function InvoiceListPage() {
             <TableBody>
               {filtered.map((invoice) => (
                 <TableRow key={invoice.id}>
-                  <TableCell className="font-sans text-xs font-medium">{invoice.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{invoice.id}</TableCell>
                   <TableCell className="font-sans text-xs">{invoice.soRef}</TableCell>
                   <TableCell>{invoice.customer}</TableCell>
                   <TableCell>{invoice.issueDate}</TableCell>
@@ -252,9 +252,7 @@ export default function InvoiceListPage() {
                       {statusConfig[invoice.status].label}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(invoice.amount / 1000000).toFixed(1)}M
-                  </TableCell>
+                  <TableCell className="text-right">{formatIDR(invoice.amount)}</TableCell>
                   <TableCell className="text-right">
                     <CreditInfoBadge customerName={invoice.customer} />
                   </TableCell>

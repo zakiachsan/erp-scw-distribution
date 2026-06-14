@@ -249,7 +249,7 @@ export default function TieringPage() {
             <CardContent className="flex items-start gap-3 pt-6">
               <Infinity className="mt-0.5 h-5 w-5 text-indigo-600 shrink-0" />
               <div className="space-y-1">
-                <p className="font-semibold text-indigo-800 dark:text-indigo-300">
+                <p className=" text-indigo-800 dark:text-indigo-300">
                   Type A — Permanent Tier Discount
                 </p>
                 <p className="text-sm text-indigo-700/80 dark:text-indigo-400/80">
@@ -383,7 +383,7 @@ export default function TieringPage() {
                     const effectiveDiscount = matchingTier?.discountPercent ?? 0
                     return (
                       <TableRow key={c.id}>
-                        <TableCell className="font-medium">{c.name}</TableCell>
+                        <TableCell className="">{c.name}</TableCell>
                         <TableCell className="text-right">{c.totalQty}</TableCell>
                         <TableCell className="text-right">
                           Rp {formatRupiah(c.totalSpent)}
@@ -431,7 +431,7 @@ export default function TieringPage() {
             <CardContent className="flex items-start gap-3 pt-6">
               <RefreshCw className="mt-0.5 h-5 w-5 text-amber-600 shrink-0" />
               <div className="space-y-1">
-                <p className="font-semibold text-amber-800 dark:text-amber-300">
+                <p className=" text-amber-800 dark:text-amber-300">
                   Type B — Monthly Reset Discount (Reset Bulanan)
                 </p>
                 <p className="text-sm text-amber-700/80 dark:text-amber-400/80">
@@ -482,7 +482,7 @@ export default function TieringPage() {
                     const product = products.find((p) => p.id === rule.productId)
                     return (
                       <TableRow key={rule.productId}>
-                        <TableCell className="font-medium">{product?.name}</TableCell>
+                        <TableCell className="">{product?.name}</TableCell>
                         <TableCell className="text-muted-foreground">{product?.sku}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
@@ -563,7 +563,7 @@ export default function TieringPage() {
                             {entry.month}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-medium">{product?.name}</TableCell>
+                        <TableCell className="">{product?.name}</TableCell>
                         <TableCell className="text-right">{entry.discountPercent}%</TableCell>
                         <TableCell className="text-right">{entry.totalOrders}</TableCell>
                         <TableCell className="text-right">Rp {formatRupiah(entry.totalDiscountGiven)}</TableCell>

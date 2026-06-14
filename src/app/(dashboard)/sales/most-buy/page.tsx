@@ -107,7 +107,7 @@ export default function MostBuyPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Value (Top 8)</p>
                 <p className="text-2xl ">
-                  Rp {(topCustomers.reduce((sum, c) => sum + c.totalPurchase, 0) / 1000000).toFixed(0)}M
+                  {formatIDR(topCustomers.reduce((sum, c) => sum + c.totalPurchase, 0))}
                 </p>
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function MostBuyPage() {
                         <span className="">{customer.rank}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{customer.name}</TableCell>
+                    <TableCell className="">{customer.name}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">{customer.company}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={tierConfig[customer.tier].className}>
@@ -179,7 +179,7 @@ export default function MostBuyPage() {
                       Rp {(customer.totalPurchase / 1000000).toFixed(0)}M
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${trendInfo.bg} ${trendInfo.color}`}>
+                      <div className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs  ${trendInfo.bg} ${trendInfo.color}`}>
                         <TrendIcon className="h-3 w-3" />
                         {customer.trendPercent > 0 ? "+" : ""}{customer.trendPercent}%
                       </div>

@@ -1,13 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,21 +26,15 @@ import {
 } from "@/components/ui/dialog"
 import {
   Plus,
-  GripVertical,
-  TrendingUp,
-  DollarSign,
-  Users,
-  Target,
-  ArrowLeft,
-  ArrowRight,
   FileText,
   ShoppingCart,
-  Truck,
   CheckCircle2,
-  XCircle,
-  UserCheck,
-  Phone,
-  MessageSquare,
+  Truck,
+  Target,
+  TrendingUp,
+  DollarSign,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react"
 
 type StageId = "estimate" | "order" | "invoice" | "paid" | "shipped"
@@ -84,7 +74,14 @@ const PIPELINE_DEALS: PipelineDeal[] = [
 const salesPeople = ["Ahmad Rizki", "Siti Nurhaliza", "Bambang"]
 
 function formatIDR(n: number) {
-  return `Rp ${(n / 1000).toFixed(0)}rb`
+  return `Rp ${n.toLocaleString("id-ID")}`
+}
+
+function formatCompactIDR(n: number) {
+  if (n >= 1000000000) return `Rp ${(n / 1000000000).toFixed(1).replace(".", ",")}M`
+  if (n >= 1000000) return `Rp ${(n / 1000000).toFixed(1).replace(".", ",")}jt`
+  if (n >= 1000) return `Rp ${(n / 1000).toFixed(0).replace(".", ",")}rb`
+  return `Rp ${n.toLocaleString("id-ID")}`
 }
 
 export default function PipelinePage() {
@@ -150,14 +147,14 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Sales Pipeline</h1>
+          <h1 className="text-2xl tracking-tight">Sales Pipeline</h1>
           <p className="text-muted-foreground">
             Kelola prospek penjualan dari estimasi hingga pengiriman
           </p>
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <Button onClick={() => setAddOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-1.5 h-4 w-4" />
             Add Deal
           </Button>
           <DialogContent className="sm:max-w-md">
@@ -166,20 +163,20 @@ export default function PipelinePage() {
               <DialogDescription>Masukkan data prospek penjualan baru.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-2">
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label>Customer Name *</Label>
                 <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nama customer" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label>Company</Label>
                 <Input value={newCompany} onChange={(e) => setNewCompany(e.target.value)} placeholder="Nama perusahaan" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label>Deal Value (Rp) *</Label>
                 <Input type="number" value={newValue} onChange={(e) => setNewValue(e.target.value)} placeholder="25000000" />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <Label>Sales Person</Label>
                   <Select value={newSales} onValueChange={(v) => setNewSales(v)}>
                     <SelectTrigger><SelectValue placeholder="Pilih sales" /></SelectTrigger>
@@ -190,7 +187,7 @@ export default function PipelinePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <Label>Stage</Label>
                   <Select value={newStage} onValueChange={(v) => setNewStage(v as StageId)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -216,12 +213,12 @@ export default function PipelinePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
                 <Target className="h-5 w-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
-                <p className="text-2xl ">{formatIDR(totalPipeline)}</p>
+                <p className="text-2xl">{formatCompactIDR(totalPipeline)}</p>
               </div>
             </div>
           </CardContent>
@@ -229,12 +226,12 @@ export default function PipelinePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
                 <TrendingUp className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Deals</p>
-                <p className="text-2xl ">{totalDeals}</p>
+                <p className="text-2xl">{totalDeals}</p>
               </div>
             </div>
           </CardContent>
@@ -242,12 +239,12 @@ export default function PipelinePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Won</p>
-                <p className="text-2xl ">{wonDeals.length} deals</p>
+                <p className="text-2xl">{wonDeals.length} deals</p>
               </div>
             </div>
           </CardContent>
@@ -255,12 +252,12 @@ export default function PipelinePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-100 dark:bg-cyan-900/30">
                 <DollarSign className="h-5 w-5 text-cyan-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Revenue</p>
-                <p className="text-2xl ">{formatIDR(wonValue)}</p>
+                <p className="text-2xl">{formatCompactIDR(wonValue)}</p>
               </div>
             </div>
           </CardContent>
@@ -272,65 +269,43 @@ export default function PipelinePage() {
         {stageSummaries.map((stage) => {
           const Icon = stage.icon
           return (
-            <div key={stage.id} className="min-w-[220px]">
-              <div className={`rounded-t-lg border-t-4 ${stage.color} bg-card p-3 border-x border-t-0`}>
+            <div key={stage.id} className="min-w-[210px]">
+              {/* Column Header */}
+              <div className={`rounded-t-lg border-t-4 ${stage.color} bg-card border-x border-t-0 p-3`}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold">{stage.label}</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <span className="text-sm truncate">{stage.label}</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">{stage.deals.length}</Badge>
+                  <Badge variant="secondary" className="text-xs ml-2 shrink-0">{stage.deals.length}</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{formatIDR(stage.total)}</p>
+                <p className="text-xs text-muted-foreground mt-1">{formatCompactIDR(stage.total)}</p>
               </div>
-              <div className="border-x border-b rounded-b-lg bg-muted/20 p-2 space-y-2 min-h-[200px]">
+              {/* Column Body */}
+              <div className="border-x border-b rounded-b-lg bg-muted/20 p-2 space-y-2 min-h-[180px]">
                 {stage.deals.length === 0 && (
                   <p className="text-xs text-muted-foreground text-center py-4">No deals</p>
                 )}
-                {stage.deals.map((deal) => {
-                  const stageIdx = STAGES.findIndex((s) => s.id === deal.stage)
-                  return (
-                    <Card
-                      key={deal.id}
-                      className="cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setDealDetail(deal)}
-                    >
-                      <CardContent className="p-3 space-y-2">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{deal.customer}</p>
-                            <p className="text-xs text-muted-foreground truncate">{deal.company}</p>
-                          </div>
-                          <Badge variant="outline" className="text-xs ml-2 shrink-0">
-                            {deal.probability}%
-                          </Badge>
+                {stage.deals.map((deal) => (
+                  <Card
+                    key={deal.id}
+                    className="cursor-pointer hover:shadow-sm transition-shadow"
+                    onClick={() => setDealDetail(deal)}
+                  >
+                    <CardContent className="p-2.5 space-y-1.5">
+                      <div className="flex items-start justify-between gap-1">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm truncate">{deal.customer}</p>
+                          <p className="text-xs text-muted-foreground truncate">{deal.company}</p>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm  text-indigo-600">{formatIDR(deal.value)}</span>
-                          <span className="text-[10px] text-muted-foreground">{deal.salesName}</span>
-                        </div>
-                        <div className="flex gap-1 pt-1 border-t">
-                          {stageIdx > 0 && (
-                            <button
-                              className="flex-1 text-[10px] text-muted-foreground hover:text-foreground flex items-center justify-center gap-0.5 py-0.5 rounded hover:bg-muted"
-                              onClick={(e) => { e.stopPropagation(); moveDeal(deal.id, -1) }}
-                            >
-                              <ArrowLeft className="h-3 w-3" /> Prev
-                            </button>
-                          )}
-                          {stageIdx < STAGES.length - 1 && (
-                            <button
-                              className="flex-1 text-[10px] text-muted-foreground hover:text-foreground flex items-center justify-center gap-0.5 py-0.5 rounded hover:bg-muted"
-                              onClick={(e) => { e.stopPropagation(); moveDeal(deal.id, 1) }}
-                            >
-                              Next <ArrowRight className="h-3 w-3" />
-                            </button>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-indigo-600 dark:text-indigo-400">{formatCompactIDR(deal.value)}</span>
+                        <span className="text-[11px] text-muted-foreground truncate ml-2">{deal.salesName}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           )
@@ -352,7 +327,7 @@ export default function PipelinePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Value</span>
-                <span className="">Rp {dealDetail.value.toLocaleString("id-ID")}</span>
+                <span>{formatIDR(dealDetail.value)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Stage</span>
@@ -364,15 +339,15 @@ export default function PipelinePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Probability</span>
-                <span className="font-medium">{dealDetail.probability}%</span>
+                <span>{dealDetail.probability}%</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Created</span>
                 <span>{dealDetail.createdAt}</span>
               </div>
               <hr />
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Actions</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Actions</span>
                 <div className="flex gap-2">
                   {STAGES.findIndex((s) => s.id === dealDetail.stage) > 0 && (
                     <Button size="sm" variant="outline" onClick={() => { moveDeal(dealDetail.id, -1); setDealDetail(null) }}>

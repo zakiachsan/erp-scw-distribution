@@ -157,7 +157,7 @@ export default function CreateSalesOrderPage() {
               <div className="rounded-lg border p-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="bg-indigo-100 text-indigo-700">{customer.tier}</Badge>
-                  <span className="text-sm font-medium">{tierDiscount * 100}% Tier Discount</span>
+                  <span className="text-sm ">{tierDiscount * 100}% Tier Discount</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Credit: Rp {(customer.remaining / 1000000).toFixed(0)}M / Rp {(customer.creditLimit / 1000000).toFixed(0)}M
@@ -235,7 +235,7 @@ export default function CreateSalesOrderPage() {
                     <TableCell className="text-right text-emerald-600">
                       -Rp {item.discount.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-right ">
                       Rp {((item.price - item.discount) * item.qty).toLocaleString()}
                     </TableCell>
                     <TableCell>
@@ -254,7 +254,7 @@ export default function CreateSalesOrderPage() {
             <div className="mt-4 flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 dark:bg-amber-900/20">
               <AlertTriangle className="h-5 w-5 text-amber-600" />
               <div className="text-sm">
-                <p className="font-medium text-amber-800 dark:text-amber-400">Credit Limit Warning</p>
+                <p className=" text-amber-800 dark:text-amber-400">Credit Limit Warning</p>
                 <p className="text-amber-700 dark:text-amber-500">
                   Order total (Rp {(total / 1000000).toFixed(1)}M) exceeds remaining credit (Rp {(customer.remaining / 1000000).toFixed(1)}M).
                   Customer needs to make a payment first.
@@ -267,7 +267,7 @@ export default function CreateSalesOrderPage() {
             <div className="mt-4 flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 p-3 dark:bg-emerald-900/20">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               <div className="text-sm">
-                <p className="font-medium text-emerald-800 dark:text-emerald-400">Credit OK</p>
+                <p className=" text-emerald-800 dark:text-emerald-400">Credit OK</p>
                 <p className="text-emerald-700 dark:text-emerald-500">
                   Order total (Rp {(total / 1000000).toFixed(1)}M) is within remaining credit (Rp {(customer.remaining / 1000000).toFixed(1)}M).
                 </p>
@@ -306,7 +306,7 @@ export default function CreateSalesOrderPage() {
               <span className="text-muted-foreground">Tier Discount ({(tierDiscount * 100).toFixed(0)}%)</span>
               <span className="text-emerald-600">-Rp {totalDiscount.toLocaleString()}</span>
             </div>
-            <div className="border-t pt-3 flex justify-between font-medium">
+            <div className="border-t pt-3 flex justify-between ">
               <span>Total</span>
               <span className="text-lg">Rp {total.toLocaleString()}</span>
             </div>

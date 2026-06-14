@@ -156,17 +156,17 @@ export default function CommissionPage() {
             <TableBody>
               {salesPersons.map((sp) => (
                 <TableRow key={sp.id}>
-                  <TableCell className="font-medium">{sp.name}</TableCell>
+                  <TableCell className="">{sp.name}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{sp.zone}</TableCell>
                   <TableCell className="text-right">{sp.ordersCount}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(sp.totalSales / 1000000).toFixed(0)}M
+                  <TableCell className="text-right ">
+                    {formatIDR(sp.totalSales)}
                   </TableCell>
                   <TableCell className="text-right">
                     <Badge variant="outline">{sp.rate}%</Badge>
                   </TableCell>
                   <TableCell className="text-right  text-emerald-600">
-                    Rp {(sp.totalCommission / 1000000).toFixed(1)}M
+                    {formatIDR(sp.totalCommission)}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-indigo-50 text-indigo-700">{sp.topProduct}</Badge>

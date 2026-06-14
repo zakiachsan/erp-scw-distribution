@@ -45,12 +45,14 @@ const monthlySummary = {
   growthPercent: 12.5,
 }
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 export default function SalesDashboardPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Sales Dashboard</h1>
+          <h1 className="text-2xl tracking-tight">Sales Dashboard</h1>
           <p className="text-muted-foreground">
             Overview of your sales pipeline and performance
           </p>
@@ -72,7 +74,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Total Sales</p>
-              <p className="text-lg  lg:text-xl">Rp {(monthlySummary.totalSales / 1000000).toFixed(1)}M</p>
+              <p className="text-lg lg:text-xl">{formatIDR(monthlySummary.totalSales)}</p>
               <p className="text-[10px] text-emerald-600">+{monthlySummary.growthPercent}% vs last month</p>
             </div>
           </CardContent>
@@ -84,7 +86,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Total Orders</p>
-              <p className="text-lg  lg:text-xl">{monthlySummary.totalOrders}</p>
+              <p className="text-lg lg:text-xl">{monthlySummary.totalOrders}</p>
               <p className="text-[10px] text-emerald-600">+8 vs last month</p>
             </div>
           </CardContent>
@@ -96,7 +98,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Avg Order Value</p>
-              <p className="text-lg  lg:text-xl">Rp {(monthlySummary.avgOrderValue / 1000000).toFixed(1)}M</p>
+              <p className="text-lg lg:text-xl">{formatIDR(monthlySummary.avgOrderValue)}</p>
               <p className="text-[10px] text-transparent">+0 vs last month</p>
             </div>
           </CardContent>
@@ -108,7 +110,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Active Customers</p>
-              <p className="text-lg  lg:text-xl">32</p>
+              <p className="text-lg lg:text-xl">32</p>
               <p className="text-[10px] text-emerald-600">+3 new this month</p>
             </div>
           </CardContent>
@@ -131,10 +133,10 @@ export default function SalesDashboardPage() {
                     <div className={`flex-1 rounded-xl border p-4 ${stage.color} cursor-pointer hover:shadow-md transition-shadow`}>
                     <div className="flex items-center justify-between">
                       <Icon className="h-5 w-5" />
-                      <span className="text-2xl ">{stage.count}</span>
+                      <span className="text-2xl">{stage.count}</span>
                     </div>
-                    <p className="mt-2 text-sm font-medium">{stage.stage}</p>
-                    <p className="text-xs opacity-75">Rp {(stage.value / 1000000).toFixed(1)}M</p>
+                    <p className="mt-2 text-sm">{stage.stage}</p>
+                    <p className="text-xs opacity-75">{formatIDR(stage.value)}</p>
                   </div>
                   {!isLast && (
                     <ArrowRight className="hidden h-5 w-5 shrink-0 text-muted-foreground lg:block" />
@@ -181,12 +183,10 @@ export default function SalesDashboardPage() {
                       {customer.rank}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
                   <TableCell className="text-muted-foreground">{customer.company}</TableCell>
                   <TableCell className="text-right">{customer.orders}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(customer.totalPurchase / 1000000).toFixed(0)}M
-                  </TableCell>
+                  <TableCell className="text-right">{formatIDR(customer.totalPurchase)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

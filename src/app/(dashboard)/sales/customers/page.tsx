@@ -44,6 +44,8 @@ import {
 } from "lucide-react"
 import { customers, type Customer } from "@/lib/sales-data"
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 const tierConfig = {
   Bronze: { label: "Bronze", className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
   Silver: { label: "Silver", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
@@ -92,7 +94,7 @@ export default function CustomerListPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Customers</h1>
+          <h1 className="text-2xl tracking-tight">Customers</h1>
           <p className="text-muted-foreground">
             Manage your customer database and credit accounts
           </p>
@@ -125,7 +127,7 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Customers</p>
-                <p className="text-2xl ">{customerList.length}</p>
+                <p className="text-2xl">{customerList.length}</p>
               </div>
             </div>
           </CardContent>
@@ -138,8 +140,8 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Credit Limit</p>
-                <p className="text-2xl ">
-                  Rp {(customerList.reduce((sum, c) => sum + c.creditLimit, 0) / 1000000).toFixed(0)}M
+                <p className="text-2xl">
+                  {formatIDR(customerList.reduce((sum, c) => sum + c.creditLimit, 0))}
                 </p>
               </div>
             </div>
@@ -153,8 +155,8 @@ export default function CustomerListPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Remaining Credit</p>
-                <p className="text-2xl ">
-                  Rp {(customerList.reduce((sum, c) => sum + c.remainingCredit, 0) / 1000000).toFixed(0)}M
+                <p className="text-2xl">
+                  {formatIDR(customerList.reduce((sum, c) => sum + c.remainingCredit, 0))}
                 </p>
               </div>
             </div>
@@ -215,13 +217,13 @@ export default function CustomerListPage() {
               {filtered.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell className="font-sans text-xs">{customer.id}</TableCell>
-                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
                   <TableCell className="text-muted-foreground">{customer.company}</TableCell>
                   <TableCell className="text-right">
-                    Rp {(customer.creditLimit / 1000000).toFixed(0)}M
+                    {formatIDR(customer.creditLimit)}
                   </TableCell>
                   <TableCell className="text-right">
-                    Rp {(customer.remainingCredit / 1000000).toFixed(0)}M
+                    {formatIDR(customer.remainingCredit)}
                   </TableCell>
                   <TableCell>{customer.lastPurchase}</TableCell>
                   <TableCell>

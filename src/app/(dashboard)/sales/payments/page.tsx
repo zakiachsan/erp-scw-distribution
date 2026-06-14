@@ -36,12 +36,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  DollarSign,
-  CreditCard,
-  Banknote,
-  Filter,
-} from "lucide-react"
+import { DollarSign, CreditCard, Banknote, Filter } from "lucide-react"
+
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
 interface Payment {
   id: string
@@ -120,7 +117,7 @@ export default function PaymentsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Payments</h1>
+          <h1 className="text-2xl tracking-tight">Payments</h1>
           <p className="text-muted-foreground">
             Kelola pembayaran dari customer
           </p>
@@ -199,7 +196,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Payments</p>
-                <p className="text-2xl ">Rp {(totalAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl">{formatIDR(totalAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -212,7 +209,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-2xl  text-emerald-600">Rp {(completedAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl text-emerald-600">{formatIDR(completedAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -225,7 +222,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl  text-yellow-600">Rp {(pendingAmount / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl text-yellow-600">{formatIDR(pendingAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -272,12 +269,10 @@ export default function PaymentsPage() {
             <TableBody>
               {filtered.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell className="font-sans text-xs font-medium">{payment.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{payment.id}</TableCell>
                   <TableCell>{payment.customer}</TableCell>
                   <TableCell className="font-sans text-xs">{payment.invoice}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(payment.amount / 1000000).toFixed(1)}M
-                  </TableCell>
+                  <TableCell className="text-right">{formatIDR(payment.amount)}</TableCell>
                   <TableCell>{payment.date}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={statusConfig[payment.status].className}>

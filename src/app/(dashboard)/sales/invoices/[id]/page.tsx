@@ -14,6 +14,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 const invoiceData = {
   id: "INV-2026-036",
   soRef: "SO-2026-043",
@@ -58,7 +60,7 @@ export default function InvoiceDetailPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl  tracking-tight">{invoiceData.id}</h1>
+            <h1 className="text-2xl tracking-tight">{invoiceData.id}</h1>
             <p className="text-muted-foreground">SO Reference: {invoiceData.soRef}</p>
           </div>
         </div>
@@ -115,8 +117,8 @@ export default function InvoiceDetailPage() {
           {/* Bill To & Dates */}
           <div className="grid gap-8 mb-8 md:grid-cols-2">
             <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Bill To</p>
-              <p className="font-semibold">{invoiceData.customer.name}</p>
+              <p className="text-xs text-muted-foreground uppercase mb-2">Bill To</p>
+              <p>{invoiceData.customer.name}</p>
               <p className="text-sm text-muted-foreground">{invoiceData.customer.address}</p>
               <p className="text-sm text-muted-foreground">{invoiceData.customer.phone}</p>
               <p className="text-sm text-muted-foreground">{invoiceData.customer.email}</p>
@@ -164,13 +166,13 @@ export default function InvoiceDetailPage() {
               {invoiceData.items.map((item, idx) => (
                 <tr key={idx} className="border-b">
                   <td className="py-3">
-                    <p className="font-medium text-sm">{item.name}</p>
+                    <p className="text-sm">{item.name}</p>
                     <p className="text-xs text-muted-foreground">{item.sku}</p>
                   </td>
                   <td className="py-3 text-right text-sm">{item.qty}</td>
-                  <td className="py-3 text-right text-sm">Rp {item.price.toLocaleString()}</td>
-                  <td className="py-3 text-right text-sm text-emerald-600">-Rp {item.discount.toLocaleString()}</td>
-                  <td className="py-3 text-right text-sm font-medium">Rp {item.total.toLocaleString()}</td>
+                  <td className="py-3 text-right text-sm">{formatIDR(item.price)}</td>
+                  <td className="py-3 text-right text-sm text-emerald-600">-{formatIDR(item.discount)}</td>
+                  <td className="py-3 text-right text-sm">{formatIDR(item.total)}</td>
                 </tr>
               ))}
             </tbody>
@@ -181,16 +183,16 @@ export default function InvoiceDetailPage() {
             <div className="w-72 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>Rp {invoiceData.subtotal.toLocaleString()}</span>
+                <span>{formatIDR(invoiceData.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Tier Discount</span>
-                <span className="text-emerald-600">-Rp {invoiceData.discount.toLocaleString()}</span>
+                <span className="text-emerald-600">-{formatIDR(invoiceData.discount)}</span>
               </div>
               <Separator />
-              <div className="flex justify-between  text-lg">
+              <div className="flex justify-between text-lg">
                 <span>Total</span>
-                <span className="text-indigo-600">Rp {invoiceData.total.toLocaleString()}</span>
+                <span className="text-indigo-600">{formatIDR(invoiceData.total)}</span>
               </div>
             </div>
           </div>
@@ -198,7 +200,7 @@ export default function InvoiceDetailPage() {
           {/* Notes */}
           {invoiceData.notes && (
             <div className="mt-8 rounded-lg bg-muted/50 p-4">
-              <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Notes</p>
+              <p className="text-xs text-muted-foreground uppercase mb-1">Notes</p>
               <p className="text-sm">{invoiceData.notes}</p>
             </div>
           )}

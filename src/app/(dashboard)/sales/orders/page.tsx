@@ -26,12 +26,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Plus,
-  Eye,
-  Filter,
-  ShoppingCart,
-} from "lucide-react"
+import { Plus, Eye, Filter, ShoppingCart } from "lucide-react"
+
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
 interface SalesOrder {
   id: string
@@ -75,7 +72,7 @@ export default function SalesOrdersPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl  tracking-tight">Sales Orders</h1>
+          <h1 className="text-2xl tracking-tight">Sales Orders</h1>
           <p className="text-muted-foreground">
             Manage sales orders and track fulfillment status
           </p>
@@ -98,7 +95,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl ">{filtered.length}</p>
+                <p className="text-2xl">{filtered.length}</p>
               </div>
             </div>
           </CardContent>
@@ -111,7 +108,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Value</p>
-                <p className="text-2xl ">Rp {(totalValue / 1000000).toFixed(1)}M</p>
+                <p className="text-2xl">{formatIDR(totalValue)}</p>
               </div>
             </div>
           </CardContent>
@@ -124,7 +121,7 @@ export default function SalesOrdersPage() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending Orders</p>
-                <p className="text-2xl ">
+                <p className="text-2xl">
                   {orders.filter((o) => ["Draft", "Confirmed", "Processing"].includes(o.status)).length}
                 </p>
               </div>
@@ -173,7 +170,7 @@ export default function SalesOrdersPage() {
             <TableBody>
               {filtered.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="font-sans text-xs font-medium">{order.id}</TableCell>
+                  <TableCell className="font-sans text-xs">{order.id}</TableCell>
                   <TableCell>{order.customer}</TableCell>
                   <TableCell>{order.date}</TableCell>
                   <TableCell>
@@ -181,9 +178,7 @@ export default function SalesOrdersPage() {
                       {statusConfig[order.status].label}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(order.total / 1000000).toFixed(1)}M
-                  </TableCell>
+                  <TableCell className="text-right">{formatIDR(order.total)}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon-sm">
                       <Eye className="h-4 w-4" />

@@ -77,7 +77,7 @@ export default function CreatePage() {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
               <DollarSign className="h-8 w-8 text-emerald-600" />
             </div>
-            <h2 className="mb-2 text-xl font-semibold">Invoice Created!</h2>
+            <h2 className="mb-2 text-xl">Invoice Created!</h2>
             <p className="mb-6 text-center text-muted-foreground">
               Invoice for <strong>{selectedCustomer?.name}</strong> sebesar{" "}
               <strong>{formatIDR(totalNumeric)}</strong> telah berhasil dibuat.
@@ -131,7 +131,7 @@ export default function CreatePage() {
                       {customers.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
                           <span className="flex items-center gap-2">
-                            <span className="font-medium">{c.name}</span>
+                                <span>{c.name}</span>
                             <span className="text-muted-foreground">({c.company})</span>
                           </span>
                         </SelectItem>
@@ -171,9 +171,7 @@ export default function CreatePage() {
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
                       <div>
-                        <p className="font-semibold text-red-800 dark:text-red-400">
-                          Melebihi batas kredit!
-                        </p>
+                        <p>Melebihi batas kredit!</p>
                         <p className="mt-1 text-sm text-red-700 dark:text-red-400/80">
                           Total invoice ({formatIDR(totalNumeric)}) melebihi sisa kredit{" "}
                           {selectedCustomer.name} ({formatIDR(selectedCustomer.remainingCredit)}).
@@ -190,9 +188,7 @@ export default function CreatePage() {
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
                       <div>
-                        <p className="font-semibold text-amber-800 dark:text-amber-400">
-                          Mendekati batas kredit ({creditUsagePercent}%)
-                        </p>
+                        <p>Mendekati batas kredit ({creditUsagePercent}%)</p>
                         <p className="mt-1 text-sm text-amber-700 dark:text-amber-400/80">
                           Invoice ini akan menggunakan {creditUsagePercent}% dari total plafon kredit{" "}
                           {selectedCustomer.name}.
@@ -233,7 +229,7 @@ export default function CreatePage() {
                   <>
                     {/* Customer Identity */}
                     <div>
-                      <p className="text-sm font-medium">{selectedCustomer.name}</p>
+                      <p className="text-sm">{selectedCustomer.name}</p>
                       <p className="text-xs text-muted-foreground">{selectedCustomer.company}</p>
                     </div>
 
@@ -257,14 +253,14 @@ export default function CreatePage() {
                       {/* Credit Limit */}
                       <div className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2">
                         <span className="text-sm text-muted-foreground">Credit Limit</span>
-                        <span className="text-sm font-semibold">{formatIDR(selectedCustomer.creditLimit)}</span>
+                        <span className="text-sm">{formatIDR(selectedCustomer.creditLimit)}</span>
                       </div>
 
                       {/* Remaining Credit */}
                       <div className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2">
                         <span className="text-sm text-muted-foreground">Remaining Credit</span>
                         <span
-                          className={`text-sm font-semibold ${
+                          className={`text-sm ${
                             selectedCustomer.remainingCredit < selectedCustomer.creditLimit * 0.2
                               ? "text-red-600"
                               : selectedCustomer.remainingCredit < selectedCustomer.creditLimit * 0.5

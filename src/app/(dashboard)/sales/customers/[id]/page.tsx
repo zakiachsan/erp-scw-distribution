@@ -12,14 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  ArrowLeft,
-  CreditCard,
-  ShoppingCart,
-  Star,
-  TrendingUp,
-} from "lucide-react"
+import { ArrowLeft, CreditCard, ShoppingCart, Star, TrendingUp } from "lucide-react"
 import Link from "next/link"
+
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
 const customerData = {
   id: "C001",
@@ -69,7 +65,7 @@ export default function CustomerDetailPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl  tracking-tight">{customerData.name}</h1>
+          <h1 className="text-2xl tracking-tight">{customerData.name}</h1>
           <p className="text-muted-foreground">{customerData.company}</p>
         </div>
       </div>
@@ -106,7 +102,7 @@ export default function CustomerDetailPage() {
             <div className="pt-2 border-t">
               <div className="flex items-center gap-2 mb-2">
                 <Star className="h-4 w-4 text-indigo-600" />
-                <span className="text-sm font-medium">Tier Status</span>
+                <span className="text-sm">Tier Status</span>
               </div>
               <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 text-sm">
                 {customerData.tier} - 12% Discount
@@ -125,18 +121,18 @@ export default function CustomerDetailPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Credit Limit</p>
-                <p className="text-xl ">Rp {(customerData.creditLimit / 1000000).toFixed(0)}M</p>
+                <p className="text-xl">{formatIDR(customerData.creditLimit)}</p>
               </div>
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Used Credit</p>
-                <p className="text-xl  text-amber-600">
-                  Rp {((customerData.creditLimit - customerData.remainingCredit) / 1000000).toFixed(0)}M
+                <p className="text-xl text-amber-600">
+                  {formatIDR(customerData.creditLimit - customerData.remainingCredit)}
                 </p>
               </div>
               <div className="rounded-lg border p-3">
                 <p className="text-sm text-muted-foreground">Remaining</p>
-                <p className="text-xl  text-emerald-600">
-                  Rp {(customerData.remainingCredit / 1000000).toFixed(0)}M
+                <p className="text-xl text-emerald-600">
+                  {formatIDR(customerData.remainingCredit)}
                 </p>
               </div>
             </div>
@@ -159,7 +155,7 @@ export default function CustomerDetailPage() {
             <CardTitle>Tiering Discount Status</CardTitle>
           </div>
           <CardDescription>
-            Total purchase: Rp {(customerData.totalPurchase / 1000000).toFixed(0)}M — Current tier: {customerData.tier}
+            Total purchase: {formatIDR(customerData.totalPurchase)} — Current tier: {customerData.tier}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -207,9 +203,7 @@ export default function CustomerDetailPage() {
                   <TableCell className="font-sans text-xs">{purchase.id}</TableCell>
                   <TableCell>{purchase.date}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">{purchase.items}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    Rp {(purchase.total / 1000000).toFixed(1)}M
-                  </TableCell>
+                  <TableCell className="text-right">{formatIDR(purchase.total)}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={statusConfig[purchase.status as keyof typeof statusConfig].className}>
                       {purchase.status}
