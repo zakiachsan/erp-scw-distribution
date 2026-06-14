@@ -24,10 +24,10 @@ import {
 import Link from "next/link"
 
 const pipelineStages = [
-  { stage: "Estimate", count: 12, value: 45000000, color: "bg-blue-100 text-blue-700", icon: FileText },
-  { stage: "Sales Order", count: 8, value: 32000000, color: "bg-indigo-100 text-indigo-700", icon: ShoppingCart },
-  { stage: "Invoice", count: 5, value: 18500000, color: "bg-violet-100 text-violet-700", icon: FileText },
-  { stage: "Shipped", count: 15, value: 67000000, color: "bg-emerald-100 text-emerald-700", icon: Truck },
+  { stage: "Estimate", count: 12, value: 45000000, color: "bg-blue-100 text-blue-700", icon: FileText, href: "/sales/pipeline" },
+  { stage: "Sales Order", count: 8, value: 32000000, color: "bg-indigo-100 text-indigo-700", icon: ShoppingCart, href: "/sales/pipeline" },
+  { stage: "Invoice", count: 5, value: 18500000, color: "bg-violet-100 text-violet-700", icon: FileText, href: "/sales/invoices" },
+  { stage: "Shipped", count: 15, value: 67000000, color: "bg-emerald-100 text-emerald-700", icon: Truck, href: "/shipping" },
 ]
 
 const topCustomers = [
@@ -127,8 +127,8 @@ export default function SalesDashboardPage() {
               const Icon = stage.icon
               const isLast = idx === pipelineStages.length - 1
               return (
-                <div key={stage.stage} className="flex items-center gap-2 lg:gap-3">
-                  <div className={`flex-1 rounded-xl border p-4 ${stage.color}`}>
+                <Link key={stage.stage} href={stage.href} className="flex items-center gap-2 lg:gap-3">
+                    <div className={`flex-1 rounded-xl border p-4 ${stage.color} cursor-pointer hover:shadow-md transition-shadow`}>
                     <div className="flex items-center justify-between">
                       <Icon className="h-5 w-5" />
                       <span className="text-2xl font-bold">{stage.count}</span>
@@ -139,7 +139,7 @@ export default function SalesDashboardPage() {
                   {!isLast && (
                     <ArrowRight className="hidden h-5 w-5 shrink-0 text-muted-foreground lg:block" />
                   )}
-                </div>
+                </Link>
               )
             })}
           </div>

@@ -56,6 +56,12 @@ const periods = ["June 2026", "May 2026", "April 2026", "Q2 2026"]
 export default function CommissionPage() {
   const [period, setPeriod] = useState("June 2026")
 
+  // Auto-calculated from paid invoices — komisi = totalSales × rate / 100
+  const calculatedCommission = salesPersons.map((sp) => ({
+    ...sp,
+    calculatedCommission: sp.totalSales * sp.rate / 100,
+  }))
+
   const totalSales = salesPersons.reduce((sum, sp) => sum + sp.totalSales, 0)
   const totalCommission = salesPersons.reduce((sum, sp) => sum + sp.totalCommission, 0)
 
@@ -178,6 +184,9 @@ export default function CommissionPage() {
               </TableRow>
             </TableBody>
           </Table>
+          <p className="text-xs text-muted-foreground mt-3 text-center">
+            Komisi otomatis dihitung dari total invoice yang sudah dibayar (Paid) × rate komisi per sales.
+          </p>
         </CardContent>
       </Card>
     </div>

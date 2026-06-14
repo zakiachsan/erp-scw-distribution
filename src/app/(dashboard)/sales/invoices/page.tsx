@@ -32,7 +32,10 @@ import {
   FileText,
   DollarSign,
   Plus,
+  AlertTriangle,
 } from "lucide-react"
+import { customers } from "@/lib/sales-data"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Invoice {
   id: string
@@ -60,6 +63,70 @@ const statusConfig = {
   Sent: { label: "Sent", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
   Paid: { label: "Paid", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
   Overdue: { label: "Overdue", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+}
+
+const formatIDR = (val: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(val)
+
+function getCustomerCreditInfo(customerName: string) {
+  return customers.find(
+    (c) =>
+      c.name === customerName ||
+      c.company === customerName ||
+      customerName.includes(c.name) ||
+      customerName.includes(c.company)
+  )
+}
+
+function CreditInfoBadge({ customerName }: { customerName: string }) {
+  const customer = getCustomerCreditInfo(customerName)
+  if (!customer) return <span className="text-xs text-muted-foreground">—</span>
+
+  const lowCredit = customer.remainingCredit < customer.creditLimit * 0.2
+  const warningCredit = customer.remainingCredit < customer.creditLimit * 0.5 && !lowCredit
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <span className="inline-flex cursor-default items-center gap-1 text-xs">
+            {lowCredit && <AlertTriangle className="h-3 w-3 text-red-500" />}
+            {warningCredit && <AlertTriangle className="h-3 w-3 text-amber-500" />}
+            <span
+              className={
+                lowCredit
+                  ? "text-red-600 font-medium"
+                  : warningCredit
+                  ? "text-amber-600 font-medium"
+                  : "text-muted-foreground"
+              }
+            >
+              {formatIDR(customer.remainingCredit)}
+            </span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="left" className="text-xs">
+          <div className="space-y-1">
+            <p>
+              <strong>Customer:</strong> {customer.name}
+            </p>
+            <p>
+              <strong>Credit Limit:</strong> {formatIDR(customer.creditLimit)}
+            </p>
+            <p>
+              <strong>Remaining:</strong> {formatIDR(customer.remainingCredit)}
+            </p>
+            <p>
+              <strong>Tier:</strong> {customer.tier}
+            </p>
+            {lowCredit && (
+              <p className="text-red-500 font-medium">⚠ Sisa kredit menipis!</p>
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 export default function InvoiceListPage() {
@@ -168,6 +235,7 @@ export default function InvoiceListPage() {
                 <TableHead>Due Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">Credit Remaining</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -186,6 +254,9 @@ export default function InvoiceListPage() {
                   </TableCell>
                   <TableCell className="text-right font-medium">
                     Rp {(invoice.amount / 1000000).toFixed(1)}M
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <CreditInfoBadge customerName={invoice.customer} />
                   </TableCell>
                   <TableCell className="text-right">
                     <Link href={`/sales/invoices/${invoice.id}`}>

@@ -26,6 +26,11 @@ export const MODULES: ModuleInfo[] = [
     menuItems: [
       { label: "Dashboard", icon: "LayoutDashboard", href: "/sales" },
       {
+        label: "Pipeline",
+        icon: "TrendingUp",
+        href: "/sales/pipeline",
+      },
+      {
         label: "Customers",
         icon: "UserCheck",
         children: [
