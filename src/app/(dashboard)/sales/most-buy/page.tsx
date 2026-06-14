@@ -41,6 +41,8 @@ interface TopCustomer {
   tier: string
 }
 
+const formatIDR = (n: number) => `Rp ${n.toLocaleString("id-ID")}`
+
 const topCustomers: TopCustomer[] = [
   { rank: 1, name: "Budi Santoso", company: "PT Autogloss Indonesia", totalPurchase: 85000000, ordersCount: 24, avgOrderValue: 3541667, lastPurchase: "2026-05-28", trend: "up", trendPercent: 15, tier: "Platinum" },
   { rank: 2, name: "Maya Putri", company: "GlossUp Bali", totalPurchase: 72000000, ordersCount: 20, avgOrderValue: 3600000, lastPurchase: "2026-05-22", trend: "up", trendPercent: 22, tier: "Platinum" },
