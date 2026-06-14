@@ -53,22 +53,22 @@ interface ShipmentOrder {
   courierType: "JNE" | "SiCepat" | "J&T" | "GrabExpress" | "Internal"
   items: string
   weight: string
-  status: "Ready to Ship" | "Shipped" | "Delivered"
+  status: "Ready to Ship" | "Out for Delivery" | "Delivered"
   createdAt: string
 }
 
 const shipmentOrders: ShipmentOrder[] = [
   { id: "SHP-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", address: "Jl. Raya Bekasi No. 123, Jakarta Timur", courierType: "JNE", items: "SCW Snow Foam x20, SCW Ceramic Coating x10", weight: "15 kg", status: "Ready to Ship", createdAt: "2026-06-01" },
   { id: "SHP-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", address: "Jl. Kemang Raya No. 45, Jakarta Selatan", courierType: "SiCepat", items: "SCW Interior Detailer x15, SCW Tire Gel x25", weight: "12 kg", status: "Ready to Ship", createdAt: "2026-05-30" },
-  { id: "SHP-003", soRef: "SO-2026-043", customer: "UD Shinemax", address: "Jl. Raya Bandung No. 456, Bandung", courierType: "J&T", items: "SCW Spray Wax x30, SCW Glass Cleaner x20", weight: "18 kg", status: "Shipped", createdAt: "2026-05-28" },
+  { id: "SHP-003", soRef: "SO-2026-043", customer: "UD Shinemax", address: "Jl. Raya Bandung No. 456, Bandung", courierType: "J&T", items: "SCW Spray Wax x30, SCW Glass Cleaner x20", weight: "18 kg", status: "Out for Delivery", createdAt: "2026-05-28" },
   { id: "SHP-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", address: "Jl. Pemuda No. 789, Surabaya", courierType: "SiCepat", items: "SCW Polish Compound x10", weight: "8 kg", status: "Delivered", createdAt: "2026-05-18" },
-  { id: "SHP-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", address: "Jl. A.P. Pettarani No. 12, Makassar", courierType: "Internal", items: "SCW Snow Foam x25", weight: "10 kg", status: "Shipped", createdAt: "2026-05-15" },
+  { id: "SHP-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", address: "Jl. A.P. Pettarani No. 12, Makassar", courierType: "Internal", items: "SCW Snow Foam x25", weight: "10 kg", status: "Out for Delivery", createdAt: "2026-05-15" },
   { id: "SHP-006", soRef: "SO-2026-046", customer: "GlossUp Bali", address: "Jl. Sunset Road No. 88, Seminyak", courierType: "JNE", items: "SCW Ceramic Coating x8, SCW Spray Wax x12", weight: "11 kg", status: "Ready to Ship", createdAt: "2026-06-02" },
 ]
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   "Ready to Ship": { label: "Ready to Ship", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  Shipped: { label: "Shipped", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
+  "Out for Delivery": { label: "Out for Delivery", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
   Delivered: { label: "Delivered", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
 }
 
@@ -108,7 +108,7 @@ export default function ShippingPage() {
   }, [courierFilter])
 
   const readyCount = shipmentOrders.filter((o) => o.status === "Ready to Ship").length
-  const shippedCount = shipmentOrders.filter((o) => o.status === "Shipped").length
+  const outForDeliveryCount = shipmentOrders.filter((o) => o.status === "Out for Delivery").length
   const deliveredCount = shipmentOrders.filter((o) => o.status === "Delivered").length
 
   return (
@@ -213,8 +213,8 @@ export default function ShippingPage() {
                 <Truck className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Shipped</p>
-                <p className="text-2xl font-bold text-amber-600">{shippedCount}</p>
+                <p className="text-sm text-muted-foreground">Out for Delivery</p>
+                <p className="text-2xl font-bold text-amber-600">{outForDeliveryCount}</p>
               </div>
             </div>
           </CardContent>

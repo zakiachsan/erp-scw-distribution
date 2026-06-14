@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, use } from "react"
 import { useRouter } from "next/navigation"
 import {
   Card,
@@ -52,9 +52,10 @@ const ALL_DATA: Record<string, {
   "out-008": { id: "out-008", tanggal: "2026-06-09", produk: "SCW Snow Foam", sku: "SCW-SF-001", qty: 12, tujuan: "Webcommerce", referensi: "TRX-2026-0435", keterangan: "Pembelian via website SCW Store", status: "New" },
 }
 
-export default function OutbondDetailPage({ params }: { params: { id: string } }) {
+export default function OutbondDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const [data, setData] = useState(() => ALL_DATA[params.id])
+  const { id } = use(params)
+  const [data, setData] = useState(() => ALL_DATA[id])
   const [scanInput, setScanInput] = useState("")
   const [pickedQty, setPickedQty] = useState(
     data?.status === "Picked" ? data.qty : 0

@@ -87,6 +87,9 @@ export const MODULES: ModuleInfo[] = [
           { label: "Stock Opname", href: "/inventory/stock-opname" },
           { label: "Packing Materials", href: "/inventory/packing-materials" },
           { label: "Stock Alert", href: "/inventory/stock-alert" },
+          { label: "Packing Queue", href: "/packing" },
+          { label: "Video Gallery", href: "/packing/videos" },
+          { label: "Materials Stock", href: "/packing/materials" },
         ],
       },
       {
@@ -95,15 +98,6 @@ export const MODULES: ModuleInfo[] = [
         children: [
           { label: "Shipments", href: "/shipping" },
           { label: "Couriers", href: "/shipping/couriers" },
-        ],
-      },
-      {
-        label: "Packing",
-        icon: "Box",
-        children: [
-          { label: "Packing Queue", href: "/packing" },
-          { label: "Video Gallery", href: "/packing/videos" },
-          { label: "Materials Stock", href: "/packing/materials" },
         ],
       },
     ],
