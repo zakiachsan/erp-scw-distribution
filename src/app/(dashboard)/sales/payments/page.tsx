@@ -36,7 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { DollarSign, CreditCard, Banknote, Filter, Search, ChevronDown, X } from "lucide-react"
+import { DollarSign, CreditCard, Banknote, Search, X, Filter } from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
@@ -132,7 +132,7 @@ function InvoiceDropdown({
       >
         {selected ? (
           <span className="flex items-center gap-2 truncate">
-            <span className="font-mono text-xs">{selected.id}</span>
+            <span className="text-xs">{selected.id}</span>
             <span className="text-muted-foreground">—</span>
             <span className="truncate">{selected.customer}</span>
             <span className="ml-auto text-xs text-muted-foreground shrink-0">{formatIDR(selected.amount)}</span>
@@ -183,7 +183,7 @@ function InvoiceDropdown({
                     value === inv.id ? "bg-indigo-50" : ""
                   }`}
                 >
-                  <span className="font-mono text-xs font-medium">{inv.id}</span>
+                  <span className="text-xs font-medium">{inv.id}</span>
                   <span className="text-muted-foreground">—</span>
                   <span className="flex-1 truncate">{inv.customer}</span>
                   <Badge variant="outline" className={`text-[10px] px-1 py-0 ${invoiceStatusColors[inv.status] || ""}`}>
@@ -212,9 +212,16 @@ export default function PaymentsPage() {
   const [formAmount, setFormAmount] = useState("")
   const [formMethod, setFormMethod] = useState("Transfer")
 
-  const filtered = payments.filter(
-    (p) => statusFilter === "All" || p.status === statusFilter
-  )
+  const [search, setSearch] = useState("")
+
+  const filtered = payments.filter((p) => {
+    const matchStatus = statusFilter === "All" || p.status === statusFilter
+    const matchSearch = !search ||
+      p.id.toLowerCase().includes(search.toLowerCase()) ||
+      p.customer.toLowerCase().includes(search.toLowerCase()) ||
+      p.invoice.toLowerCase().includes(search.toLowerCase())
+    return matchStatus && matchSearch
+  })
 
   const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0)
   const completedAmount = payments
@@ -368,72 +375,90 @@ export default function PaymentsPage() {
 
       {/* Payments Table */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Payment List</CardTitle>
-              <CardDescription>
-                {filtered.length} payment{filtered.length !== 1 ? "s" : ""} found
-              </CardDescription>
+        <CardContent className="p-0">
+          {/* Filter bar */}
+          <div className="flex items-center gap-3 border-b px-4 py-2.5">
+            <div className="relative flex-1 max-w-xs">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Cari payment ID / customer / invoice..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-sm" />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-              <SelectTrigger className="w-44">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Filter status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Status</SelectItem>
-                <SelectItem value="Completed">Completed</SelectItem>
-                <SelectItem value="Pending">Pending</SelectItem>
-                <SelectItem value="Failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Payment ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Invoice</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((payment) => (
-                <TableRow key={payment.id}>
-                  <TableCell className="font-sans text-xs">{payment.id}</TableCell>
-                  <TableCell>{payment.customer}</TableCell>
-                  <TableCell className="font-sans text-xs">{payment.invoice}</TableCell>
-                  <TableCell className="text-right">{formatIDR(payment.amount)}</TableCell>
-                  <TableCell>{payment.date}</TableCell>
-                  <TableCell>
-                    <select
-                      value={payment.status}
-                      onChange={(e) => {
-                        const newStatus = e.target.value as Payment["status"]
-                        setPayments((prev) =>
-                          prev.map((p) => (p.id === payment.id ? { ...p, status: newStatus } : p))
-                        )
-                      }}
-                      className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[11px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[payment.status].className}`}
-                    >
-                      <option value="Completed">Completed</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Failed">Failed</option>
-                    </select>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{payment.method}</Badge>
-                  </TableCell>
-                </TableRow>
+            <div className="flex items-center gap-1.5">
+              {(["All", "Completed", "Pending", "Failed"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`rounded-md border px-2 py-1 text-[11px] font-medium transition-all ${
+                    statusFilter === s
+                      ? s === "All" ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                        : s === "Completed" ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                        : s === "Pending" ? "border-yellow-300 bg-yellow-50 text-yellow-700"
+                        : "border-red-300 bg-red-50 text-red-700"
+                      : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  {s === "All" ? "Semua" : s}
+                </button>
               ))}
-            </TableBody>
-          </Table>
+              {statusFilter !== "All" && (
+                <button onClick={() => setStatusFilter("All")} className="rounded-md px-1 text-gray-400 hover:text-gray-600">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Payment ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Invoice</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Method</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-10 text-sm text-muted-foreground">
+                      Tidak ada pembayaran ditemukan
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filtered.map((payment) => (
+                    <TableRow key={payment.id}>
+                      <TableCell className="text-xs">{payment.id}</TableCell>
+                      <TableCell>{payment.customer}</TableCell>
+                      <TableCell className="text-xs">{payment.invoice}</TableCell>
+                      <TableCell className="text-right">{formatIDR(payment.amount)}</TableCell>
+                      <TableCell>{payment.date}</TableCell>
+                      <TableCell>
+                        <select
+                          value={payment.status}
+                          onChange={(e) => {
+                            const newStatus = e.target.value as Payment["status"]
+                            setPayments((prev) =>
+                              prev.map((p) => (p.id === payment.id ? { ...p, status: newStatus } : p))
+                            )
+                          }}
+                          className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[11px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[payment.status].className}`}
+                        >
+                          <option value="Completed">Completed</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Failed">Failed</option>
+                        </select>
+                      </TableCell>
+                      <TableCell><Badge variant="outline">{payment.method}</Badge></TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

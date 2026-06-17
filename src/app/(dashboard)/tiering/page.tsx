@@ -10,6 +10,14 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -48,6 +56,8 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  Plus,
+  Trash2,
 } from "lucide-react"
 
 // ─── Mock Products ──────────────────────────────────────────────────────────
@@ -137,6 +147,14 @@ function formatRupiah(n: number) {
   return new Intl.NumberFormat("id-ID").format(n)
 }
 
+function parseFormattedNumber(val: string): number {
+  return parseInt(val.replace(/\./g, "")) || 0
+}
+
+function formatNumber(val: number): string {
+  return val.toLocaleString("id-ID")
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 export default function TieringPage() {
   const [selectedProduct, setSelectedProduct] = useState("P01")
@@ -144,9 +162,26 @@ export default function TieringPage() {
 
   // Type A state
   const [typeARules, setTypeARules] = useState<TierRule[]>(defaultTypeARules)
+  const [editTierRules, setEditTierRules] = useState(false)
+  const [assignedProducts, setAssignedProducts] = useState<string[]>(["P01", "P02"])
+  const [showAddProduct, setShowAddProduct] = useState(false)
+  const [addProductId, setAddProductId] = useState("P03")
+  const [removeConfirm, setRemoveConfirm] = useState<string | null>(null)
 
   // Type B state
-  const [typeBRules, setTypeBRules] = useState<TypeBProductRule[]>(defaultTypeBRules)
+  const [typeBProducts, setTypeBProducts] = useState<string[]>(["P01", "P02", "P03"])
+  const [typeBRules, setTypeBRules] = useState<TypeBProductRule[]>(
+    products.filter((p) => ["P01", "P02", "P03"].includes(p.id)).map((p) => ({
+      productId: p.id,
+      discountPercent: p.id === "P01" ? 5 : p.id === "P03" ? 3 : 0,
+      activeMonth: "June 2026",
+      lastResetDate: "2026-06-01",
+    }))
+  )
+  const [editTypeBRules, setEditTypeBRules] = useState(false)
+  const [showAddTypeB, setShowAddTypeB] = useState(false)
+  const [addTypeBId, setAddTypeBId] = useState("P04")
+  const [removeTypeBConfirm, setRemoveTypeBConfirm] = useState<string | null>(null)
 
   // Simulation state
   const [simQty, setSimQty] = useState(50)
@@ -216,48 +251,62 @@ export default function TieringPage() {
         {/* TYPE A — PERMANEN                                            */}
         {/* ════════════════════════════════════════════════════════════ */}
         <TabsContent value="typeA" className="space-y-6 pt-4">
-          {/* Product Selector */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Package className="h-4 w-4 text-indigo-500" />
-                Product Selection
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label>Select Product</Label>
-                <Select value={selectedProduct} onValueChange={(v) => setSelectedProduct(v ?? "")}>
-                  <SelectTrigger className="w-full sm:w-80">
-                    <Package className="mr-2 h-4 w-4" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name} ({p.sku})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          {/* Type A Info Banner */}
+          <Card className="border-indigo-200 bg-indigo-50/40">
+            <CardContent className="flex items-center gap-3 p-3">
+              <Infinity className="h-5 w-5 text-indigo-600 shrink-0" />
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-indigo-800">
+                  Type A — Permanent Tier Discount
+                </p>
+                <p className="text-xs text-indigo-700/80">
+                  Once a customer reaches a tier level based on cumulative lifetime purchases, the discount applies <strong>permanently</strong>. Tier status is never reset.
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Type A Info Banner */}
-          <Card className="border-indigo-200 bg-indigo-50/40 dark:border-indigo-800 dark:bg-indigo-950/20">
-            <CardContent className="flex items-start gap-3 pt-6">
-              <Infinity className="mt-0.5 h-5 w-5 text-indigo-600 shrink-0" />
-              <div className="space-y-1">
-                <p className=" text-indigo-800 dark:text-indigo-300">
-                  Type A — Permanent Tier Discount
-                </p>
-                <p className="text-sm text-indigo-700/80 dark:text-indigo-400/80">
-                  Once a customer reaches a tier level (based on cumulative lifetime purchases),
-                  the discount applies <strong>permanently</strong> for all future purchases.
-                  Tier status is never reset.
-                </p>
+          {/* Product Selector — daftar produk yang masuk Type A */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Package className="h-4 w-4 text-indigo-500" />
+                  Produk Type A ({assignedProducts.length})
+                </CardTitle>
+                <Button size="sm" variant="outline" onClick={() => { setAddProductId("P03"); setShowAddProduct(true) }}>
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  Tambah Produk
+                </Button>
               </div>
+            </CardHeader>
+            <CardContent>
+              {assignedProducts.length === 0 ? (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  Belum ada produk yang masuk Type A. Klik "Tambah Produk" untuk menambahkan.
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  {assignedProducts.map((pid) => {
+                    const p = products.find((pr) => pr.id === pid)
+                    return (
+                      <div key={pid} className="flex items-center justify-between rounded-md border p-2.5">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-indigo-500" />
+                          <span className="text-sm font-medium">{p?.name || pid}</span>
+                          <span className="text-xs text-muted-foreground">({p?.sku})</span>
+                        </div>
+                        <button
+                          onClick={() => setRemoveConfirm(pid)}
+                          className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -275,12 +324,18 @@ export default function TieringPage() {
                   </CardDescription>
                 </div>
                 <Button
-                  variant="outline"
+                  variant={editTierRules ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setTypeARules(defaultTypeARules)}
+                  onClick={() => {
+                    if (editTierRules) {
+                      setEditTierRules(false)
+                    } else {
+                      setEditTierRules(true)
+                    }
+                  }}
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Reset
+                  {editTierRules ? "Save" : "Edit"}
                 </Button>
               </div>
             </CardHeader>
@@ -311,16 +366,19 @@ export default function TieringPage() {
                           onChange={(e) =>
                             updateTierRule(index, "minQty", parseInt(e.target.value) || 0)
                           }
+                          disabled={!editTierRules}
                           className="w-24 text-right ml-auto"
                         />
                       </TableCell>
                       <TableCell className="text-right">
                         <Input
-                          type="number"
-                          value={rule.minAmount}
+                          type="text"
+                          inputMode="numeric"
+                          value={formatNumber(rule.minAmount)}
                           onChange={(e) =>
-                            updateTierRule(index, "minAmount", parseInt(e.target.value) || 0)
+                            updateTierRule(index, "minAmount", parseFormattedNumber(e.target.value))
                           }
+                          disabled={!editTierRules}
                           className="w-36 text-right ml-auto"
                         />
                       </TableCell>
@@ -332,6 +390,7 @@ export default function TieringPage() {
                             onChange={(e) =>
                               updateTierRule(index, "discountPercent", parseInt(e.target.value) || 0)
                             }
+                            disabled={!editTierRules}
                             className="w-20 text-right"
                           />
                           <span className="text-sm text-muted-foreground">%</span>
@@ -358,11 +417,10 @@ export default function TieringPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-indigo-600" />
-                Mock Data — Customer Tier Assignments
+                Customer Tier Assignments
               </CardTitle>
               <CardDescription>
-                These customers have been assigned tiers based on cumulative lifetime purchases.
-                Their tier status is <strong>permanent</strong> — it does not reset.
+                Customer yang sudah mendapatkan tier permanent berdasarkan total pembelian.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -370,11 +428,11 @@ export default function TieringPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Customer</TableHead>
+                    <TableHead>Tier</TableHead>
                     <TableHead className="text-right">Total Qty</TableHead>
                     <TableHead className="text-right">Total Spent (Rp)</TableHead>
-                    <TableHead>Tier</TableHead>
+                    <TableHead className="text-center">Discount</TableHead>
                     <TableHead>Since</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -384,14 +442,19 @@ export default function TieringPage() {
                     return (
                       <TableRow key={c.id}>
                         <TableCell className="">{c.name}</TableCell>
-                        <TableCell className="text-right">{c.totalQty}</TableCell>
-                        <TableCell className="text-right">
-                          Rp {formatRupiah(c.totalSpent)}
-                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={tierColors[c.currentTier]}>
                             <Award className="mr-1 h-3 w-3" />
                             {c.currentTier}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{c.totalQty}</TableCell>
+                        <TableCell className="text-right">
+                          Rp {formatRupiah(c.totalSpent)}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="bg-indigo-50 text-indigo-700 text-xs">
+                            {effectiveDiscount}%
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
@@ -400,24 +463,12 @@ export default function TieringPage() {
                             {c.achievedDate}
                           </div>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <Badge
-                            variant="secondary"
-                            className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                          >
-                            <Infinity className="mr-1 h-3 w-3" />
-                            Permanent — {effectiveDiscount}% off
-                          </Badge>
-                        </TableCell>
                       </TableRow>
                     )
                   })}
                 </TableBody>
               </Table>
-              <p className="mt-4 text-xs text-muted-foreground">
-                * Even if a customer's future purchase volume drops, their tier and discount
-                remain active forever. This is the key difference from Type B.
-              </p>
+
             </CardContent>
           </Card>
         </TabsContent>
@@ -427,117 +478,165 @@ export default function TieringPage() {
         {/* ════════════════════════════════════════════════════════════ */}
         <TabsContent value="typeB" className="space-y-6 pt-4">
           {/* Type B Info Banner */}
-          <Card className="border-amber-200 bg-amber-50/40 dark:border-amber-800 dark:bg-amber-950/20">
-            <CardContent className="flex items-start gap-3 pt-6">
-              <RefreshCw className="mt-0.5 h-5 w-5 text-amber-600 shrink-0" />
-              <div className="space-y-1">
-                <p className=" text-amber-800 dark:text-amber-300">
-                  Type B — Monthly Reset Discount (Reset Bulanan)
+          <Card className="border-amber-200 bg-amber-50/40">
+            <CardContent className="flex items-center gap-3 p-3">
+              <RefreshCw className="h-5 w-5 text-amber-600 shrink-0" />
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-amber-800">
+                  Type B — Reset Bulanan
                 </p>
-                <p className="text-sm text-amber-700/80 dark:text-amber-400/80">
-                  Per-product discount that resets every month. Each product can have its own
-                  discount percentage. At the start of each month, all Type B discounts are
-                  automatically refreshed. No cumulative purchase tracking required.
+                <p className="text-xs text-amber-700/80">
+                  Bedanya dengan Type A, akumulasi belanja customer di-reset tiap bulan ke 0.
+                  Setiap awal bulan, semua customer kembali ke tier terendah.
+                  Produk & tier rules bisa diatur sendiri, tidak terikat dengan Type A.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Per-Product Discount Configuration */}
+          {/* Produk Type B */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Package className="h-4 w-4 text-amber-600" />
+                  Produk Type B ({typeBProducts.length})
+                </CardTitle>
+                <Button size="sm" variant="outline" onClick={() => { setAddTypeBId("P04"); setShowAddTypeB(true) }}>
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  Tambah Produk
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {typeBProducts.length === 0 ? (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  Belum ada produk yang masuk Type B. Klik "Tambah Produk" untuk menambahkan.
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  {typeBProducts.map((pid) => {
+                    const p = products.find((pr) => pr.id === pid)
+                    return (
+                      <div key={pid} className="flex items-center justify-between rounded-md border p-2.5">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-amber-600" />
+                          <span className="text-sm font-medium">{p?.name || pid}</span>
+                          <span className="text-xs text-muted-foreground">({p?.sku})</span>
+                        </div>
+                        <button
+                          onClick={() => setRemoveTypeBConfirm(pid)}
+                          className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tier Rules Type B */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-amber-600" />
-                    Per-Product Discount Configuration
+                    <Percent className="h-5 w-5 text-amber-600" />
+                    Tier Rules Type B
                   </CardTitle>
                   <CardDescription>
-                    Set discount percentage for each product. Resets automatically every month.
+                    Configure tier thresholds and discount percentage for Type B
                   </CardDescription>
                 </div>
                 <Button
-                  variant="outline"
+                  variant={editTypeBRules ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setTypeBRules(defaultTypeBRules)}
+                  onClick={() => setEditTypeBRules(!editTypeBRules)}
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Reset All
+                  {editTypeBRules ? "Save" : "Edit"}
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead className="text-right">Discount %</TableHead>
-                    <TableHead>Active Month</TableHead>
-                    <TableHead>Last Reset</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {typeBRules.map((rule) => {
-                    const product = products.find((p) => p.id === rule.productId)
-                    return (
-                      <TableRow key={rule.productId}>
-                        <TableCell className="">{product?.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{product?.sku}</TableCell>
+              {typeBProducts.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-3 text-center">Tambah produk terlebih dahulu</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-32">Tier Level</TableHead>
+                      <TableHead className="text-right">Min Quantity</TableHead>
+                      <TableHead className="text-right">Min Amount (Rp)</TableHead>
+                      <TableHead className="text-right">Discount %</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {typeARules.map((rule, index) => (
+                      <TableRow key={rule.level}>
+                        <TableCell>
+                          <Badge variant="outline" className={tierColors[rule.level]}>
+                            <Award className="mr-1 h-3 w-3" />
+                            {rule.level}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Input
+                            type="number"
+                            value={rule.minQty}
+                            onChange={(e) =>
+                              updateTierRule(index, "minQty", parseInt(e.target.value) || 0)
+                            }
+                            disabled={!editTypeBRules}
+                            className="w-24 text-right ml-auto"
+                          />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={formatNumber(rule.minAmount)}
+                            onChange={(e) =>
+                              updateTierRule(index, "minAmount", parseFormattedNumber(e.target.value))
+                            }
+                            disabled={!editTypeBRules}
+                            className="w-36 text-right ml-auto"
+                          />
+                        </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
                             <Input
                               type="number"
                               value={rule.discountPercent}
                               onChange={(e) =>
-                                updateProductDiscount(
-                                  rule.productId,
-                                  parseInt(e.target.value) || 0
-                                )
+                                updateTierRule(index, "discountPercent", parseInt(e.target.value) || 0)
                               }
+                              disabled={!editTypeBRules}
                               className="w-20 text-right"
-                              min={0}
-                              max={100}
                             />
                             <span className="text-sm text-muted-foreground">%</span>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="border-amber-200 text-amber-700 dark:border-amber-700 dark:text-amber-400">
-                            <Calendar className="mr-1 h-3 w-3" />
-                            {rule.activeMonth}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {rule.lastResetDate}
-                          </div>
-                        </TableCell>
                       </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              <div className="mt-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-300">
-                <RefreshCw className="h-4 w-4 shrink-0" />
-                <span>
-                  Auto-reset scheduled: <strong>1 July 2026</strong> — all Type B discounts
-                  will be refreshed to their default values.
-                </span>
-              </div>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
 
-          {/* Mock Data: Monthly Reset History */}
+          {/* Monthly Reset History */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-amber-600" />
-                Mock Data — Monthly Reset History
+                Monthly Reset History
               </CardTitle>
               <CardDescription>
-                Historical record showing how Type B discounts are applied and reset each month.
+                Riwayat reset diskon Type B setiap bulan
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -590,44 +689,179 @@ export default function TieringPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Confirm Hapus Type B Dialog */}
+      <Dialog open={!!removeTypeBConfirm} onOpenChange={(o) => { if (!o) setRemoveTypeBConfirm(null) }}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Hapus Produk?</DialogTitle>
+            <DialogDescription>
+              {(() => {
+                const p = products.find((pr) => pr.id === removeTypeBConfirm)
+                return `Yakin ingin menghapus "${p?.name || removeTypeBConfirm}" dari Type B?`
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setRemoveTypeBConfirm(null)}>Batal</Button>
+            <Button variant="destructive" size="sm" onClick={() => {
+              if (removeTypeBConfirm) {
+                setTypeBProducts((prev) => prev.filter((x) => x !== removeTypeBConfirm))
+                setTypeBRules((prev) => prev.filter((r) => r.productId !== removeTypeBConfirm))
+              }
+              setRemoveTypeBConfirm(null)
+            }}>Hapus</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tambah Produk Type B Dialog */}
+      <Dialog open={showAddTypeB} onOpenChange={setShowAddTypeB}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Tambah Produk Type B</DialogTitle>
+            <DialogDescription>Pilih produk yang akan masuk program Type B</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label className="text-xs">Produk</Label>
+            <Select value={addTypeBId} onValueChange={(v) => setAddTypeBId(v ?? "P04")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {products
+                  .filter((p) => !typeBProducts.includes(p.id))
+                  .map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name} ({p.sku})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            {products.filter((p) => !typeBProducts.includes(p.id)).length === 0 && (
+              <p className="text-xs text-muted-foreground">Semua produk sudah ditambahkan</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowAddTypeB(false)}>Batal</Button>
+            <Button size="sm" disabled={products.filter((p) => !typeBProducts.includes(p.id)).length === 0}
+              onClick={() => {
+                setTypeBProducts((prev) => [...prev, addTypeBId])
+                if (!typeBRules.find((r) => r.productId === addTypeBId)) {
+                  setTypeBRules((prev) => [...prev, {
+                    productId: addTypeBId,
+                    discountPercent: 0,
+                    activeMonth: "June 2026",
+                    lastResetDate: "2026-06-01",
+                  }])
+                }
+                setShowAddTypeB(false)
+              }}
+            >Tambah</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Hapus Dialog */}
+      <Dialog open={!!removeConfirm} onOpenChange={(o) => { if (!o) setRemoveConfirm(null) }}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Hapus Produk?</DialogTitle>
+            <DialogDescription>
+              {(() => {
+                const p = products.find((pr) => pr.id === removeConfirm)
+                return `Yakin ingin menghapus "${p?.name || removeConfirm}" dari program Type A?`
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setRemoveConfirm(null)}>Batal</Button>
+            <Button variant="destructive" size="sm" onClick={() => {
+              if (removeConfirm) setAssignedProducts((prev) => prev.filter((x) => x !== removeConfirm))
+              setRemoveConfirm(null)
+            }}>Hapus</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tambah Produk Dialog */}
+      <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Tambah Produk</DialogTitle>
+            <DialogDescription>Pilih produk yang akan masuk program Type A</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label className="text-xs">Produk</Label>
+            <Select value={addProductId} onValueChange={(v) => setAddProductId(v ?? "P03")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {products
+                  .filter((p) => !assignedProducts.includes(p.id))
+                  .map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name} ({p.sku})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            {products.filter((p) => !assignedProducts.includes(p.id)).length === 0 && (
+              <p className="text-xs text-muted-foreground">Semua produk sudah ditambahkan</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowAddProduct(false)}>Batal</Button>
+            <Button size="sm" disabled={products.filter((p) => !assignedProducts.includes(p.id)).length === 0}
+              onClick={() => {
+                setAssignedProducts((prev) => [...prev, addProductId])
+                setShowAddProduct(false)
+              }}
+            >Tambah</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ── Simulation / Preview ────────────────────────────────────── */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-indigo-600" />
-            Preview Simulation
-          </CardTitle>
-          <CardDescription>
-            Test discount calculation with sample quantity and amount for{" "}
-            {tab === "typeA" ? "Type A (Permanent)" : "Type B (Monthly Reset)"}
-          </CardDescription>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Calculator className="h-4 w-4 text-indigo-600" />
+              Preview Simulation
+            </CardTitle>
+            <span className="text-xs text-muted-foreground">
+              {tab === "typeA" ? "Type A — Permanent" : "Type B — Monthly Reset"}
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Simulate Quantity</Label>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Simulate Quantity</Label>
                 <Input
                   type="number"
                   value={simQty}
                   onChange={(e) => setSimQty(parseInt(e.target.value) || 0)}
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Simulate Amount (Rp)</Label>
+              <div className="space-y-1">
+                <Label className="text-xs">Simulate Amount (Rp)</Label>
                 <Input
-                  type="number"
-                  value={simAmount}
-                  onChange={(e) => setSimAmount(parseInt(e.target.value) || 0)}
+                  type="text"
+                  inputMode="numeric"
+                  value={formatNumber(simAmount)}
+                  onChange={(e) => setSimAmount(parseFormattedNumber(e.target.value))}
                 />
               </div>
               {tab === "typeB" && (
-                <div className="space-y-2">
-                  <Label>Product (for Type B rate)</Label>
+                <div className="space-y-1">
+                  <Label className="text-xs">Product (for Type B rate)</Label>
                   <Select value={selectedProduct} onValueChange={(v) => setSelectedProduct(v ?? "")}>
                     <SelectTrigger>
                       <Package className="mr-2 h-4 w-4" />
-                      <SelectValue />
+                      {products.find((p) => p.id === selectedProduct)?.name || selectedProduct}
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((p) => (
@@ -640,7 +874,7 @@ export default function TieringPage() {
                 </div>
               )}
             </div>
-            <div className="rounded-xl border bg-muted/30 p-6">
+            <div className="rounded-lg border bg-slate-50 p-4">
               <div className="mb-3 flex items-center gap-2">
                 <Badge
                   variant="outline"

@@ -64,6 +64,7 @@ const breadcrumbMap: Record<string, string> = {
   users: "Users",
   roles: "Roles",
   "activity-log": "Activity Log",
+  "sales-team": "Sales Team",
 }
 
 export function Navbar() {

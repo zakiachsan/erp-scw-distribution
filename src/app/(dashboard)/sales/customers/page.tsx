@@ -257,7 +257,7 @@ export default function CustomerListPage() {
               ) : (
                 filtered.map((c) => (
                   <tr key={c.id} className="border-b last:border-0 hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => window.location.href = `/sales/customers/${c.id}`}>
-                    <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{c.id}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground">{c.id}</td>
                     <td className="px-3 py-2">
                       <span className="text-xs font-medium text-slate-900">{c.name}</span>
                     </td>

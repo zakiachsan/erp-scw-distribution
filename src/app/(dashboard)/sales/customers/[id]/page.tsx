@@ -194,7 +194,7 @@ export default function CustomerDetailPage() {
             <TableBody>
               {purchaseHistory.map((purchase) => (
                 <TableRow key={purchase.id}>
-                  <TableCell className="font-mono text-xs">{purchase.id}</TableCell>
+                  <TableCell className="text-xs">{purchase.id}</TableCell>
                   <TableCell className="text-xs">{purchase.date}</TableCell>
                   <TableCell className="text-xs text-muted-foreground max-w-[250px] truncate">{purchase.items}</TableCell>
                   <TableCell className="text-xs text-right">{formatIDR(purchase.total)}</TableCell>

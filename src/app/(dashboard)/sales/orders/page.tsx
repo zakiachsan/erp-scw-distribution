@@ -10,15 +10,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -27,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Plus, Filter, ShoppingCart } from "lucide-react"
+import { Plus, ShoppingCart, Search, X } from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
@@ -52,36 +45,44 @@ const orders: SalesOrder[] = [
   { id: "SO-2026-036", customer: "CV Ceramic Pro JKT", date: "2026-05-08", status: "Completed", total: 4100000 },
 ]
 
-const statusConfig = {
-  Draft: { label: "Draft", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
-  Confirmed: { label: "Confirmed", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  Processing: { label: "Processing", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Shipped: { label: "Shipped", className: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400" },
-  Completed: { label: "Completed", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
+const statusConfig: Record<string, { className: string }> = {
+  Draft: { className: "bg-gray-100 text-gray-800" },
+  Confirmed: { className: "bg-blue-100 text-blue-800" },
+  Processing: { className: "bg-amber-100 text-amber-800" },
+  Shipped: { className: "bg-violet-100 text-violet-800" },
+  Completed: { className: "bg-emerald-100 text-emerald-800" },
 }
 
 export default function SalesOrdersPage() {
+  const [orderList, setOrderList] = useState(orders)
   const [statusFilter, setStatusFilter] = useState("All")
+  const [search, setSearch] = useState("")
   const router = useRouter()
 
   const filtered = useMemo(() => {
-    return orders.filter((o) => statusFilter === "All" || o.status === statusFilter)
-  }, [statusFilter])
+    return orderList.filter((o) => {
+      const matchStatus = statusFilter === "All" || o.status === statusFilter
+      const matchSearch = !search ||
+        o.id.toLowerCase().includes(search.toLowerCase()) ||
+        o.customer.toLowerCase().includes(search.toLowerCase())
+      return matchStatus && matchSearch
+    })
+  }, [statusFilter, search, orderList])
 
   const totalValue = filtered.reduce((sum, o) => sum + o.total, 0)
+  const pendingCount = orderList.filter((o) => ["Draft", "Confirmed", "Processing"].includes(o.status)).length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl tracking-tight">Purchase Orders</h1>
-          <p className="text-muted-foreground">
-            Manage sales orders and track fulfillment status
-          </p>
+          <h1 className="text-lg font-bold text-gray-900">Purchase Orders</h1>
+          <p className="text-xs text-gray-500">Manage purchase orders and track fulfillment status</p>
         </div>
         <Link href="/sales/orders/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button size="sm">
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
             Create PO
           </Button>
         </Link>
@@ -92,7 +93,7 @@ export default function SalesOrdersPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
                 <ShoppingCart className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
@@ -105,7 +106,7 @@ export default function SalesOrdersPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
                 <ShoppingCart className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
@@ -118,76 +119,109 @@ export default function SalesOrdersPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
                 <ShoppingCart className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Pending Orders</p>
-                <p className="text-2xl">
-                  {orders.filter((o) => ["Draft", "Confirmed", "Processing"].includes(o.status)).length}
-                </p>
+                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-2xl">{pendingCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Table */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Order List</CardTitle>
-              <CardDescription>
-                {filtered.length} order{filtered.length !== 1 ? "s" : ""} found
-              </CardDescription>
+        <CardContent className="p-0">
+          {/* Filter bar */}
+          <div className="flex items-center gap-3 border-b px-4 py-2.5">
+            <div className="relative flex-1 max-w-xs">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Cari PO number atau customer..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-sm" />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "All")}>
-              <SelectTrigger className="w-44">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Filter status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Status</SelectItem>
-                <SelectItem value="Draft">Draft</SelectItem>
-                <SelectItem value="Confirmed">Confirmed</SelectItem>
-                <SelectItem value="Processing">Processing</SelectItem>
-                <SelectItem value="Shipped">Shipped</SelectItem>
-                <SelectItem value="Completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>PO Number</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((order) => (
-                <TableRow
-                  key={order.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => router.push(`/sales/orders/${order.id}`)}
+            <div className="flex items-center gap-1.5">
+              {(["All", "Draft", "Confirmed", "Processing", "Shipped", "Completed"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`rounded-md border px-2 py-1 text-[11px] font-medium transition-all ${
+                    statusFilter === s
+                      ? s === "All" ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                        : s === "Draft" ? "border-gray-300 bg-gray-100 text-gray-700"
+                        : s === "Confirmed" ? "border-blue-300 bg-blue-50 text-blue-700"
+                        : s === "Processing" ? "border-amber-300 bg-amber-50 text-amber-700"
+                        : s === "Shipped" ? "border-violet-300 bg-violet-50 text-violet-700"
+                        : "border-emerald-300 bg-emerald-50 text-emerald-700"
+                      : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                  }`}
                 >
-                  <TableCell className="font-sans text-xs">{order.id}</TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell>{order.date}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusConfig[order.status].className}>
-                      {statusConfig[order.status].label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">{formatIDR(order.total)}</TableCell>
-                </TableRow>
+                  {s === "All" ? "Semua" : s}
+                </button>
               ))}
-            </TableBody>
-          </Table>
+              {statusFilter !== "All" && (
+                <button onClick={() => setStatusFilter("All")} className="rounded-md px-1 text-gray-400 hover:text-gray-600">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>PO Number</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-10 text-sm text-muted-foreground">
+                      Tidak ada PO ditemukan
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filtered.map((order) => (
+                    <TableRow
+                      key={order.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => router.push(`/sales/orders/${order.id}`)}
+                    >
+                      <TableCell className="text-xs">{order.id}</TableCell>
+                      <TableCell className="text-sm">{order.customer}</TableCell>
+                      <TableCell className="text-sm">{order.date}</TableCell>
+                      <TableCell>
+                        <select
+                          value={order.status}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => {
+                            const newStatus = e.target.value as SalesOrder["status"]
+                            setOrderList((prev) =>
+                              prev.map((o) => (o.id === order.id ? { ...o, status: newStatus } : o))
+                            )
+                          }}
+                          className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-xs font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[order.status].className}`}
+                        >
+                          <option value="Draft">Draft</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </TableCell>
+                      <TableCell className="text-right text-sm">{formatIDR(order.total)}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

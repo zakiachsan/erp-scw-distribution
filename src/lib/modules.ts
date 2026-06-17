@@ -51,6 +51,7 @@ export const MODULES: ModuleInfo[] = [
         href: "/sales/payments",
       },
       { label: "Commission", icon: "DollarSign", href: "/sales/commission" },
+      { label: "Sales Team", icon: "Users", href: "/sales/sales-team" },
       { label: "Tiering Discount", icon: "Percent", href: "/tiering" },
     ],
   },

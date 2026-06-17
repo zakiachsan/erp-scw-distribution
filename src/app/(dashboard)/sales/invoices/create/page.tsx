@@ -251,7 +251,7 @@ export default function CreateInvoicePage() {
                       return (
                         <SelectItem key={po.id} value={po.id}>
                           <span className="flex items-center gap-2">
-                            <span className="font-mono text-xs">{po.id}</span>
+                            <span className="text-xs">{po.id}</span>
                             <span>—</span>
                             <span>{po.customer}</span>
                             <Badge variant="outline" className={`text-[10px] px-1 py-0 ${st.className}`}>{st.label}</Badge>
@@ -326,7 +326,7 @@ export default function CreateInvoicePage() {
                         {poItems.map((item, i) => (
                           <tr key={i} className="border-b last:border-0">
                             <td className="px-3 py-2 text-xs font-medium">{item.productName}</td>
-                            <td className="px-3 py-2 text-xs text-muted-foreground font-mono">{item.sku}</td>
+                            <td className="px-3 py-2 text-xs text-muted-foreground ">{item.sku}</td>
                             <td className="px-3 py-2 text-xs text-right">{formatIDR(item.price)}</td>
                             <td className="px-3 py-2 text-xs text-center">{item.qty} {item.unit}</td>
                             <td className="px-3 py-2 text-xs text-right text-emerald-600">-{formatIDR(item.discount)}</td>
@@ -402,7 +402,7 @@ export default function CreateInvoicePage() {
                   <>
                     <div>
                       <p className="text-xs text-muted-foreground">PO Number</p>
-                      <p className="text-sm font-mono font-medium">{selectedPO.id}</p>
+                      <p className="text-sm font-medium">{selectedPO.id}</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Customer</p>

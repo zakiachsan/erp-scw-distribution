@@ -66,6 +66,12 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   Completed: { label: "Completed", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
 }
 
+const pipelineDeals: Record<string, string> = {
+  "PL-001": "PT Autogloss Indonesia",
+  "PL-002": "CV Ceramic Pro JKT",
+  "PL-004": "PT DetailWorks BDG",
+}
+
 const orders: SalesOrderDetail[] = [
   {
     id: "SO-2026-045",
@@ -227,6 +233,9 @@ export default function SalesOrderDetailPage({
   const tierDiscount = Math.round(subtotal * discountRate)
   const total = subtotal - tierDiscount
 
+  // Order status (changeable)
+  const [orderStatus, setOrderStatus] = useState(order.status)
+
   // Invoice state
   const [invoices, setInvoices] = useState<{ id: string; date: string; amount: number; status: string }[]>(() => {
     // Seed some invoices for certain POs
@@ -242,7 +251,7 @@ export default function SalesOrderDetailPage({
   const [invCreated, setInvCreated] = useState(false)
 
   const hasInvoice = invoices.length > 0
-  const canCreateInvoice = !hasInvoice && order.status !== "Draft"
+  const canCreateInvoice = !hasInvoice && orderStatus !== "Draft"
 
   const handleCreateInvoice = () => {
     const newInv = {
@@ -270,20 +279,26 @@ export default function SalesOrderDetailPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold text-gray-900">{order.id}</h1>
-              <Badge variant="outline" className={`text-[10px] ${statusConfig[order.status].className}`}>
-                {statusConfig[order.status].label}
-              </Badge>
-              {order.pipelineId && (
-                <Link href={`/sales/pipeline/${order.pipelineId}`}>
-                  <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200 cursor-pointer hover:bg-indigo-100 transition-colors">
-                    Lihat Deal →
-                  </Badge>
-                </Link>
-              )}
+              <select
+                value={orderStatus}
+                onChange={(e) => setOrderStatus(e.target.value as typeof orderStatus)}
+                className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[10px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[orderStatus].className}`}
+              >
+                <option value="Draft">Draft</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Completed">Completed</option>
+              </select>
             </div>
             <p className="text-xs text-muted-foreground">{order.customer} · {order.date}</p>
           </div>
         </div>
+        {order.pipelineId && (
+          <Link href={`/sales/pipeline/${order.pipelineId}`} className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors">
+            Deal: {order.pipelineId} →
+          </Link>
+        )}
       </div>
 
       {/* Items Table */}
@@ -403,7 +418,7 @@ export default function SalesOrderDetailPage({
               <tbody>
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="border-b last:border-0">
-                    <td className="px-3 py-2 font-mono text-xs">{inv.id}</td>
+                    <td className="px-3 py-2 text-xs">{inv.id}</td>
                     <td className="px-3 py-2 text-xs text-muted-foreground">{inv.date}</td>
                     <td className="px-3 py-2 text-xs text-right font-medium">{formatIDR(inv.amount)}</td>
                     <td className="px-3 py-2">
@@ -424,7 +439,7 @@ export default function SalesOrderDetailPage({
             <div className="py-6 text-center">
               <DollarSign className="mx-auto mb-2 h-8 w-8 text-muted-foreground/30" />
               <p className="text-xs text-muted-foreground">
-                {order.status === "Draft"
+                {orderStatus === "Draft"
                   ? "Konfirmasi PO terlebih dahulu untuk membuat invoice"
                   : "Belum ada invoice. Klik \"Buat Invoice\" untuk membuat invoice dari PO ini."
                 }
@@ -447,7 +462,7 @@ export default function SalesOrderDetailPage({
             <div className="rounded-lg border bg-slate-50 p-3 space-y-2">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">PO Number</span>
-                <span className="font-mono font-medium">{order.id}</span>
+                <span className="font-medium">{order.id}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Customer</span>
