@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -26,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Plus, Eye, Filter, ShoppingCart } from "lucide-react"
+import { Plus, Filter, ShoppingCart } from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
@@ -61,6 +62,7 @@ const statusConfig = {
 
 export default function SalesOrdersPage() {
   const [statusFilter, setStatusFilter] = useState("All")
+  const router = useRouter()
 
   const filtered = useMemo(() => {
     return orders.filter((o) => statusFilter === "All" || o.status === statusFilter)
@@ -72,7 +74,7 @@ export default function SalesOrdersPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl tracking-tight">Sales Orders</h1>
+          <h1 className="text-2xl tracking-tight">Purchase Orders</h1>
           <p className="text-muted-foreground">
             Manage sales orders and track fulfillment status
           </p>
@@ -80,7 +82,7 @@ export default function SalesOrdersPage() {
         <Link href="/sales/orders/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Create Sales Order
+            Create PO
           </Button>
         </Link>
       </div>
@@ -159,17 +161,20 @@ export default function SalesOrdersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SO Number</TableHead>
+                <TableHead>PO Number</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Total</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((order) => (
-                <TableRow key={order.id}>
+                <TableRow
+                  key={order.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => router.push(`/sales/orders/${order.id}`)}
+                >
                   <TableCell className="font-sans text-xs">{order.id}</TableCell>
                   <TableCell>{order.customer}</TableCell>
                   <TableCell>{order.date}</TableCell>
@@ -179,11 +184,6 @@ export default function SalesOrdersPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">{formatIDR(order.total)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon-sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

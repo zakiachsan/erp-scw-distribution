@@ -32,6 +32,8 @@ import {
   Award,
 } from "lucide-react"
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 interface SalesPerson {
   id: string
   name: string

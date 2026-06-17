@@ -16,7 +16,6 @@ import {
   BookOpen,
   Store,
   Bell,
-  Settings,
   ChevronDown,
   ChevronRight,
   Menu,
@@ -53,7 +52,6 @@ const iconMap: Record<string, React.ElementType> = {
   BookOpen,
   Store,
   Bell,
-  Settings,
   UserCheck,
   FileText,
   Receipt,
@@ -123,7 +121,16 @@ export function Sidebar() {
     )
   }
 
-  const isActive = (href: string) => pathname === href
+  const isActive = (href: string) => {
+    if (pathname === href) return true
+    // For detail pages (href with 2+ segments like /sales/pipeline),
+    // match if pathname starts with href + "/" to highlight on sub-pages
+    const hrefParts = href.split("/").filter(Boolean)
+    if (hrefParts.length >= 2) {
+      return pathname.startsWith(href + "/")
+    }
+    return false
+  }
   const isChildActive = (href: string, allChildHrefs: string[]) => {
     if (pathname === href) return true
     if (!pathname.startsWith(href + "/")) return false
@@ -273,18 +280,7 @@ export function Sidebar() {
           {!collapsed && <span>Notifications</span>}
         </Link>
 
-        <Link
-          href="/settings/users"
-          className={cn(
-            "mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-            pathname.startsWith("/settings")
-              ? "bg-slate-600 text-white"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}
-        >
-          <Settings className="h-4 w-4 shrink-0" />
-          {!collapsed && <span>Settings</span>}
-        </Link>
+
       </nav>
 
       {/* Footer */}

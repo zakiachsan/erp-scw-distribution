@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import {
   Card,
   CardContent,
@@ -36,9 +36,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { DollarSign, CreditCard, Banknote, Filter } from "lucide-react"
+import { DollarSign, CreditCard, Banknote, Filter, Search, ChevronDown, X } from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
+// ── Invoice options for dropdown ──
+const invoiceOptions = [
+  { id: "INV-2026-038", customer: "PT Autogloss Indonesia", amount: 8500000, status: "Draft" },
+  { id: "INV-2026-037", customer: "CV Ceramic Pro JKT", amount: 6200000, status: "Sent" },
+  { id: "INV-2026-036", customer: "UD Shinemax", amount: 4500000, status: "Paid" },
+  { id: "INV-2026-035", customer: "PT DetailWorks BDG", amount: 7200000, status: "Paid" },
+  { id: "INV-2026-034", customer: "PT Autogloss Indonesia", amount: 8500000, status: "Paid" },
+  { id: "INV-2026-033", customer: "CV ProShine SBY", amount: 5800000, status: "Overdue" },
+  { id: "INV-2026-032", customer: "GlossUp Bali", amount: 6200000, status: "Paid" },
+  { id: "INV-2026-031", customer: "DetailPro Semarang", amount: 2800000, status: "Paid" },
+]
 
 interface Payment {
   id: string
@@ -62,11 +74,133 @@ const initialPayments: Payment[] = [
 ]
 
 const statusConfig: Record<string, { className: string }> = {
-  Completed: { className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  Pending: { className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  Failed: { className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  Completed: { className: "bg-emerald-100 text-emerald-800" },
+  Pending: { className: "bg-yellow-100 text-yellow-800" },
+  Failed: { className: "bg-red-100 text-red-800" },
 }
 
+const invoiceStatusColors: Record<string, string> = {
+  Draft: "bg-gray-100 text-gray-700",
+  Sent: "bg-blue-100 text-blue-700",
+  Paid: "bg-emerald-100 text-emerald-700",
+  Overdue: "bg-red-100 text-red-700",
+}
+
+// ── Searchable Invoice Dropdown ──
+function InvoiceDropdown({
+  value,
+  onSelect,
+}: {
+  value: string
+  onSelect: (invoiceId: string, customer: string, amount: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
+  const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const selected = invoiceOptions.find((i) => i.id === value)
+
+  const filtered = invoiceOptions.filter(
+    (i) =>
+      i.id.toLowerCase().includes(search.toLowerCase()) ||
+      i.customer.toLowerCase().includes(search.toLowerCase())
+  )
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+        setSearch("")
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(!open)
+          setTimeout(() => inputRef.current?.focus(), 0)
+        }}
+        className={`flex h-9 w-full items-center justify-between rounded-md border bg-white px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
+          open ? "border-indigo-300 ring-1 ring-indigo-200" : "border-gray-200"
+        }`}
+      >
+        {selected ? (
+          <span className="flex items-center gap-2 truncate">
+            <span className="font-mono text-xs">{selected.id}</span>
+            <span className="text-muted-foreground">—</span>
+            <span className="truncate">{selected.customer}</span>
+            <span className="ml-auto text-xs text-muted-foreground shrink-0">{formatIDR(selected.amount)}</span>
+          </span>
+        ) : (
+          <span className="text-muted-foreground">Pilih invoice...</span>
+        )}
+        <ChevronDown className={`h-4 w-4 shrink-0 ml-2 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg">
+          {/* Search input */}
+          <div className="flex items-center gap-2 border-b px-3 py-2">
+            <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Cari nomor invoice atau nama customer..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 text-sm outline-none placeholder:text-muted-foreground"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="text-muted-foreground hover:text-foreground">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Options list */}
+          <div className="max-h-60 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-4 text-center text-xs text-muted-foreground">
+                Invoice tidak ditemukan
+              </div>
+            ) : (
+              filtered.map((inv) => (
+                <button
+                  key={inv.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(inv.id, inv.customer, inv.amount)
+                    setOpen(false)
+                    setSearch("")
+                  }}
+                  className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-indigo-50 ${
+                    value === inv.id ? "bg-indigo-50" : ""
+                  }`}
+                >
+                  <span className="font-mono text-xs font-medium">{inv.id}</span>
+                  <span className="text-muted-foreground">—</span>
+                  <span className="flex-1 truncate">{inv.customer}</span>
+                  <Badge variant="outline" className={`text-[10px] px-1 py-0 ${invoiceStatusColors[inv.status] || ""}`}>
+                    {inv.status}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground shrink-0">{formatIDR(inv.amount)}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Main Page ──
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>(initialPayments)
   const [statusFilter, setStatusFilter] = useState("All")
@@ -144,10 +278,13 @@ export default function PaymentsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Invoice Reference</Label>
-                <Input
-                  placeholder="INV-2026-038"
+                <InvoiceDropdown
                   value={formInvoice}
-                  onChange={(e) => setFormInvoice(e.target.value)}
+                  onSelect={(id, customer, amount) => {
+                    setFormInvoice(id)
+                    if (!formCustomer) setFormCustomer(customer)
+                    if (!formAmount) setFormAmount(String(amount))
+                  }}
                 />
               </div>
               <div className="space-y-2">
@@ -191,7 +328,7 @@ export default function PaymentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
                 <DollarSign className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
@@ -204,7 +341,7 @@ export default function PaymentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
                 <Banknote className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
@@ -217,7 +354,7 @@ export default function PaymentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/30">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100">
                 <CreditCard className="h-5 w-5 text-yellow-600" />
               </div>
               <div>
@@ -275,9 +412,20 @@ export default function PaymentsPage() {
                   <TableCell className="text-right">{formatIDR(payment.amount)}</TableCell>
                   <TableCell>{payment.date}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusConfig[payment.status].className}>
-                      {payment.status}
-                    </Badge>
+                    <select
+                      value={payment.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as Payment["status"]
+                        setPayments((prev) =>
+                          prev.map((p) => (p.id === payment.id ? { ...p, status: newStatus } : p))
+                        )
+                      }}
+                      className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[11px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[payment.status].className}`}
+                    >
+                      <option value="Completed">Completed</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Failed">Failed</option>
+                    </select>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{payment.method}</Badge>

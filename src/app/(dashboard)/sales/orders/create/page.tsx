@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import { use } from "react"
 import {
   Card,
   CardContent,
@@ -66,6 +68,38 @@ interface OrderItem {
   discount: number
 }
 
+// Pipeline deals data (mirrors pipeline detail page)
+const PIPELINE_DEALS: Record<string, { id: string; customer: string; company: string; customerId: string }> = {
+  "PL-001": { id: "PL-001", customer: "Budi Santoso", company: "PT Autogloss Indonesia", customerId: "C001" },
+  "PL-002": { id: "PL-002", customer: "Andi Pratama", company: "CV Ceramic Pro JKT", customerId: "C002" },
+  "PL-003": { id: "PL-003", customer: "Rina Wijaya", company: "UD Shinemax", customerId: "C003" },
+  "PL-004": { id: "PL-004", customer: "Dedi Kurniawan", company: "PT DetailWorks BDG", customerId: "C004" },
+  "PL-005": { id: "PL-005", customer: "Sari Dewi", company: "CV ProShine SBY", customerId: "C005" },
+}
+
+// Pre-fill items from pipeline quotation
+const PIPELINE_QUOTATION_ITEMS: Record<string, { productId: string; qty: number }[]> = {
+  "PL-001": [
+    { productId: "P01", qty: 20 },
+    { productId: "P03", qty: 50 },
+  ],
+  "PL-002": [
+    { productId: "P02", qty: 10 },
+  ],
+  "PL-003": [
+    { productId: "P01", qty: 5 },
+    { productId: "P03", qty: 8 },
+    { productId: "P04", qty: 10 },
+  ],
+  "PL-004": [
+    { productId: "P02", qty: 15 },
+  ],
+  "PL-005": [
+    { productId: "P06", qty: 15 },
+    { productId: "P07", qty: 8 },
+  ],
+}
+
 const tierDiscountMap: Record<string, number> = {
   Bronze: 0.02,
   Silver: 0.05,
@@ -74,9 +108,41 @@ const tierDiscountMap: Record<string, number> = {
 }
 
 export default function CreateSalesOrderPage() {
-  const [selectedCustomer, setSelectedCustomer] = useState("")
-  const [items, setItems] = useState<OrderItem[]>([])
+  const searchParams = useSearchParams()
+  const pipelineId = searchParams.get("pipelineId")
+  const pipelineDeal = pipelineId ? PIPELINE_DEALS[pipelineId] : null
+
+  const [selectedCustomer, setSelectedCustomer] = useState(pipelineDeal?.customerId || "")
+  const [items, setItems] = useState<OrderItem[]>(() => {
+    if (pipelineId && PIPELINE_QUOTATION_ITEMS[pipelineId]) {
+      return PIPELINE_QUOTATION_ITEMS[pipelineId].map((qi) => {
+        const product = products.find((p) => p.id === qi.productId)
+        return {
+          productId: qi.productId,
+          qty: qi.qty,
+          price: product?.price || 0,
+          discount: 0,
+        }
+      })
+    }
+    return []
+  })
   const [notes, setNotes] = useState("")
+  const [created, setCreated] = useState(false)
+
+  // Apply tier discount when customer changes
+  useEffect(() => {
+    if (pipelineId && pipelineDeal && items.length > 0) {
+      const customer = customers.find((c) => c.id === pipelineDeal.customerId)
+      if (customer) {
+        const tierDiscount = tierDiscountMap[customer.tier] || 0
+        setItems(prev => prev.map(item => ({
+          ...item,
+          discount: Math.round(item.price * tierDiscount),
+        })))
+      }
+    }
+  }, []) // Only run once on mount
 
   const customer = customers.find((c) => c.id === selectedCustomer)
   const tierDiscount = customer ? tierDiscountMap[customer.tier] || 0 : 0
@@ -121,8 +187,14 @@ export default function CreateSalesOrderPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl  tracking-tight">Create Sales Order</h1>
+          <h1 className="text-2xl  tracking-tight">Create Purchase Order</h1>
           <p className="text-muted-foreground">Fill in the details to create a new sales order</p>
+          {pipelineDeal && (
+            <Badge variant="outline" className="mt-1 text-xs bg-indigo-50 text-indigo-700 border-indigo-200">
+              <ShoppingCart className="h-3 w-3 mr-1" />
+              Dari Pipeline: {pipelineDeal.company}
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -132,7 +204,7 @@ export default function CreateSalesOrderPage() {
           <CardTitle>Customer</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-[3fr_2fr]">
             <div className="space-y-2">
               <Label>Select Customer</Label>
               <Select value={selectedCustomer} onValueChange={(v) => setSelectedCustomer(v ?? "")}>
@@ -310,9 +382,28 @@ export default function CreateSalesOrderPage() {
               <span>Total</span>
               <span className="text-lg">Rp {total.toLocaleString()}</span>
             </div>
-            <Button className="w-full" disabled={items.length === 0 || !selectedCustomer}>
-              Submit Sales Order
-            </Button>
+            {created ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Purchase Order berhasil dibuat!
+                </div>
+                <Link href={pipelineDeal ? `/sales/pipeline/${pipelineId}` : "/sales/orders"} className="block">
+                  <Button variant="outline" className="w-full" size="sm">
+                    {pipelineDeal ? "Kembali ke Pipeline" : "Lihat Semua Orders"}
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={items.length === 0 || !selectedCustomer}
+                onClick={() => setCreated(true)}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {pipelineDeal ? "Submit & Kembali ke Pipeline" : "Submit Purchase Order"}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

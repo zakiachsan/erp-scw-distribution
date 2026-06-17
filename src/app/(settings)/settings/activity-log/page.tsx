@@ -151,11 +151,9 @@ const activityLogs = [
 const moduleOptions = [
   { label: "All Modules", value: "all" },
   { label: "Sales", value: "Sales" },
-  { label: "Inventory", value: "Inventory" },
-  { label: "Purchasing", value: "Purchasing" },
-  { label: "Shipping", value: "Shipping" },
+  { label: "Operasional", value: "Operasional" },
   { label: "Accounting", value: "Accounting" },
-  { label: "Settings", value: "Settings" },
+  { label: "WebCommerce", value: "WebCommerce" },
 ]
 
 const userOptions = [

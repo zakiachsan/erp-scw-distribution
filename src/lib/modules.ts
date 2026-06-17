@@ -33,26 +33,17 @@ export const MODULES: ModuleInfo[] = [
       {
         label: "Customers",
         icon: "UserCheck",
-        children: [
-          { label: "Customer List", href: "/sales/customers" },
-          { label: "Most-Buy Customers", href: "/sales/most-buy" },
-        ],
+        href: "/sales/customers",
       },
       {
-        label: "Sales Orders",
+        label: "Purchase Orders",
         icon: "FileText",
-        children: [
-          { label: "Order List", href: "/sales/orders" },
-          { label: "Create SO", href: "/sales/orders/create" },
-        ],
+        href: "/sales/orders",
       },
       {
         label: "Invoices",
         icon: "Receipt",
-        children: [
-          { label: "Invoice List", href: "/sales/invoices" },
-          { label: "Create Invoice", href: "/sales/invoices/create" },
-        ],
+        href: "/sales/invoices",
       },
       {
         label: "Payments",
@@ -154,7 +145,6 @@ export const MODULES: ModuleInfo[] = [
       { label: "Banners", icon: "Image", href: "/ecommerce/banners" },
       { label: "Coupons", icon: "Ticket", href: "/ecommerce/coupons" },
       { label: "Reviews", icon: "Star", href: "/ecommerce/reviews" },
-      { label: "Settings", icon: "Settings", href: "/ecommerce/settings" },
     ],
   },
 ]

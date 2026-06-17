@@ -9,7 +9,6 @@ import {
   ChevronRight,
   LogOut,
   User,
-  Settings,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -149,10 +148,6 @@ export function Navbar() {
             <DropdownMenuItem>
               <User className="h-4 w-4" />
               Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="h-4 w-4" />
-              Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">

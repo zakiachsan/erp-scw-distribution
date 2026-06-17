@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ArrowLeft, CreditCard, ShoppingCart, Star, TrendingUp } from "lucide-react"
+import { ArrowLeft, Star, TrendingUp } from "lucide-react"
 import Link from "next/link"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
@@ -41,9 +41,9 @@ const purchaseHistory = [
 ]
 
 const statusConfig = {
-  Paid: { className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  Pending: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Overdue: { className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  Paid: { className: "bg-emerald-100 text-emerald-800" },
+  Pending: { className: "bg-amber-100 text-amber-800" },
+  Overdue: { className: "bg-red-100 text-red-800" },
 }
 
 const creditUsedPercent = ((customerData.creditLimit - customerData.remainingCredit) / customerData.creditLimit) * 100
@@ -57,123 +57,117 @@ const tierDiscounts = [
 
 export default function CustomerDetailPage() {
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-4 p-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
         <Link href="/sales/customers">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="h-8 w-8">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl tracking-tight">{customerData.name}</h1>
-          <p className="text-muted-foreground">{customerData.company}</p>
+          <h1 className="text-lg font-bold text-gray-900">{customerData.name}</h1>
+          <p className="text-xs text-gray-500">{customerData.company}</p>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Customer Info Card */}
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle>Customer Information</CardTitle>
+      {/* Top Row: Customer Info + Credit Tracking */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Customer Information */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Customer Information</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Email</span>
-                <span>{customerData.email}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Phone</span>
-                <span>{customerData.phone}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Address</span>
-                <span className="text-right text-xs">{customerData.address}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Sales Person</span>
-                <span>{customerData.salesPerson}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Join Date</span>
-                <span>{customerData.joinDate}</span>
-              </div>
+          <CardContent className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Email</span>
+              <span>{customerData.email}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Phone</span>
+              <span>{customerData.phone}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Address</span>
+              <span className="text-right max-w-[250px]">{customerData.address}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Sales Person</span>
+              <span>{customerData.salesPerson}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Join Date</span>
+              <span>{customerData.joinDate}</span>
             </div>
             <div className="pt-2 border-t">
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="h-4 w-4 text-indigo-600" />
-                <span className="text-sm">Tier Status</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Tier</span>
+                <Badge className="text-[10px] bg-indigo-100 text-indigo-800">
+                  {customerData.tier} — {customerData.tier === "Platinum" ? "12%" : customerData.tier === "Gold" ? "8%" : customerData.tier === "Silver" ? "5%" : "2%"} diskon
+                </Badge>
               </div>
-              <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 text-sm">
-                {customerData.tier} - 12% Discount
-              </Badge>
             </div>
           </CardContent>
         </Card>
 
         {/* Credit Tracking */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Credit Tracking</CardTitle>
-            <CardDescription>Current credit utilization</CardDescription>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Credit Tracking</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-lg border p-3">
-                <p className="text-sm text-muted-foreground">Credit Limit</p>
-                <p className="text-xl">{formatIDR(customerData.creditLimit)}</p>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-lg border p-2">
+                <p className="text-[10px] text-muted-foreground">Credit Limit</p>
+                <p className="text-xs font-semibold">{formatIDR(customerData.creditLimit)}</p>
               </div>
-              <div className="rounded-lg border p-3">
-                <p className="text-sm text-muted-foreground">Used Credit</p>
-                <p className="text-xl text-amber-600">
-                  {formatIDR(customerData.creditLimit - customerData.remainingCredit)}
-                </p>
+              <div className="rounded-lg border p-2">
+                <p className="text-[10px] text-muted-foreground">Used</p>
+                <p className="text-xs font-semibold">{formatIDR(customerData.creditLimit - customerData.remainingCredit)}</p>
               </div>
-              <div className="rounded-lg border p-3">
-                <p className="text-sm text-muted-foreground">Remaining</p>
-                <p className="text-xl text-emerald-600">
-                  {formatIDR(customerData.remainingCredit)}
-                </p>
+              <div className="rounded-lg border p-2">
+                <p className="text-[10px] text-muted-foreground">Remaining</p>
+                <p className="text-xs font-semibold">{formatIDR(customerData.remainingCredit)}</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+            <div className="space-y-1">
+              <div className="flex justify-between text-[10px] text-muted-foreground">
                 <span>Used: {creditUsedPercent.toFixed(0)}%</span>
                 <span>Available: {(100 - creditUsedPercent).toFixed(0)}%</span>
               </div>
-              <Progress value={creditUsedPercent} className="h-3" />
+              <Progress value={creditUsedPercent} className="h-2" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Tiering Discount Status */}
+      {/* Tiering Discount */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-indigo-600" />
-            <CardTitle>Tiering Discount Status</CardTitle>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-indigo-600" />
+              <CardTitle className="text-sm">Tiering Discount</CardTitle>
+            </div>
+            <span className="text-xs text-muted-foreground">Total: {formatIDR(customerData.totalPurchase)}</span>
           </div>
-          <CardDescription>
-            Total purchase: {formatIDR(customerData.totalPurchase)} — Current tier: {customerData.tier}
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-4 gap-2">
             {tierDiscounts.map((tier) => (
               <div
                 key={tier.tier}
-                className={`rounded-lg border p-3 text-center ${
+                className={`rounded-lg border p-2 text-center ${
                   customerData.tier === tier.tier
-                    ? "border-indigo-500 ring-2 ring-indigo-200 dark:ring-indigo-800"
+                    ? "border-indigo-500 ring-1 ring-indigo-200"
                     : ""
                 }`}
               >
-                <Badge variant="outline" className={tier.color}>{tier.tier}</Badge>
-                <p className="mt-2 text-xs text-muted-foreground">Min: {tier.minPurchase}</p>
-                <p className="text-lg ">{tier.discount}</p>
+                <Badge variant="outline" className={`text-[10px] ${tier.color}`}>{tier.tier}</Badge>
+                <p className="text-[10px] text-muted-foreground mt-1">Min: {tier.minPurchase}</p>
+                <p className="text-xs font-bold">{tier.discount}</p>
                 {customerData.tier === tier.tier && (
-                  <Badge className="mt-1 bg-indigo-600 text-white">Current</Badge>
+                  <Badge className="mt-1 text-[10px] bg-indigo-600 text-white">Current</Badge>
                 )}
               </div>
             ))}
@@ -183,14 +177,14 @@ export default function CustomerDetailPage() {
 
       {/* Purchase History */}
       <Card>
-        <CardHeader>
-          <CardTitle>Purchase History</CardTitle>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Purchase History</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SO Number</TableHead>
+                <TableHead>PO Number</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Items</TableHead>
                 <TableHead className="text-right">Total</TableHead>
@@ -200,12 +194,12 @@ export default function CustomerDetailPage() {
             <TableBody>
               {purchaseHistory.map((purchase) => (
                 <TableRow key={purchase.id}>
-                  <TableCell className="font-sans text-xs">{purchase.id}</TableCell>
-                  <TableCell>{purchase.date}</TableCell>
-                  <TableCell className="text-muted-foreground text-xs">{purchase.items}</TableCell>
-                  <TableCell className="text-right">{formatIDR(purchase.total)}</TableCell>
+                  <TableCell className="font-mono text-xs">{purchase.id}</TableCell>
+                  <TableCell className="text-xs">{purchase.date}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground max-w-[250px] truncate">{purchase.items}</TableCell>
+                  <TableCell className="text-xs text-right">{formatIDR(purchase.total)}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusConfig[purchase.status as keyof typeof statusConfig].className}>
+                    <Badge variant="outline" className={`text-[10px] ${statusConfig[purchase.status as keyof typeof statusConfig].className}`}>
                       {purchase.status}
                     </Badge>
                   </TableCell>

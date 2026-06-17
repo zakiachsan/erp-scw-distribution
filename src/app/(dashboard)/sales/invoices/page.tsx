@@ -142,19 +142,11 @@ export default function InvoiceListPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl tracking-tight">Invoices</h1>
-          <p className="text-muted-foreground">
-            Manage invoices and track payment status
-          </p>
-        </div>
-        <Link href="/sales/invoices/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Invoice
-          </Button>
-        </Link>
+      <div>
+        <h1 className="text-2xl tracking-tight">Invoices</h1>
+        <p className="text-muted-foreground">
+          Riwayat invoice dari Purchase Orders
+        </p>
       </div>
 
       {/* Summary Cards */}
