@@ -382,7 +382,7 @@ export default function StockOpnameDetailPage() {
             </form>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground whitespace-nowrap">Scan ke Rak:</span>
-              <Select value={scanRackId} onValueChange={setScanRackId}>
+              <Select value={scanRackId} onValueChange={(v) => setScanRackId(v ?? "")}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="— Pilih rak">
                     {scanRackId ? allRacks.find((r) => r.id === scanRackId)?.name : "— Pilih rak"}

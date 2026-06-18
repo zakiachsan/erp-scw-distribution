@@ -52,6 +52,19 @@ import {
 } from "lucide-react"
 import { useWarehouseStore } from "@/lib/warehouse-store"
 
+interface Product {
+  id: string
+  sku: string
+  name: string
+  category: string
+  description: string
+  barcode: string
+  status: "in-stock" | "low-stock" | "out-of-stock"
+  warehouses: { name: string; rak: string; qty: number }[]
+  priceTiers: { tier: string; minQty: number; priceIDR: number; priceUSD: number }[]
+  stockMovements: { id: string; type: "in" | "out" | "transfer" | "adjustment"; date: string; source: string; destination: string; qty: number; reference: string; note: string }[]
+}
+
 const productMap: Record<
   string,
   {

@@ -251,7 +251,7 @@ export default function CreateOutbondPage() {
                     <DialogDescription>Pilih produk yang akan dicatat sebagai barang keluar.</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-2">
-                    <Select value={selectedProduct} onValueChange={setSelectedProduct}>
+                    <Select value={selectedProduct} onValueChange={(v) => setSelectedProduct(v ?? "")}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Pilih produk" />
                       </SelectTrigger>

@@ -381,7 +381,7 @@ export default function PutAwayDetailPage() {
             </form>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground whitespace-nowrap">Assign ke Rak:</span>
-              <Select value={scanRackId} onValueChange={setScanRackId}>
+              <Select value={scanRackId} onValueChange={(v) => setScanRackId(v ?? "")}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="— Pilih rak">
                     {scanRackId ? racks.find(r => r.id === scanRackId)?.name : "— Pilih rak"}
@@ -436,7 +436,7 @@ export default function PutAwayDetailPage() {
                 <DialogDescription>Pilih rak yang mau diisi produk.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-2">
-                <Select value={selectedRackId} onValueChange={setSelectedRackId}>
+                <Select value={selectedRackId} onValueChange={(v) => setSelectedRackId(v ?? "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih rak">
                       {selectedRackId ? racks.find(r => r.id === selectedRackId)?.name : null}
@@ -500,7 +500,7 @@ export default function PutAwayDetailPage() {
                       <DialogDescription>Pilih produk dari PO untuk dimasukkan ke rak ini.</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
-                      <Select value={productToAdd} onValueChange={setProductToAdd}>
+                      <Select value={productToAdd} onValueChange={(v) => setProductToAdd(v ?? "")}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Pilih produk" />
                         </SelectTrigger>

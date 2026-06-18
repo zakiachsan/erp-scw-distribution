@@ -36,7 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { DollarSign, CreditCard, Banknote, Search, X, Filter } from "lucide-react"
+import { DollarSign, CreditCard, Banknote, Search, X, Filter, ChevronDown } from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 

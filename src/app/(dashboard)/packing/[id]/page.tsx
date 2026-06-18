@@ -374,7 +374,7 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 </div>
               )}
-              {detail.status !== "Completed" && recordedBlob && (
+              {detail.status === "In Progress" && recordedBlob && (
                 <div className="space-y-3">
                   <div className="rounded-lg overflow-hidden bg-black aspect-video">
                     <video ref={videoRef} src={URL.createObjectURL(recordedBlob)} controls playsInline className="w-full h-full object-cover" />

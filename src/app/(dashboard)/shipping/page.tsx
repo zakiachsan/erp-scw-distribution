@@ -152,7 +152,7 @@ export default function ShippingPage() {
               </div>
               <div>
                 <label className="text-sm font-medium">Courier</label>
-                <Select value={courier} onValueChange={(v) => setCourier(v)}>
+                <Select value={courier} onValueChange={(v) => setCourier(v ?? "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a courier..." />
                   </SelectTrigger>

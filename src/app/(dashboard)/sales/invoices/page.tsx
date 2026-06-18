@@ -10,6 +10,7 @@ import {
   Search,
   FileText,
   DollarSign,
+  X,
 } from "lucide-react"
 
 interface Invoice {
