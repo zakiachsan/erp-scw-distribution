@@ -1,9 +1,9 @@
 "use client"
 
-export const dynamic = "force-dynamic"
 
 
 import Link from "next/link"
+import { Suspense } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import {
   Card,
@@ -166,7 +166,7 @@ function formatCurrency(amount: number, currency: string) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(amount)
 }
 
-export default function PurchaseOrderDetailPage() {
+function PurchaseOrderDetailContent() {
   const params = useParams()
   const searchParams = useSearchParams()
   const id = params.id as string
@@ -413,3 +413,13 @@ export default function PurchaseOrderDetailPage() {
     </div>
   )
 }
+
+function PurchaseOrderDetailPage() {
+  return (
+    <Suspense>
+      <PurchaseOrderDetailContent />
+    </Suspense>
+  )
+}
+
+export default PurchaseOrderDetailPage

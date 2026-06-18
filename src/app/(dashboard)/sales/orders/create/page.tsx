@@ -1,9 +1,8 @@
 "use client"
 
-export const dynamic = "force-dynamic"
 
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { use } from "react"
 import {
@@ -110,7 +109,7 @@ const tierDiscountMap: Record<string, number> = {
   Platinum: 0.12,
 }
 
-export default function CreateSalesOrderPage() {
+function CreateSalesOrderContent() {
   const searchParams = useSearchParams()
   const pipelineId = searchParams.get("pipelineId")
   const pipelineDeal = pipelineId ? PIPELINE_DEALS[pipelineId] : null
@@ -413,3 +412,13 @@ export default function CreateSalesOrderPage() {
     </div>
   )
 }
+
+function CreateSalesOrderPage() {
+  return (
+    <Suspense>
+      <CreateSalesOrderContent />
+    </Suspense>
+  )
+}
+
+export default CreateSalesOrderPage
