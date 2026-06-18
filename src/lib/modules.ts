@@ -114,21 +114,42 @@ export const MODULES: ModuleInfo[] = [
     menuItems: [
       { label: "Dashboard", icon: "LayoutDashboard", href: "/accounting" },
       {
-        label: "Jurnal",
+        label: "Buku Besar",
         icon: "BookOpen",
         children: [
-          { label: "Journal Entries", href: "/accounting/journal" },
-          { label: "New Journal", href: "/accounting/journal/create" },
+          { label: "Akun Perkiraan", href: "/accounting/coa" },
+          { label: "Jurnal Umum", href: "/accounting/journal" },
         ],
       },
-      { label: "General Ledger", icon: "ListOrdered", href: "/accounting/ledger" },
-      { label: "Balance Sheet", icon: "Scale", href: "/accounting/balance-sheet" },
-      { label: "P&L Statement", icon: "TrendingUp", href: "/accounting/profit-loss" },
-      { label: "Bank Reconciliation", icon: "ArrowLeftRight", href: "/accounting/reconciliation" },
-      { label: "Tax PPh 21/23", icon: "Landmark", href: "/accounting/tax" },
-      { label: "Fixed Asset", icon: "HardDrive", href: "/accounting/fixed-asset" },
-      { label: "Budget", icon: "PieChart", href: "/accounting/budget" },
-      { label: "KPI", icon: "Target", href: "/accounting/kpi" },
+      {
+        label: "Kas & Bank",
+        icon: "Landmark",
+        children: [
+          { label: "Pembayaran", href: "/accounting/payments" },
+          { label: "Penerimaan", href: "/accounting/receipts" },
+          { label: "Transfer Bank", href: "/accounting/transfers" },
+          { label: "Rekonsiliasi Bank", href: "/accounting/reconciliation" },
+        ],
+      },
+      {
+        label: "Penjualan",
+        icon: "TrendingUp",
+        children: [
+          { label: "Penawaran Penjualan", href: "/accounting/sales/quotations" },
+          { label: "Faktur Penjualan", href: "/accounting/sales/invoices" },
+        ],
+      },
+      {
+        label: "Persediaan",
+        icon: "Package",
+        children: [
+          { label: "Pekerjaan Pesanan", href: "/accounting/inventory/work-orders" },
+          { label: "Penyelesaian Pesanan", href: "/accounting/inventory/completions" },
+          { label: "Penyesuaian Persediaan", href: "/accounting/inventory/adjustments" },
+        ],
+      },
+      { label: "Aset Tetap", icon: "HardDrive", href: "/accounting/fixed-assets" },
+      { label: "Laporan", icon: "PieChart", href: "/accounting/reports" },
     ],
   },
   {

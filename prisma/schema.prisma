@@ -1,0 +1,743 @@
+// ═══════════════════════════════════════════════════════════════
+// SCW Distribution — Accounting Module Schema (Simplified)
+// Standard: PSAK (Pernyataan Standar Akuntansi Keuangan)
+// ═══════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART OF ACCOUNTS (Akun Perkiraan)
+// ═══════════════════════════════════════════════════════════════
+
+model ChartOfAccount {
+  id            String   @id @default(cuid())
+  code          String   @unique @db.VarChar(20)
+  name          String   @db.VarChar(200)
+  description   String?  @db.Text
+  
+  // Hierarki parent-child (recursive)
+  parentId      String?
+  parent        ChartOfAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children      ChartOfAccount[] @relation("AccountHierarchy")
+  
+  // Klasifikasi sesuai PSAK
+  accountType   AccountType
+  accountSubType AccountSubType?
+  normalBalance NormalBalance @default(DEBIT)
+  
+  // Status dan kontrol
+  isActive      Boolean  @default(true)
+  isGroup       Boolean  @default(false)
+  isBankAccount Boolean  @default(false)
+  isCashAccount Boolean  @default(false)
+  isSystem      Boolean  @default(false)
+  
+  // Currency
+  currencyCode  String?  @default("IDR") @db.VarChar(3)
+  
+  // Mapping ke laporan keuangan
+  reportLine    String?  @db.VarChar(100)
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@index([code])
+  @@index([accountType])
+  @@index([parentId])
+  @@map("chart_of_accounts")
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
+enum AccountSubType {
+  BANK
+  CASH
+  RECEIVABLE
+  PAYABLE
+  FIXED_ASSET
+  ACCUMULATED_DEPRECIATION
+  CURRENT_ASSET
+  LONG_TERM_ASSET
+  CURRENT_LIABILITY
+  LONG_TERM_LIABILITY
+  EQUITY
+  REVENUE
+  COST_OF_GOODS
+  OPERATING_EXPENSE
+  OTHER_INCOME
+  OTHER_EXPENSE
+}
+
+enum NormalBalance {
+  DEBIT
+  CREDIT
+}
+
+// ═══════════════════════════════════════════════════════════════
+// JOURNAL ENTRIES (Jurnal Umum)
+// ═══════════════════════════════════════════════════════════════
+
+model JournalEntry {
+  id              String           @id @default(cuid())
+  entryNumber     String           @unique @db.VarChar(30)
+  postingDate     DateTime         @db.Date
+  
+  // Source reference
+  sourceType      String           @db.VarChar(30) // e.g., "SALES_INVOICE", "PAYMENT"
+  sourceId        String?
+  sourceNumber    String?          @db.VarChar(30)
+  
+  // Status
+  status          String           @default("DRAFT") // DRAFT, POSTED, REVERSED, VOIDED
+  
+  // Description
+  description     String           @db.Text
+  
+  // Currency
+  currencyCode    String           @default("IDR") @db.VarChar(3)
+  exchangeRate    Decimal          @default(1) @db.Decimal(15, 8)
+  
+  // Validation
+  totalDebit      Decimal          @default(0) @db.Decimal(18, 2)
+  totalCredit     Decimal          @default(0) @db.Decimal(18, 2)
+  isBalanced      Boolean          @default(true)
+  
+  // Fiscal
+  fiscalYear      String           @db.VarChar(10)
+  fiscalPeriod    Int              @db.SmallInt
+  
+  // Audit
+  createdBy       String           @db.VarChar(50) @map("created_by")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  postedAt        DateTime?        @map("posted_at")
+  postedBy        String?          @db.VarChar(50) @map("posted_by")
+  
+  // Relations
+  details         JournalDetail[]
+  
+  @@index([postingDate])
+  @@index([status])
+  @@index([sourceType, sourceId])
+  @@index([fiscalYear, fiscalPeriod])
+  @@map("journal_entries")
+}
+
+model JournalDetail {
+  id              String           @id @default(cuid())
+  journalEntryId  String           @map("journal_entry_id")
+  journalEntry    JournalEntry     @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  
+  lineSequence    Int              @default(0) @map("line_sequence")
+  accountId       String           @map("account_id")
+  
+  // Amount
+  debitAmount     Decimal          @default(0) @db.Decimal(18, 2) @map("debit_amount")
+  creditAmount    Decimal          @default(0) @db.Decimal(18, 2) @map("credit_amount")
+  
+  // Multi-currency
+  debitCurrency   Decimal          @default(0) @db.Decimal(18, 2) @map("debit_currency")
+  creditCurrency  Decimal          @default(0) @db.Decimal(18, 2) @map("credit_currency")
+  
+  // Partner
+  partnerId       String?          @map("partner_id")
+  
+  // Description
+  description     String?          @db.VarChar(500)
+  
+  // Reconciliation
+  reconcileId     String?          @map("reconcile_id")
+  reconciledAt    DateTime?        @map("reconciled_at")
+  
+  createdAt       DateTime         @default(now()) @map("created_at")
+  
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([partnerId])
+  @@index([reconcileId])
+  @@map("journal_details")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PARTNER (Customer/Vendor)
+// ═══════════════════════════════════════════════════════════════
+
+model Partner {
+  id            String   @id @default(cuid())
+  code          String   @unique @db.VarChar(20)
+  name          String   @db.VarChar(200)
+  type          String   @db.VarChar(20) // CUSTOMER, VENDOR, BOTH
+  
+  email         String?  @db.VarChar(200)
+  phone         String?  @db.VarChar(50)
+  address       String?  @db.Text
+  npwp          String?  @db.VarChar(30)
+  
+  paymentTermDays Int    @default(0) @map("payment_term_days")
+  creditLimit   Decimal  @default(0) @db.Decimal(18, 2) @map("credit_limit")
+  
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("partners")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PRODUCT (Barang & Jasa)
+// ═══════════════════════════════════════════════════════════════
+
+model Product {
+  id            String   @id @default(cuid())
+  sku           String   @unique @db.VarChar(50)
+  name          String   @db.VarChar(200)
+  description   String?  @db.Text
+  type          String   @default("STOCK") // STOCK, SERVICE, DIGITAL
+  
+  costPrice     Decimal  @db.Decimal(18, 2) @map("cost_price")
+  sellingPrice  Decimal  @db.Decimal(18, 2) @map("selling_price")
+  currencyCode  String   @default("IDR") @db.VarChar(3)
+  uom           String   @db.VarChar(20) // PCS, KG, BOX
+  
+  minimumStock  Decimal  @default(0) @db.Decimal(18, 4) @map("minimum_stock")
+  maximumStock  Decimal  @default(0) @db.Decimal(18, 4) @map("maximum_stock")
+  
+  // CoA mapping
+  inventoryAccountId String? @map("inventory_account_id")
+  cogsAccountId      String? @map("cogs_account_id")
+  revenueAccountId   String? @map("revenue_account_id")
+  
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("products")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WAREHOUSE (Gudang)
+// ═══════════════════════════════════════════════════════════════
+
+model Warehouse {
+  id            String   @id @default(cuid())
+  code          String   @unique @db.VarChar(20)
+  name          String   @db.VarChar(100)
+  address       String?  @db.Text
+  isActive      Boolean  @default(true)
+  isMain        Boolean  @default(false) @map("is_main")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("warehouses")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STOCK BALANCE
+// ═══════════════════════════════════════════════════════════════
+
+model StockBalance {
+  id            String   @id @default(cuid())
+  productId     String   @map("product_id")
+  warehouseId   String   @map("warehouse_id")
+  
+  quantity      Decimal  @default(0) @db.Decimal(18, 4)
+  averageCost   Decimal  @default(0) @db.Decimal(18, 2) @map("average_cost")
+  totalValue    Decimal  @default(0) @db.Decimal(18, 2) @map("total_value")
+  
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@unique([productId, warehouseId])
+  @@map("stock_balances")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SALES QUOTATION (Penawaran Penjualan)
+// ═══════════════════════════════════════════════════════════════
+
+model SalesQuotation {
+  id            String   @id @default(cuid())
+  quotationNumber String @unique @db.VarChar(30) @map("quotation_number")
+  quotationDate DateTime @db.Date @map("quotation_date")
+  
+  customerId    String   @map("customer_id")
+  status        String   @default("DRAFT")
+  
+  subtotal      Decimal  @db.Decimal(18, 2)
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  taxAmount     Decimal  @default(0) @db.Decimal(18, 2) @map("tax_amount")
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  
+  notes         String?  @db.Text
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@index([customerId])
+  @@index([quotationDate])
+  @@map("sales_quotations")
+}
+
+model SalesQuotationItem {
+  id            String   @id @default(cuid())
+  salesQuotationId String @map("sales_quotation_id")
+  productId     String   @map("product_id")
+  
+  quantity      Decimal  @db.Decimal(18, 4)
+  unitPrice     Decimal  @db.Decimal(18, 2) @map("unit_price")
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  subtotal      Decimal  @db.Decimal(18, 2)
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([salesQuotationId])
+  @@map("sales_quotation_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SALES INVOICE (Faktur Penjualan)
+// ═══════════════════════════════════════════════════════════════
+
+model SalesInvoice {
+  id            String   @id @default(cuid())
+  invoiceNumber String   @unique @db.VarChar(30) @map("invoice_number")
+  invoiceDate   DateTime @db.Date @map("invoice_date")
+  dueDate       DateTime @db.Date @map("due_date")
+  
+  customerId    String   @map("customer_id")
+  status        String   @default("DRAFT")
+  paymentStatus String   @default("UNPAID") @map("payment_status")
+  
+  subtotal      Decimal  @db.Decimal(18, 2)
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  taxAmount     Decimal  @default(0) @db.Decimal(18, 2) @map("tax_amount")
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  paidAmount    Decimal  @default(0) @db.Decimal(18, 2) @map("paid_amount")
+  remainingAmount Decimal @db.Decimal(18, 2) @map("remaining_amount")
+  
+  ppnRate       Decimal  @default(11) @db.Decimal(5, 2) @map("ppn_rate")
+  ppnAmount     Decimal  @default(0) @db.Decimal(18, 2) @map("ppn_amount")
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  notes         String?  @db.Text
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@index([customerId])
+  @@index([invoiceDate])
+  @@map("sales_invoices")
+}
+
+model SalesInvoiceItem {
+  id            String   @id @default(cuid())
+  salesInvoiceId String @map("sales_invoice_id")
+  productId     String   @map("product_id")
+  
+  quantity      Decimal  @db.Decimal(18, 4)
+  unitPrice     Decimal  @db.Decimal(18, 2) @map("unit_price")
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  subtotal      Decimal  @db.Decimal(18, 2)
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([salesInvoiceId])
+  @@map("sales_invoice_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PURCHASE INVOICE (Faktur Pembelian)
+// ═══════════════════════════════════════════════════════════════
+
+model PurchaseInvoice {
+  id            String   @id @default(cuid())
+  invoiceNumber String   @unique @db.VarChar(30) @map("invoice_number")
+  invoiceDate   DateTime @db.Date @map("invoice_date")
+  dueDate       DateTime @db.Date @map("due_date")
+  
+  vendorId      String   @map("vendor_id")
+  status        String   @default("DRAFT")
+  paymentStatus String   @default("UNPAID") @map("payment_status")
+  
+  subtotal      Decimal  @db.Decimal(18, 2)
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  taxAmount     Decimal  @default(0) @db.Decimal(18, 2) @map("tax_amount")
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  paidAmount    Decimal  @default(0) @db.Decimal(18, 2) @map("paid_amount")
+  remainingAmount Decimal @db.Decimal(18, 2) @map("remaining_amount")
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  notes         String?  @db.Text
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@index([vendorId])
+  @@index([invoiceDate])
+  @@map("purchase_invoices")
+}
+
+model PurchaseInvoiceItem {
+  id            String   @id @default(cuid())
+  purchaseInvoiceId String @map("purchase_invoice_id")
+  productId     String   @map("product_id")
+  
+  quantity      Decimal  @db.Decimal(18, 4)
+  unitPrice     Decimal  @db.Decimal(18, 2) @map("unit_price")
+  discountPercent Decimal @default(0) @db.Decimal(5, 2) @map("discount_percent")
+  discountAmount Decimal @default(0) @db.Decimal(18, 2) @map("discount_amount")
+  subtotal      Decimal  @db.Decimal(18, 2)
+  totalAmount   Decimal  @db.Decimal(18, 2) @map("total_amount")
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([purchaseInvoiceId])
+  @@map("purchase_invoice_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORK ORDER (Pekerjaan Pesanan)
+// ═══════════════════════════════════════════════════════════════
+
+model WorkOrder {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique @db.VarChar(30) @map("order_number")
+  orderDate     DateTime @db.Date @map("order_date")
+  
+  customerId    String?  @map("customer_id")
+  status        String   @default("DRAFT")
+  
+  targetProduct String?  @db.VarChar(200) @map("target_product")
+  targetQuantity Decimal? @db.Decimal(18, 4) @map("target_quantity")
+  
+  notes         String?  @db.Text
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("work_orders")
+}
+
+model WorkOrderItem {
+  id            String   @id @default(cuid())
+  workOrderId   String   @map("work_order_id")
+  productId     String   @map("product_id")
+  
+  quantity      Decimal  @db.Decimal(18, 4)
+  unit          String   @db.VarChar(20)
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([workOrderId])
+  @@map("work_order_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORK COMPLETION (Penyelesaian Pesanan)
+// ═══════════════════════════════════════════════════════════════
+
+model WorkCompletion {
+  id            String   @id @default(cuid())
+  completionNumber String @unique @db.VarChar(30) @map("completion_number")
+  completionDate DateTime @db.Date @map("completion_date")
+  
+  workOrderId   String   @map("work_order_id")
+  rollOverType  String   @default("BARANG") @map("roll_over_type")
+  status        String   @default("DRAFT")
+  portion       Decimal  @default(100) @db.Decimal(5, 2)
+  
+  notes         String?  @db.Text
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("work_completions")
+}
+
+model WorkCompletionItem {
+  id            String   @id @default(cuid())
+  workCompletionId String @map("work_completion_id")
+  productId     String   @map("product_id")
+  
+  quantity      Decimal  @db.Decimal(18, 4)
+  unit          String   @db.VarChar(20)
+  allocationAmount Decimal @default(0) @db.Decimal(18, 2) @map("allocation_amount")
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([workCompletionId])
+  @@map("work_completion_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STOCK ADJUSTMENT (Penyesuaian Persediaan)
+// ═══════════════════════════════════════════════════════════════
+
+model StockAdjustment {
+  id            String   @id @default(cuid())
+  adjustmentNumber String @unique @db.VarChar(30) @map("adjustment_number")
+  adjustmentDate DateTime @db.Date @map("adjustment_date")
+  
+  status        String   @default("DRAFT")
+  notes         String?  @db.Text
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("stock_adjustments")
+}
+
+model StockAdjustmentItem {
+  id            String   @id @default(cuid())
+  stockAdjustmentId String @map("stock_adjustment_id")
+  productId     String   @map("product_id")
+  
+  adjustmentType String  @map("adjustment_type") // MASUK, KELUAR
+  quantity      Decimal  @db.Decimal(18, 4)
+  unit          String   @db.VarChar(20)
+  unitCost      Decimal  @db.Decimal(18, 2) @map("unit_cost")
+  totalCost     Decimal  @db.Decimal(18, 2) @map("total_cost")
+  
+  description   String?  @db.VarChar(500)
+  
+  @@index([stockAdjustmentId])
+  @@map("stock_adjustment_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PAYMENT (Pembayaran)
+// ═══════════════════════════════════════════════════════════════
+
+model Payment {
+  id            String   @id @default(cuid())
+  paymentNumber String   @unique @db.VarChar(30) @map("payment_number")
+  paymentDate   DateTime @db.Date @map("payment_date")
+  
+  bankAccountId String   @map("bank_account_id")
+  vendorId      String?  @map("vendor_id")
+  status        String   @default("DRAFT")
+  amount        Decimal  @db.Decimal(18, 2)
+  checkNumber   String?  @db.VarChar(50) @map("check_number")
+  description   String?  @db.VarChar(500)
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("payments")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RECEIPT (Penerimaan)
+// ═══════════════════════════════════════════════════════════════
+
+model Receipt {
+  id            String   @id @default(cuid())
+  receiptNumber String   @unique @db.VarChar(30) @map("receipt_number")
+  receiptDate   DateTime @db.Date @map("receipt_date")
+  
+  bankAccountId String   @map("bank_account_id")
+  customerId    String?  @map("customer_id")
+  status        String   @default("DRAFT")
+  amount        Decimal  @db.Decimal(18, 2)
+  description   String?  @db.VarChar(500)
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("receipts")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BANK TRANSFER (Transfer Bank)
+// ═══════════════════════════════════════════════════════════════
+
+model BankTransfer {
+  id            String   @id @default(cuid())
+  transferNumber String @unique @db.VarChar(30) @map("transfer_number")
+  transferDate  DateTime @db.Date @map("transfer_date")
+  
+  fromAccountId String   @map("from_account_id")
+  toAccountId   String   @map("to_account_id")
+  amount        Decimal  @db.Decimal(18, 2)
+  description   String?  @db.VarChar(500)
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("bank_transfers")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BANK RECONCILIATION (Rekonsiliasi Bank)
+// ═══════════════════════════════════════════════════════════════
+
+model BankReconciliation {
+  id            String   @id @default(cuid())
+  reconciliationNumber String @unique @db.VarChar(30) @map("reconciliation_number")
+  reconciliationDate DateTime @db.Date @map("reconciliation_date")
+  
+  bankAccountId String   @map("bank_account_id")
+  startDate     DateTime @db.Date @map("start_date")
+  endDate       DateTime @db.Date @map("end_date")
+  
+  bookBalance   Decimal  @db.Decimal(18, 2) @map("book_balance")
+  bankBalance   Decimal  @db.Decimal(18, 2) @map("bank_balance")
+  
+  reconciledBookBalance Decimal @db.Decimal(18, 2) @map("reconciled_book_balance")
+  reconciledBankBalance Decimal @db.Decimal(18, 2) @map("reconciled_bank_balance")
+  
+  status        String   @default("DRAFT")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("bank_reconciliations")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FIXED ASSET (Aset Tetap)
+// ═══════════════════════════════════════════════════════════════
+
+model FixedAsset {
+  id            String   @id @default(cuid())
+  assetNumber   String   @unique @db.VarChar(30) @map("asset_number")
+  name          String   @db.VarChar(200)
+  
+  purchaseDate  DateTime @db.Date @map("purchase_date")
+  useDate       DateTime @db.Date @map("use_date")
+  
+  purchasePrice Decimal  @db.Decimal(18, 2) @map("purchase_price")
+  residualValue Decimal  @default(0) @db.Decimal(18, 2) @map("residual_value")
+  
+  usefulLifeYears Int    @db.SmallInt @map("useful_life_years")
+  usefulLifeMonths Int   @default(0) @db.SmallInt @map("useful_life_months")
+  quantity      Int      @default(1)
+  
+  depreciationMethod String @default("STRAIGHT_LINE") @map("depreciation_method")
+  depreciationRate Decimal @default(0) @db.Decimal(5, 2) @map("depreciation_rate")
+  
+  isIntangible  Boolean  @default(false) @map("is_intangible")
+  
+  assetAccountId String  @map("asset_account_id")
+  accumulatedDeprAccountId String @map("accumulated_depr_account_id")
+  expenseAccountId String @map("expense_account_id")
+  
+  currentBookValue Decimal @db.Decimal(18, 2) @map("current_book_value")
+  accumulatedDepreciation Decimal @default(0) @db.Decimal(18, 2) @map("accumulated_depreciation")
+  
+  status        String   @default("ACTIVE")
+  
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdBy     String   @db.VarChar(50) @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("fixed_assets")
+}
+
+model AssetDepreciation {
+  id            String   @id @default(cuid())
+  fixedAssetId  String   @map("fixed_asset_id")
+  
+  periodYear    Int      @db.SmallInt @map("period_year")
+  periodMonth   Int      @db.SmallInt @map("period_month")
+  
+  depreciationAmount Decimal @db.Decimal(18, 2) @map("depreciation_amount")
+  accumulatedDepreciation Decimal @db.Decimal(18, 2) @map("accumulated_depreciation")
+  bookValue     Decimal  @db.Decimal(18, 2) @map("book_value")
+  
+  isPosted      Boolean  @default(false) @map("is_posted")
+  journalEntryId String? @map("journal_entry_id")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  @@unique([fixedAssetId, periodYear, periodMonth])
+  @@map("asset_depreciations")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO-NUMBERING SEQUENCE
+// ═══════════════════════════════════════════════════════════════
+
+model Sequence {
+  id            String   @id @default(cuid())
+  sequenceName  String   @unique @map("sequence_name") @db.VarChar(100)
+  description   String?  @db.VarChar(200)
+  prefix        String   @db.VarChar(20)
+  formatPattern String   @db.VarChar(100) @map("format_pattern")
+  currentNumber BigInt   @default(0) @map("current_number")
+  incrementBy   Int      @default(1) @map("increment_by")
+  minLength     Int      @default(1) @map("min_length")
+  resetPeriod   String   @default("NEVER") @map("reset_period")
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@map("sequences")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FISCAL PERIOD
+// ═══════════════════════════════════════════════════════════════
+
+model FiscalPeriod {
+  id            String   @id @default(cuid())
+  year          Int      @db.SmallInt
+  month         Int      @db.SmallInt
+  startDate     DateTime @db.Date @map("start_date")
+  endDate       DateTime @db.Date @map("end_date")
+  status        String   @default("OPEN")
+  isClosed      Boolean  @default(false) @map("is_closed")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@unique([year, month])
+  @@map("fiscal_periods")
+}

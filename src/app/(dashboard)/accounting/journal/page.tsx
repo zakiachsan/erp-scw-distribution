@@ -29,343 +29,381 @@ import {
 } from "@/components/ui/table"
 import {
   Search,
-  Plus,
+  BookOpen,
   Filter,
   Calendar,
-  BookOpen,
 } from "lucide-react"
 
 interface JournalEntry {
   id: string
+  number: string
   date: string
-  reference: string
-  account: string
-  accountName: string
   description: string
-  debit: number
-  credit: number
-  status: "Posted" | "Draft" | "Pending" | "Reversed"
+  totalDebit: number
+  totalCredit: number
+  status: "Diterbitkan" | "Draft" | "Dibatalkan"
+  type: string
+  lines: {
+    account: string
+    accountName: string
+    debit: number
+    credit: number
+  }[]
 }
 
 const journalEntries: JournalEntry[] = [
   {
-    id: "JE-2026-00187",
+    id: "JE-001",
+    number: "JV.2026.06.00001",
     date: "2026-06-02",
-    reference: "INV-2026-0312",
-    account: "1101",
-    accountName: "Kas",
     description: "Pembayaran Invoice PT Maju Jaya - SCW Nano Coating 9H",
-    debit: 45000000,
-    credit: 0,
-    status: "Posted",
+    totalDebit: 45000000,
+    totalCredit: 45000000,
+    status: "Diterbitkan",
+    type: "Pembayaran",
+    lines: [
+      { account: "1101", accountName: "Kas", debit: 45000000, credit: 0 },
+      { account: "4101", accountName: "Penjualan Produk", debit: 0, credit: 45000000 },
+    ],
   },
   {
-    id: "JE-2026-00186",
+    id: "JE-002",
+    number: "JV.2026.06.00002",
     date: "2026-06-01",
-    reference: "PO-2026-0089",
-    account: "2101",
-    accountName: "Utang Usaha",
     description: "Pembelian bahan baku coating dari ChemPro Asia",
-    debit: 0,
-    credit: 28500000,
-    status: "Posted",
+    totalDebit: 28500000,
+    totalCredit: 28500000,
+    status: "Diterbitkan",
+    type: "Pembelian",
+    lines: [
+      { account: "5101", accountName: "Harga Pokok Penjualan", debit: 28500000, credit: 0 },
+      { account: "2101", accountName: "Utang Usaha", debit: 0, credit: 28500000 },
+    ],
   },
   {
-    id: "JE-2026-00185",
+    id: "JE-003",
+    number: "JV.2026.06.00003",
     date: "2026-06-01",
-    reference: "SAL-2026-006",
-    account: "5101",
-    accountName: "Gaji Karyawan",
     description: "Gaji bulanan tim produksi SCW",
-    debit: 125000000,
-    credit: 0,
-    status: "Pending",
+    totalDebit: 125000000,
+    totalCredit: 125000000,
+    status: "Diterbitkan",
+    type: "Biaya Operasional",
+    lines: [
+      { account: "6101", accountName: "Gaji Karyawan", debit: 125000000, credit: 0 },
+      { account: "1101", accountName: "Kas", debit: 0, credit: 125000000 },
+    ],
   },
   {
-    id: "JE-2026-00184",
+    id: "JE-004",
+    number: "JV.2026.05.00004",
     date: "2026-05-31",
-    reference: "EXP-2026-0045",
-    account: "6102",
-    accountName: "Sewa Gudang",
     description: "Sewa gudang warehouse Surabaya Mei 2026",
-    debit: 15000000,
-    credit: 0,
-    status: "Posted",
+    totalDebit: 15000000,
+    totalCredit: 15000000,
+    status: "Diterbitkan",
+    type: "Biaya Operasional",
+    lines: [
+      { account: "6102", accountName: "Sewa Gudang", debit: 15000000, credit: 0 },
+      { account: "1102", accountName: "Bank BCA", debit: 0, credit: 15000000 },
+    ],
   },
   {
-    id: "JE-2026-00183",
+    id: "JE-005",
+    number: "JV.2026.05.00005",
     date: "2026-05-30",
-    reference: "REV-2026-0078",
-    account: "4101",
-    accountName: "Penjualan Produk",
     description: "Penjualan SCW Body Wash & SCW Tire Shine ke Toko Onderdil",
-    debit: 0,
-    credit: 67800000,
-    status: "Posted",
-  },
-  {
-    id: "JE-2026-00182",
-    date: "2026-05-30",
-    reference: "INV-2026-0310",
-    account: "1101",
-    accountName: "Kas",
-    description: "Pembayaran invoice dari SPBU Jaya Abadi",
-    debit: 32500000,
-    credit: 0,
-    status: "Posted",
-  },
-  {
-    id: "JE-2026-00181",
-    date: "2026-05-29",
-    reference: "PUR-2026-0044",
-    account: "6101",
-    accountName: "Harga Pokok Penjualan",
-    description: "Pembelian SCW Nano Coating 9H untuk stok gudang",
-    debit: 85000000,
-    credit: 0,
-    status: "Posted",
-  },
-  {
-    id: "JE-2026-00180",
-    date: "2026-05-29",
-    reference: "EXP-2026-0043",
-    account: "6103",
-    accountName: "Listrik & Air",
-    description: "Tagihan listrik & air gudang Mei 2026",
-    debit: 3750000,
-    credit: 0,
-    status: "Posted",
-  },
-  {
-    id: "JE-2026-00179",
-    date: "2026-05-28",
-    reference: "TRF-2026-0032",
-    account: "1102",
-    accountName: "Bank BCA",
-    description: "Transfer masuk dari distributor Bandung",
-    debit: 56200000,
-    credit: 0,
+    totalDebit: 67800000,
+    totalCredit: 67800000,
     status: "Draft",
+    type: "Penjualan",
+    lines: [
+      { account: "1102", accountName: "Bank BCA", debit: 67800000, credit: 0 },
+      { account: "4101", accountName: "Penjualan Produk", debit: 0, credit: 67800000 },
+    ],
   },
   {
-    id: "JE-2026-00178",
+    id: "JE-006",
+    number: "JV.2026.05.00006",
+    date: "2026-05-30",
+    description: "Pembayaran invoice dari SPBU Jaya Abadi",
+    totalDebit: 32500000,
+    totalCredit: 32500000,
+    status: "Diterbitkan",
+    type: "Pembayaran",
+    lines: [
+      { account: "1101", accountName: "Kas", debit: 32500000, credit: 0 },
+      { account: "1202", accountName: "Piutang Usaha", debit: 0, credit: 32500000 },
+    ],
+  },
+  {
+    id: "JE-007",
+    number: "JV.2026.05.00007",
+    date: "2026-05-29",
+    description: "Pembelian SCW Nano Coating 9H untuk stok gudang",
+    totalDebit: 85000000,
+    totalCredit: 85000000,
+    status: "Draft",
+    type: "Pembelian",
+    lines: [
+      { account: "1201", accountName: "Persediaan Barang", debit: 85000000, credit: 0 },
+      { account: "2101", accountName: "Utang Usaha", debit: 0, credit: 85000000 },
+    ],
+  },
+  {
+    id: "JE-008",
+    number: "JV.2026.05.00008",
     date: "2026-05-28",
-    reference: "ADJ-2026-0012",
-    account: "1201",
-    accountName: "Persediaan Barang",
     description: "Penyesuaian stok SCW Body Polish",
-    debit: 12000000,
-    credit: 0,
-    status: "Reversed",
+    totalDebit: 12000000,
+    totalCredit: 12000000,
+    status: "Dibatalkan",
+    type: "Penyesuaian",
+    lines: [
+      { account: "1201", accountName: "Persediaan Barang", debit: 12000000, credit: 0 },
+      { account: "6101", accountName: "Harga Pokok Penjualan", debit: 0, credit: 12000000 },
+    ],
   },
-  {
-    id: "JE-2026-00177",
-    date: "2026-05-27",
-    reference: "REV-2026-0075",
-    account: "4101",
-    accountName: "Penjualan Produk",
-    description: "Penjualan SCW Leather Care ke bengkel premium",
-    debit: 0,
-    credit: 24300000,
-    status: "Posted",
-  },
-  {
-    id: "JE-2026-00176",
-    date: "2026-05-27",
-    reference: "EXP-2026-0042",
-    account: "6104",
-    accountName: "Marketing & Promosi",
-    description: "Biaya iklan Instagram SCW detailing products",
-    debit: 5000000,
-    credit: 0,
-    status: "Posted",
-  },
+]
+
+const transactionTypes = [
+  "Semua",
+  "Penjualan",
+  "Pembelian",
+  "Pembayaran",
+  "Biaya Operasional",
+  "Penyesuaian",
 ]
 
 function formatIDR(amount: number): string {
-  if (amount === 0) return "-"
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
-const accounts = [
-  "All Accounts",
-  "1101 - Kas",
-  "1102 - Bank BCA",
-  "1201 - Persediaan Barang",
-  "2101 - Utang Usaha",
-  "4101 - Penjualan Produk",
-  "5101 - Gaji Karyawan",
-  "6101 - Harga Pokok Penjualan",
-  "6102 - Sewa Gudang",
-  "6103 - Listrik & Air",
-  "6104 - Marketing & Promosi",
-]
-
-const statuses = ["All Status", "Posted", "Draft", "Pending", "Reversed"]
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+}
 
 export default function JournalPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("All Status")
-  const [accountFilter, setAccountFilter] = useState("All Accounts")
-  const [dateFrom, setDateFrom] = useState("")
-  const [dateTo, setDateTo] = useState("")
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<"all" | "Diterbitkan" | "Draft" | "Dibatalkan">("all")
+  const [typeFilter, setTypeFilter] = useState("Semua")
+  const [dateFilter, setDateFilter] = useState("Semua")
 
-  const filteredEntries = useMemo(() => {
+  const filtered = useMemo(() => {
     return journalEntries.filter((entry) => {
       const matchesSearch =
-        entry.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.id.toLowerCase().includes(searchQuery.toLowerCase())
-
+        entry.description.toLowerCase().includes(search.toLowerCase()) ||
+        entry.number.toLowerCase().includes(search.toLowerCase())
       const matchesStatus =
-        statusFilter === "All Status" || entry.status === statusFilter
-
-      const matchesAccount =
-        accountFilter === "All Accounts" ||
-        `${entry.account} - ${entry.accountName}` === accountFilter
-
-      const matchesDateFrom = !dateFrom || entry.date >= dateFrom
-      const matchesDateTo = !dateTo || entry.date <= dateTo
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesAccount &&
-        matchesDateFrom &&
-        matchesDateTo
-      )
+        statusFilter === "all" || entry.status === statusFilter
+      const matchesType =
+        typeFilter === "Semua" || entry.type === typeFilter
+      const matchesDate =
+        dateFilter === "Semua" || entry.date.startsWith(dateFilter)
+      return matchesSearch && matchesStatus && matchesType && matchesDate
     })
-  }, [searchQuery, statusFilter, accountFilter, dateFrom, dateTo])
+  }, [search, statusFilter, typeFilter, dateFilter])
+
+  const totalCount = journalEntries.length
+  const diterbitkanCount = journalEntries.filter((e) => e.status === "Diterbitkan").length
+  const draftCount = journalEntries.filter((e) => e.status === "Draft").length
+  const dibatalkanCount = journalEntries.filter((e) => e.status === "Dibatalkan").length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Journal Entries
-          </h1>
-          <p className="text-slate-500">
-            Daftar entri jurnal akuntansi SCW Distribution
+          <h1 className="text-2xl font-bold tracking-tight">Jurnal Umum</h1>
+          <p className="text-muted-foreground">
+            Daftar semua jurnal transaksi akuntansi
           </p>
         </div>
-        <Link href="/accounting/journal/create">
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="mr-2 h-4 w-4" />
-            New Entry
-          </Button>
-        </Link>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 text-slate-400 -translate-y-1/2" />
-              <Input
-                placeholder="Search entries..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+      {/* Summary Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          onClick={() => setStatusFilter("all")}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                <BookOpen className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Jurnal</p>
+                <p className="text-2xl font-bold">{totalCount}</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-slate-400" />
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                placeholder="From"
-              />
+          </CardContent>
+        </Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Diterbitkan" ? "ring-2 ring-emerald-500" : ""}`}
+          onClick={() => setStatusFilter("Diterbitkan")}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                <BookOpen className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Diterbitkan</p>
+                <p className="text-2xl font-bold text-emerald-600">{diterbitkanCount}</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-400">to</span>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                placeholder="To"
-              />
+          </CardContent>
+        </Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Draft" ? "ring-2 ring-amber-500" : ""}`}
+          onClick={() => setStatusFilter("Draft")}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                <BookOpen className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Draft</p>
+                <p className="text-2xl font-bold text-amber-600">{draftCount}</p>
+              </div>
             </div>
-            <Select value={accountFilter} onValueChange={(v) => setAccountFilter(v ?? '')}>
-              <SelectTrigger>
-                <SelectValue placeholder="Account" />
-              </SelectTrigger>
-              <SelectContent>
-                {accounts.map((acc) => (
-                  <SelectItem key={acc} value={acc}>
-                    {acc}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? '')}>
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {statuses.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        <Card
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Dibatalkan" ? "ring-2 ring-red-500" : ""}`}
+          onClick={() => setStatusFilter("Dibatalkan")}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
+                <BookOpen className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Dibatalkan</p>
+                <p className="text-2xl font-bold text-red-600">{dibatalkanCount}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Table */}
+      {/* Table Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-indigo-600" />
-            Journal Entries ({filteredEntries.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Daftar Jurnal</CardTitle>
+              <CardDescription>
+                {filtered.length} jurnal ditemukan
+                {statusFilter !== "all" && (
+                  <span className="ml-1">({statusFilter})</span>
+                )}
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-3">
+              {statusFilter !== "all" && (
+                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                  Clear filter
+                </Button>
+              )}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nomor jurnal atau keterangan..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-64 pl-9"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Select value={dateFilter} onValueChange={(v) => setDateFilter(v ?? "Semua")}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Tanggal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semua">Semua Tanggal</SelectItem>
+                    <SelectItem value="2026-06">Juni 2026</SelectItem>
+                    <SelectItem value="2026-05">Mei 2026</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v ?? "Semua")}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Tipe Transaksi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {transactionTypes.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Reference</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Debit</TableHead>
-                <TableHead className="text-right">Credit</TableHead>
+                <TableHead>Nomor #</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead>Keterangan</TableHead>
+                <TableHead>Tipe</TableHead>
+                <TableHead className="text-right">Total</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEntries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="text-slate-600">{entry.date}</TableCell>
-                  <TableCell className="font-sans text-sm font-medium">
-                    {entry.reference}
+              {filtered.map((entry) => (
+                <TableRow
+                  key={entry.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <TableCell className="font-sans text-xs">
+                    <Link
+                      href={`/accounting/journal/${entry.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      {entry.number}
+                    </Link>
                   </TableCell>
-                  <TableCell className="text-slate-600">
-                    {entry.account} - {entry.accountName}
+                  <TableCell>{formatDate(entry.date)}</TableCell>
+                  <TableCell>
+                    <div className="max-w-[300px]">
+                      <span className="text-sm line-clamp-1">{entry.description}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {entry.lines[0]?.account} - {entry.lines[0]?.accountName}
+                        {entry.lines.length > 1 && ` +${entry.lines.length - 1} baris`}
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell className="max-w-[300px] truncate text-slate-600">
-                    {entry.description}
+                  <TableCell>
+                    <Badge variant="outline">{entry.type}</Badge>
                   </TableCell>
-                  <TableCell className="text-right font-sans">
-                    {formatIDR(entry.debit)}
-                  </TableCell>
-                  <TableCell className="text-right font-sans">
-                    {formatIDR(entry.credit)}
+                  <TableCell className="text-right">
+                    {formatIDR(entry.totalDebit)}
                   </TableCell>
                   <TableCell>
                     <Badge
+                      variant="outline"
                       className={
-                        entry.status === "Posted"
-                          ? "bg-green-100 text-green-700 hover:bg-green-100"
-                          : entry.status === "Pending"
-                          ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                        entry.status === "Diterbitkan"
+                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
                           : entry.status === "Draft"
-                          ? "bg-slate-100 text-slate-700 hover:bg-slate-100"
-                          : "bg-red-100 text-red-700 hover:bg-red-100"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                       }
                     >
                       {entry.status}
@@ -373,13 +411,6 @@ export default function JournalPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredEntries.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-500">
-                    No journal entries found matching your filters.
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </CardContent>

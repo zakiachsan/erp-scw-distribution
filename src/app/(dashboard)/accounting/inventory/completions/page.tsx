@@ -30,34 +30,76 @@ import {
 import {
   Search,
   Plus,
-  Landmark,
+  CheckCircle2,
   Filter,
 } from "lucide-react"
 
-interface Reconciliation {
+interface Completion {
   id: string
   number: string
   date: string
-  bank: string
-  period: string
-  selisih: number
-  status: "Selesai" | "Draft" | "Dibatalkan"
+  workOrder: string
+  tipePenyelesaian: string
+  keterangan: string
 }
 
-const mockReconciliations: Reconciliation[] = [
-  { id: "RC-001", number: "RK.2026.06.00001", date: "2026-06-15", bank: "Bank BCA", period: "Juni 2026", selisih: 0, status: "Selesai" },
-  { id: "RC-002", number: "RK.2026.06.00002", date: "2026-06-10", bank: "Bank Mandiri", period: "Juni 2026", selisih: 250000, status: "Selesai" },
-  { id: "RC-003", number: "RK.2026.05.00003", date: "2026-05-31", bank: "Bank BCA", period: "Mei 2026", selisih: 0, status: "Draft" },
-  { id: "RC-004", number: "RK.2026.05.00004", date: "2026-05-25", bank: "Bank Mandiri", period: "Mei 2026", selisih: 500000, status: "Draft" },
-  { id: "RC-005", number: "RK.2026.04.00005", date: "2026-04-30", bank: "Bank BCA", period: "April 2026", selisih: 0, status: "Dibatalkan" },
+const completions: Completion[] = [
+  {
+    id: "CMP-001",
+    number: "CMP.2026.06.00001",
+    date: "2026-06-18",
+    workOrder: "JC.2026.06.00003",
+    tipePenyelesaian: "Barang",
+    keterangan: "SCW Tire Shine 100 botol selesai diproduksi",
+  },
+  {
+    id: "CMP-002",
+    number: "CMP.2026.06.00002",
+    date: "2026-06-17",
+    workOrder: "JC.2026.06.00004",
+    tipePenyelesaian: "Jasa",
+    keterangan: "Coating interior leather treatment selesai",
+  },
+  {
+    id: "CMP-003",
+    number: "CMP.2026.06.00003",
+    date: "2026-06-16",
+    workOrder: "JC.2026.06.00006",
+    tipePenyelesaian: "Barang",
+    keterangan: "Batch SCW Glass Coating selesai diproduksi",
+  },
+  {
+    id: "CMP-004",
+    number: "CMP.2026.06.00004",
+    date: "2026-06-15",
+    workOrder: "JC.2026.06.00008",
+    tipePenyelesaian: "Jasa",
+    keterangan: "Detailing harian 5 unit selesai",
+  },
+  {
+    id: "CMP-005",
+    number: "CMP.2026.06.00005",
+    date: "2026-06-14",
+    workOrder: "JC.2026.06.00002",
+    tipePenyelesaian: "Barang",
+    keterangan: "SCW Body Wash 50L batch selesai",
+  },
+  {
+    id: "CMP-006",
+    number: "CMP.2026.06.00006",
+    date: "2026-06-12",
+    workOrder: "JC.2026.06.00001",
+    tipePenyelesaian: "Barang",
+    keterangan: "Coating SCW Nano Coating 9H selesai diproses",
+  },
 ]
 
-const bankOptions = ["All", "Bank BCA", "Bank Mandiri"]
-const statusOptions = ["All", "Selesai", "Draft", "Dibatalkan"]
-
-function formatIDR(amount: number): string {
-  return `Rp ${amount.toLocaleString("id-ID")}`
+const tipeBadgeConfig: Record<string, { className: string }> = {
+  Barang: { className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  Jasa: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
 }
+
+const categoryFilterOptions = ["Semua", "Barang", "Jasa"]
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
@@ -68,40 +110,44 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export default function ReconciliationPage() {
+export default function CompletionsPage() {
   const [search, setSearch] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("Semua")
   const [statusFilter, setStatusFilter] = useState<"all" | "Selesai" | "Draft" | "Dibatalkan">("all")
-  const [bankFilter, setBankFilter] = useState("All")
 
   const filtered = useMemo(() => {
-    return mockReconciliations.filter((r) => {
+    return completions.filter((comp) => {
       const matchesSearch =
-        r.number.toLowerCase().includes(search.toLowerCase()) ||
-        r.bank.toLowerCase().includes(search.toLowerCase())
-      const matchesStatus = statusFilter === "all" || r.status === statusFilter
-      const matchesBank = bankFilter === "All" || r.bank === bankFilter
-      return matchesSearch && matchesStatus && matchesBank
+        comp.workOrder.toLowerCase().includes(search.toLowerCase()) ||
+        comp.number.toLowerCase().includes(search.toLowerCase()) ||
+        comp.keterangan.toLowerCase().includes(search.toLowerCase())
+      const matchesCategory =
+        categoryFilter === "Semua" || comp.tipePenyelesaian === categoryFilter
+      // All completions are "Selesai" in mock data; statusFilter filters are conceptual
+      const matchesStatus =
+        statusFilter === "all"
+      return matchesSearch && matchesCategory && matchesStatus
     })
-  }, [search, statusFilter, bankFilter])
+  }, [search, categoryFilter, statusFilter])
 
-  const totalReconciliations = mockReconciliations.length
-  const selesaiCount = mockReconciliations.filter((r) => r.status === "Selesai").length
-  const draftCount = mockReconciliations.filter((r) => r.status === "Draft").length
-  const dibatalkanCount = mockReconciliations.filter((r) => r.status === "Dibatalkan").length
+  const totalCount = completions.length
+  const selesaiCount = completions.length // All completions are done
+  const draftCount = 0
+  const dibatalkanCount = 0
 
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Rekonsiliasi Bank</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Penyelesaian Pesanan</h1>
           <p className="text-muted-foreground">
-            Cocokkan data rekening bank dengan jurnal akuntansi
+            Daftar penyelesaian pekerjaan pesanan SCW Distribution
           </p>
         </div>
-        <Link href="/accounting/reconciliation/create">
-          <Button>
+        <Link href="/accounting/inventory/completions/create">
+          <Button className="bg-indigo-600 hover:bg-indigo-700">
             <Plus className="mr-2 h-4 w-4" />
-            Tambah Rekonsiliasi
+            Buat Penyelesaian
           </Button>
         </Link>
       </div>
@@ -114,11 +160,11 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Landmark className="h-5 w-5 text-indigo-600" />
+                <CheckCircle2 className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Rekonsiliasi</p>
-                <p className="text-2xl font-bold">{totalReconciliations}</p>
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold">{totalCount}</p>
               </div>
             </div>
           </CardContent>
@@ -130,7 +176,7 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Landmark className="h-5 w-5 text-emerald-600" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Selesai</p>
@@ -146,7 +192,7 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Landmark className="h-5 w-5 text-amber-600" />
+                <CheckCircle2 className="h-5 w-5 text-amber-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Draft</p>
@@ -162,7 +208,7 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <Landmark className="h-5 w-5 text-red-600" />
+                <CheckCircle2 className="h-5 w-5 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Dibatalkan</p>
@@ -177,9 +223,9 @@ export default function ReconciliationPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daftar Rekonsiliasi</CardTitle>
+              <CardTitle>Penyelesaian Pesanan</CardTitle>
               <CardDescription>
-                {filtered.length} rekonsiliasi ditemukan
+                {filtered.length} penyelesaian pesanan ditemukan
                 {statusFilter !== "all" && (
                   <span className="ml-1">({statusFilter})</span>
                 )}
@@ -194,21 +240,21 @@ export default function ReconciliationPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Cari nomor atau bank..."
+                  placeholder="Cari nomor, pekerjaan, atau keterangan..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-64 pl-9"
                 />
               </div>
-              <Select value={bankFilter} onValueChange={(v) => setBankFilter(v ?? "All")}>
+              <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? "Semua")}>
                 <SelectTrigger className="w-40">
                   <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Bank" />
+                  <SelectValue placeholder="Tipe" />
                 </SelectTrigger>
                 <SelectContent>
-                  {bankOptions.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
+                  {categoryFilterOptions.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -220,48 +266,47 @@ export default function ReconciliationPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[180px]">Nomor #</TableHead>
-                <TableHead className="w-[120px]">Tanggal</TableHead>
-                <TableHead className="w-[140px]">Bank</TableHead>
-                <TableHead className="w-[120px]">Periode</TableHead>
-                <TableHead className="w-[160px] text-right">Selisih</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead>Nomor #</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead>Pekerjaan Pesanan</TableHead>
+                <TableHead>Tipe</TableHead>
+                <TableHead>Keterangan</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((r) => (
-                <TableRow key={r.id}>
+              {filtered.map((comp) => (
+                <TableRow key={comp.id}>
                   <TableCell className="font-sans text-xs">
                     <Link
-                      href={`/accounting/reconciliation/${r.id}`}
+                      href={`/accounting/inventory/completions/${comp.id}`}
                       className="text-primary hover:underline"
                     >
-                      {r.number}
+                      {comp.number}
                     </Link>
                   </TableCell>
-                  <TableCell>{formatDate(r.date)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{r.bank}</Badge>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(comp.date)}
                   </TableCell>
-                  <TableCell>{r.period}</TableCell>
-                  <TableCell className="text-right font-sans text-sm font-medium">
-                    <span className={r.selisih > 0 ? "text-red-600" : ""}>
-                      {r.selisih === 0 ? "-" : formatIDR(r.selisih)}
-                    </span>
+                  <TableCell className="font-sans text-xs">
+                    <Link
+                      href={`/accounting/inventory/work-orders/${comp.workOrder}`}
+                      className="text-primary hover:underline"
+                    >
+                      {comp.workOrder}
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={
-                        r.status === "Selesai"
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                          : r.status === "Draft"
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                      }
+                      className={tipeBadgeConfig[comp.tipePenyelesaian]?.className || ""}
                     >
-                      {r.status}
+                      {comp.tipePenyelesaian}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm text-muted-foreground line-clamp-1">
+                      {comp.keterangan}
+                    </span>
                   </TableCell>
                 </TableRow>
               ))}

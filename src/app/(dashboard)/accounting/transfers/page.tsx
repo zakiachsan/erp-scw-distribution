@@ -30,30 +30,31 @@ import {
 import {
   Search,
   Plus,
-  Landmark,
+  ArrowRightLeft,
   Filter,
 } from "lucide-react"
 
-interface Reconciliation {
+interface Transfer {
   id: string
   number: string
   date: string
-  bank: string
-  period: string
-  selisih: number
-  status: "Selesai" | "Draft" | "Dibatalkan"
+  fromBank: string
+  toBank: string
+  description: string
+  amount: number
+  status: "Berhasil" | "Pending" | "Dibatalkan"
 }
 
-const mockReconciliations: Reconciliation[] = [
-  { id: "RC-001", number: "RK.2026.06.00001", date: "2026-06-15", bank: "Bank BCA", period: "Juni 2026", selisih: 0, status: "Selesai" },
-  { id: "RC-002", number: "RK.2026.06.00002", date: "2026-06-10", bank: "Bank Mandiri", period: "Juni 2026", selisih: 250000, status: "Selesai" },
-  { id: "RC-003", number: "RK.2026.05.00003", date: "2026-05-31", bank: "Bank BCA", period: "Mei 2026", selisih: 0, status: "Draft" },
-  { id: "RC-004", number: "RK.2026.05.00004", date: "2026-05-25", bank: "Bank Mandiri", period: "Mei 2026", selisih: 500000, status: "Draft" },
-  { id: "RC-005", number: "RK.2026.04.00005", date: "2026-04-30", bank: "Bank BCA", period: "April 2026", selisih: 0, status: "Dibatalkan" },
+const mockTransfers: Transfer[] = [
+  { id: "T-001", number: "TF.2026.06.00001", date: "2026-06-15", fromBank: "Bank BCA", toBank: "Bank Mandiri", description: "Transfer operasional ke rekening kerja", amount: 50000000, status: "Berhasil" },
+  { id: "T-002", number: "TF.2026.06.00002", date: "2026-06-12", fromBank: "Bank Mandiri", toBank: "Bank BCA", description: "Transfer pembayaran supplier batch kedua", amount: 28500000, status: "Berhasil" },
+  { id: "T-003", number: "TF.2026.06.00003", date: "2026-06-10", fromBank: "Bank BCA", toBank: "Kas", description: "Setor tunai untuk operasional harian", amount: 15000000, status: "Berhasil" },
+  { id: "T-004", number: "TF.2026.05.00004", date: "2026-05-31", fromBank: "Kas", toBank: "Bank BCA", description: "Setoran kas ke rekening BCA", amount: 32500000, status: "Pending" },
+  { id: "T-005", number: "TF.2026.05.00005", date: "2026-05-28", fromBank: "Bank BCA", toBank: "Bank Mandiri", description: "Transfer pembayaran gaji karyawan", amount: 125000000, status: "Dibatalkan" },
+  { id: "T-006", number: "TF.2026.05.00006", date: "2026-05-25", fromBank: "Bank Mandiri", toBank: "Bank BCA", description: "Transfer dana investasi peralatan", amount: 85000000, status: "Berhasil" },
 ]
 
-const bankOptions = ["All", "Bank BCA", "Bank Mandiri"]
-const statusOptions = ["All", "Selesai", "Draft", "Dibatalkan"]
+const bankOptions = ["All", "Kas", "Bank BCA", "Bank Mandiri"]
 
 function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
@@ -68,40 +69,40 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export default function ReconciliationPage() {
+export default function TransfersPage() {
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"all" | "Selesai" | "Draft" | "Dibatalkan">("all")
+  const [statusFilter, setStatusFilter] = useState<"all" | "Berhasil" | "Pending" | "Dibatalkan">("all")
   const [bankFilter, setBankFilter] = useState("All")
 
   const filtered = useMemo(() => {
-    return mockReconciliations.filter((r) => {
+    return mockTransfers.filter((t) => {
       const matchesSearch =
-        r.number.toLowerCase().includes(search.toLowerCase()) ||
-        r.bank.toLowerCase().includes(search.toLowerCase())
-      const matchesStatus = statusFilter === "all" || r.status === statusFilter
-      const matchesBank = bankFilter === "All" || r.bank === bankFilter
+        t.description.toLowerCase().includes(search.toLowerCase()) ||
+        t.number.toLowerCase().includes(search.toLowerCase())
+      const matchesStatus = statusFilter === "all" || t.status === statusFilter
+      const matchesBank = bankFilter === "All" || t.fromBank === bankFilter || t.toBank === bankFilter
       return matchesSearch && matchesStatus && matchesBank
     })
   }, [search, statusFilter, bankFilter])
 
-  const totalReconciliations = mockReconciliations.length
-  const selesaiCount = mockReconciliations.filter((r) => r.status === "Selesai").length
-  const draftCount = mockReconciliations.filter((r) => r.status === "Draft").length
-  const dibatalkanCount = mockReconciliations.filter((r) => r.status === "Dibatalkan").length
+  const totalTransfers = mockTransfers.length
+  const berhasilCount = mockTransfers.filter((t) => t.status === "Berhasil").length
+  const pendingCount = mockTransfers.filter((t) => t.status === "Pending").length
+  const dibatalkanCount = mockTransfers.filter((t) => t.status === "Dibatalkan").length
 
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Rekonsiliasi Bank</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Transfer Bank</h1>
           <p className="text-muted-foreground">
-            Cocokkan data rekening bank dengan jurnal akuntansi
+            Daftar transfer antar rekening bank SCW Distribution
           </p>
         </div>
-        <Link href="/accounting/reconciliation/create">
+        <Link href="/accounting/transfers/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Tambah Rekonsiliasi
+            Tambah Transfer
           </Button>
         </Link>
       </div>
@@ -114,43 +115,43 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Landmark className="h-5 w-5 text-indigo-600" />
+                <ArrowRightLeft className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Rekonsiliasi</p>
-                <p className="text-2xl font-bold">{totalReconciliations}</p>
+                <p className="text-sm text-muted-foreground">Total Transfer</p>
+                <p className="text-2xl font-bold">{totalTransfers}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Selesai" ? "ring-2 ring-emerald-500" : ""}`}
-          onClick={() => setStatusFilter("Selesai")}
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Berhasil" ? "ring-2 ring-emerald-500" : ""}`}
+          onClick={() => setStatusFilter("Berhasil")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Landmark className="h-5 w-5 text-emerald-600" />
+                <ArrowRightLeft className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Selesai</p>
-                <p className="text-2xl font-bold text-emerald-600">{selesaiCount}</p>
+                <p className="text-sm text-muted-foreground">Berhasil</p>
+                <p className="text-2xl font-bold text-emerald-600">{berhasilCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Draft" ? "ring-2 ring-amber-500" : ""}`}
-          onClick={() => setStatusFilter("Draft")}
+          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Pending" ? "ring-2 ring-amber-500" : ""}`}
+          onClick={() => setStatusFilter("Pending")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Landmark className="h-5 w-5 text-amber-600" />
+                <ArrowRightLeft className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Draft</p>
-                <p className="text-2xl font-bold text-amber-600">{draftCount}</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
               </div>
             </div>
           </CardContent>
@@ -162,7 +163,7 @@ export default function ReconciliationPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <Landmark className="h-5 w-5 text-red-600" />
+                <ArrowRightLeft className="h-5 w-5 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Dibatalkan</p>
@@ -177,9 +178,9 @@ export default function ReconciliationPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daftar Rekonsiliasi</CardTitle>
+              <CardTitle>Daftar Transfer</CardTitle>
               <CardDescription>
-                {filtered.length} rekonsiliasi ditemukan
+                {filtered.length} transfer ditemukan
                 {statusFilter !== "all" && (
                   <span className="ml-1">({statusFilter})</span>
                 )}
@@ -194,7 +195,7 @@ export default function ReconciliationPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Cari nomor atau bank..."
+                  placeholder="Cari nomor atau keterangan..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-64 pl-9"
@@ -222,45 +223,47 @@ export default function ReconciliationPage() {
               <TableRow>
                 <TableHead className="w-[180px]">Nomor #</TableHead>
                 <TableHead className="w-[120px]">Tanggal</TableHead>
-                <TableHead className="w-[140px]">Bank</TableHead>
-                <TableHead className="w-[120px]">Periode</TableHead>
-                <TableHead className="w-[160px] text-right">Selisih</TableHead>
+                <TableHead className="w-[130px]">Dari Bank</TableHead>
+                <TableHead className="w-[130px]">Ke Bank</TableHead>
+                <TableHead>Keterangan</TableHead>
+                <TableHead className="w-[160px] text-right">Total</TableHead>
                 <TableHead className="w-[100px]">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((r) => (
-                <TableRow key={r.id}>
+              {filtered.map((t) => (
+                <TableRow key={t.id}>
                   <TableCell className="font-sans text-xs">
                     <Link
-                      href={`/accounting/reconciliation/${r.id}`}
+                      href={`/accounting/transfers/${t.id}`}
                       className="text-primary hover:underline"
                     >
-                      {r.number}
+                      {t.number}
                     </Link>
                   </TableCell>
-                  <TableCell>{formatDate(r.date)}</TableCell>
+                  <TableCell>{formatDate(t.date)}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{r.bank}</Badge>
+                    <Badge variant="outline">{t.fromBank}</Badge>
                   </TableCell>
-                  <TableCell>{r.period}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{t.toBank}</Badge>
+                  </TableCell>
+                  <TableCell className="max-w-[250px] truncate">{t.description}</TableCell>
                   <TableCell className="text-right font-sans text-sm font-medium">
-                    <span className={r.selisih > 0 ? "text-red-600" : ""}>
-                      {r.selisih === 0 ? "-" : formatIDR(r.selisih)}
-                    </span>
+                    {formatIDR(t.amount)}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={
-                        r.status === "Selesai"
+                        t.status === "Berhasil"
                           ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                          : r.status === "Draft"
+                          : t.status === "Pending"
                           ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
                           : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                       }
                     >
-                      {r.status}
+                      {t.status}
                     </Badge>
                   </TableCell>
                 </TableRow>
