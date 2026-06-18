@@ -718,7 +718,7 @@ export const useWarehouseStore = create<WarehouseState>()(
             if (r.poId !== poId) return r
             return {
               ...r,
-              items: r.items.map((i) =
+              items: r.items.map((i) =>
                 i.productName === item.productName
                   ? {
                       ...i,
