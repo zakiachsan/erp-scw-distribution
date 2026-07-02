@@ -8,7 +8,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -25,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Download, FileText } from "lucide-react"
+import { Download } from "lucide-react"
 
 interface BalanceSheetItem {
   account: string
@@ -78,20 +77,20 @@ export default function BalanceSheetPage() {
   const totalLiabilitiesAndEquity = totalLiabilities + totalEquity
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             Balance Sheet
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Neraca keuangan SCW Distribution - Laporan posisi keuangan
           </p>
         </div>
         <div className="flex gap-2">
           <Select value={asOfMonth} onValueChange={(v) => setAsOfMonth(v ?? '')}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" style={{ height: 32, fontSize: 12, borderRadius: 6 }}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -101,121 +100,97 @@ export default function BalanceSheetPage() {
               <SelectItem value="2026-03">Maret 2026</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 500,
+              background: "#fff", color: "#0176d3",
+              border: "1px solid #d8d8d8", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+          >
+            <Download size={14} />
             Export
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Assets</p>
-            <p className="text-xl font-bold text-blue-600">
-              {formatIDR(totalAssets)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #0176d3" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Assets</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#0176d3", marginTop: 4 }}>{formatIDR(totalAssets)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Liabilities</p>
-            <p className="text-xl font-bold text-amber-600">
-              {formatIDR(totalLiabilities)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #fe9339" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Liabilities</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{formatIDR(totalLiabilities)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Equity</p>
-            <p className="text-xl font-bold text-green-600">
-              {formatIDR(totalEquity)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Equity</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalEquity)}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Balance Sheet Statement */}
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">SCW Distribution</CardTitle>
-          <CardDescription className="text-base font-medium text-slate-700">
+        <CardHeader className="text-center pb-3">
+          <CardTitle style={{ fontSize: 18, fontWeight: 700, color: "#001526" }}>SCW Distribution</CardTitle>
+          <CardDescription style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginTop: 2 }}>
             Neraca (Balance Sheet)
           </CardDescription>
-          <p className="text-sm text-slate-500">
-            Per 30 Juni 2026
-          </p>
+          <p style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>Per 30 Juni 2026</p>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="p-5 space-y-6">
           {/* ASSETS */}
           <div>
-            <h2 className="text-lg font-bold text-blue-700 mb-3 border-b-2 border-blue-200 pb-1">
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#0176d3", borderBottom: "2px solid #c8e0f7", paddingBottom: 4, marginBottom: 12 }}>
               ASSETS
             </h2>
 
-            {/* Current Assets */}
-            <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">
-              Current Assets
-            </h3>
-            <Table>
-              <TableBody>
+            <h3 style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8 }}>Current Assets</h3>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
                 {currentAssets.map((item) => (
-                  <TableRow key={item.code}>
-                    <TableCell className="pl-8 text-slate-600">
-                      {item.account}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
-                      {formatIDR(item.amount)}
-                    </TableCell>
-                  </TableRow>
+                  <tr key={item.code} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <td style={{ padding: "6px 12px 6px 32px", fontSize: 13, color: "#444746" }}>{item.account}</td>
+                    <td style={{ padding: "6px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.amount)}</td>
+                  </tr>
                 ))}
-                <TableRow className="border-t border-slate-300 bg-blue-50">
-                  <TableCell className="pl-8 font-bold text-slate-700">
-                    Total Current Assets
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-blue-700">
-                    {formatIDR(totalCurrentAssets)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                <tr style={{ borderTop: "1px solid #ecebea", background: "#eef4ff" }}>
+                  <td style={{ padding: "8px 12px 8px 32px", fontSize: 13, fontWeight: 700, color: "#001526" }}>Total Current Assets</td>
+                  <td style={{ padding: "8px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#0176d3" }}>{formatIDR(totalCurrentAssets)}</td>
+                </tr>
+              </tbody>
+            </table>
 
-            {/* Fixed Assets */}
-            <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2 mt-4">
-              Fixed Assets (Non-Current)
-            </h3>
-            <Table>
-              <TableBody>
+            <h3 style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8, marginTop: 16 }}>Fixed Assets (Non-Current)</h3>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
                 {fixedAssets.map((item) => (
-                  <TableRow key={item.code}>
-                    <TableCell className="pl-8 text-slate-600">
-                      {item.account}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
-                      {formatIDR(item.amount)}
-                    </TableCell>
-                  </TableRow>
+                  <tr key={item.code} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <td style={{ padding: "6px 12px 6px 32px", fontSize: 13, color: "#444746" }}>{item.account}</td>
+                    <td style={{ padding: "6px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.amount)}</td>
+                  </tr>
                 ))}
-                <TableRow className="border-t border-slate-300 bg-blue-50">
-                  <TableCell className="pl-8 font-bold text-slate-700">
-                    Total Fixed Assets
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-blue-700">
-                    {formatIDR(totalFixedAssets)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                <tr style={{ borderTop: "1px solid #ecebea", background: "#eef4ff" }}>
+                  <td style={{ padding: "8px 12px 8px 32px", fontSize: 13, fontWeight: 700, color: "#001526" }}>Total Fixed Assets</td>
+                  <td style={{ padding: "8px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#0176d3" }}>{formatIDR(totalFixedAssets)}</td>
+                </tr>
+              </tbody>
+            </table>
 
-            <div className="border-t-2 border-blue-300 bg-blue-100 rounded-lg p-3 mt-3">
-              <div className="flex justify-between">
-                <span className="font-bold text-blue-800 text-lg">
-                  TOTAL ASSETS
-                </span>
-                <span className="font-sans font-bold text-blue-800 text-lg">
-                  {formatIDR(totalAssets)}
-                </span>
+            <div style={{ background: "#d8eafe", borderRadius: 8, padding: 12, marginTop: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontWeight: 700, color: "#001526", fontSize: 16 }}>TOTAL ASSETS</span>
+                <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#001526", fontSize: 16 }}>{formatIDR(totalAssets)}</span>
               </div>
             </div>
           </div>
@@ -224,83 +199,63 @@ export default function BalanceSheetPage() {
 
           {/* LIABILITIES */}
           <div>
-            <h2 className="text-lg font-bold text-amber-700 mb-3 border-b-2 border-amber-200 pb-1">
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#fe9339", borderBottom: "2px solid #f9e0a0", paddingBottom: 4, marginBottom: 12 }}>
               LIABILITIES
             </h2>
-            <Table>
-              <TableBody>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
                 {liabilities.map((item) => (
-                  <TableRow key={item.code}>
-                    <TableCell className="pl-8 text-slate-600">
-                      {item.account}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
-                      {formatIDR(item.amount)}
-                    </TableCell>
-                  </TableRow>
+                  <tr key={item.code} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <td style={{ padding: "6px 12px 6px 32px", fontSize: 13, color: "#444746" }}>{item.account}</td>
+                    <td style={{ padding: "6px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.amount)}</td>
+                  </tr>
                 ))}
-                <TableRow className="border-t border-slate-300 bg-amber-50">
-                  <TableCell className="pl-8 font-bold text-slate-700">
-                    Total Liabilities
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-amber-700">
-                    {formatIDR(totalLiabilities)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                <tr style={{ borderTop: "1px solid #ecebea", background: "#fff4e5" }}>
+                  <td style={{ padding: "8px 12px 8px 32px", fontSize: 13, fontWeight: 700, color: "#001526" }}>Total Liabilities</td>
+                  <td style={{ padding: "8px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#9a6b00" }}>{formatIDR(totalLiabilities)}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* EQUITY */}
           <div>
-            <h2 className="text-lg font-bold text-green-700 mb-3 border-b-2 border-green-200 pb-1">
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#2e844a", borderBottom: "2px solid #b8dcc5", paddingBottom: 4, marginBottom: 12 }}>
               EQUITY
             </h2>
-            <Table>
-              <TableBody>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
                 {equity.map((item) => (
-                  <TableRow key={item.code}>
-                    <TableCell className="pl-8 text-slate-600">
-                      {item.account}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
-                      {formatIDR(item.amount)}
-                    </TableCell>
-                  </TableRow>
+                  <tr key={item.code} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <td style={{ padding: "6px 12px 6px 32px", fontSize: 13, color: "#444746" }}>{item.account}</td>
+                    <td style={{ padding: "6px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.amount)}</td>
+                  </tr>
                 ))}
-                <TableRow className="border-t border-slate-300 bg-green-50">
-                  <TableCell className="pl-8 font-bold text-slate-700">
-                    Total Equity
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-green-700">
-                    {formatIDR(totalEquity)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                <tr style={{ borderTop: "1px solid #ecebea", background: "#e8f5ed" }}>
+                  <td style={{ padding: "8px 12px 8px 32px", fontSize: 13, fontWeight: 700, color: "#001526" }}>Total Equity</td>
+                  <td style={{ padding: "8px 12px", fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a" }}>{formatIDR(totalEquity)}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div className="border-t-2 border-slate-300 bg-slate-100 rounded-lg p-3">
-            <div className="flex justify-between">
-              <span className="font-bold text-slate-800 text-lg">
-                TOTAL LIABILITIES & EQUITY
-              </span>
-              <span className="font-sans font-bold text-slate-800 text-lg">
-                {formatIDR(totalLiabilitiesAndEquity)}
-              </span>
+          <div style={{ background: "#f4f6f9", borderRadius: 8, padding: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ fontWeight: 700, color: "#001526", fontSize: 16 }}>TOTAL LIABILITIES & EQUITY</span>
+              <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#001526", fontSize: 16 }}>{formatIDR(totalLiabilitiesAndEquity)}</span>
             </div>
           </div>
 
           {/* Verification */}
-          <div className={`text-center p-3 rounded-lg ${totalAssets === totalLiabilitiesAndEquity ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+          <div style={{
+            textAlign: "center", padding: 12, borderRadius: 8,
+            background: totalAssets === totalLiabilitiesAndEquity ? "#e8f5ed" : "#fef1f0",
+            color: totalAssets === totalLiabilitiesAndEquity ? "#2e844a" : "#ea001e",
+          }}>
             {totalAssets === totalLiabilitiesAndEquity ? (
-              <p className="font-medium">
-                ✓ Assets = Liabilities + Equity — Neraca seimbang
-              </p>
+              <p style={{ fontWeight: 500 }}>✓ Assets = Liabilities + Equity — Neraca seimbang</p>
             ) : (
-              <p className="font-medium">
-                ✗ Neraca tidak seimbang! Selisih: {formatIDR(Math.abs(totalAssets - totalLiabilitiesAndEquity))}
-              </p>
+              <p style={{ fontWeight: 500 }}>✗ Neraca tidak seimbang! Selisih: {formatIDR(Math.abs(totalAssets - totalLiabilitiesAndEquity))}</p>
             )}
           </div>
         </CardContent>

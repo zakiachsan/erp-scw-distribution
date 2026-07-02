@@ -2,44 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Save,
-  Send,
-  AlertCircle,
-  CheckCircle2,
-  ToggleLeft,
-  ToggleRight,
-  BookOpen,
-} from "lucide-react"
+import { ArrowLeft, Plus, Trash2, BookOpen, AlertCircle, CheckCircle2, Save, Send } from "lucide-react"
 
+// ── Types ──
 interface JournalLine {
   id: number
   accountCode: string
@@ -48,6 +13,7 @@ interface JournalLine {
   credit: number
 }
 
+// ── Static data ──
 const chartOfAccounts = [
   { code: "1101", name: "Kas" },
   { code: "1102", name: "Bank BCA" },
@@ -86,12 +52,11 @@ const transactionTypes = [
   "Jurnal Umum",
 ]
 
-function formatIDR(amount: number): string {
-  if (amount === 0) return "-"
-  return `Rp ${amount.toLocaleString("id-ID")}`
-}
+// ── Helpers ──
+const formatIDR = (amount: number): string =>
+  amount === 0 ? "Rp 0" : `Rp ${amount.toLocaleString("id-ID")}`
 
-function generateJournalNumber(): string {
+const generateJournalNumber = (): string => {
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, "0")
@@ -99,10 +64,119 @@ function generateJournalNumber(): string {
   return `JV.${year}.${month}.${seq}`
 }
 
+// ── Inline style constants (SLDS) ──
+const slds = {
+  brand: "#0176d3",
+  brandHover: "#014486",
+  textPrimary: "#001526",
+  textSecondary: "#444746",
+  border: "#d8d8d8",
+  borderLight: "#ecebea",
+  success: "#2e844a",
+  warning: "#fe9339",
+  error: "#ea001e",
+  bgLight: "#f4f6f9",
+  bgWhite: "#ffffff",
+  radius: 6,
+  fontBase: "13px",
+  fontSmall: "12px",
+  fontXSmall: "11px",
+}
+
+// ── SLDS-style components ──
+const sldsCard = (styles: React.CSSProperties = {}) => ({
+  background: slds.bgWhite,
+  border: `1px solid ${slds.borderLight}`,
+  borderRadius: slds.radius,
+  ...styles,
+})
+
+const sldsInput = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  boxSizing: "border-box" as const,
+  ...styles,
+})
+
+const sldsSelect = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 28px 0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  appearance: "none" as const,
+  WebkitAppearance: "none" as const,
+  cursor: "pointer",
+  ...styles,
+})
+
+const sldsLabel = (styles: React.CSSProperties = {}) => ({
+  fontSize: slds.fontSmall,
+  fontWeight: 600,
+  color: slds.textSecondary,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.04em",
+  display: "block",
+  marginBottom: 4,
+  ...styles,
+})
+
+const sldsButton = (variant: "primary" | "outline" | "ghost" = "primary", styles: React.CSSProperties = {}) => {
+  const base: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    height: 32,
+    padding: "0 14px",
+    fontSize: slds.fontBase,
+    fontWeight: 600,
+    border: `1px solid ${slds.border}`,
+    borderRadius: slds.radius,
+    cursor: "pointer",
+    transition: "all 100ms",
+    whiteSpace: "nowrap",
+    ...styles,
+  }
+  if (variant === "primary") {
+    return {
+      ...base,
+      background: slds.brand,
+      color: "#fff",
+      border: `1px solid ${slds.brand}`,
+    }
+  }
+  if (variant === "outline") {
+    return {
+      ...base,
+      background: slds.bgWhite,
+      color: slds.textPrimary,
+      border: `1px solid ${slds.border}`,
+    }
+  }
+  // ghost
+  return {
+    ...base,
+    background: "transparent",
+    color: slds.textSecondary,
+    border: "1px solid transparent",
+    padding: "0 8px",
+  }
+}
+
+// ── Page component ──
 export default function CreateJournalEntryPage() {
-  const [entryDate, setEntryDate] = useState(
-    new Date().toISOString().split("T")[0]
-  )
+  const [entryDate, setEntryDate] = useState(new Date().toISOString().split("T")[0])
   const [journalNumber, setJournalNumber] = useState(generateJournalNumber())
   const [isAutoNumber, setIsAutoNumber] = useState(true)
   const [transactionType, setTransactionType] = useState("")
@@ -118,10 +192,7 @@ export default function CreateJournalEntryPage() {
   const difference = totalDebit - totalCredit
 
   const addLine = () => {
-    setLines([
-      ...lines,
-      { id: nextId, accountCode: "", accountName: "", debit: 0, credit: 0 },
-    ])
+    setLines([...lines, { id: nextId, accountCode: "", accountName: "", debit: 0, credit: 0 }])
     setNextId(nextId + 1)
   }
 
@@ -130,16 +201,11 @@ export default function CreateJournalEntryPage() {
     setLines(lines.filter((line) => line.id !== id))
   }
 
-  const updateLine = (
-    id: number,
-    field: keyof JournalLine,
-    value: string | number
-  ) => {
+  const updateLine = (id: number, field: keyof JournalLine, value: string | number) => {
     setLines(
       lines.map((line) => {
         if (line.id === id) {
           const updated = { ...line, [field]: value }
-          // Auto-fill account name when code is selected
           if (field === "accountCode") {
             const account = chartOfAccounts.find((a) => a.code === value)
             updated.accountName = account?.name || ""
@@ -162,106 +228,155 @@ export default function CreateJournalEntryPage() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/accounting/journal">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Link
+            href="/accounting/journal"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 32,
+              height: 32,
+              borderRadius: slds.radius,
+              color: slds.textSecondary,
+              textDecoration: "none",
+              transition: "background 100ms",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <ArrowLeft size={16} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: slds.textPrimary, lineHeight: 1.2 }}>
               Buat Jurnal Baru
             </h1>
-            <p className="text-sm text-slate-500">
+            <p style={{ fontSize: slds.fontBase, color: slds.textSecondary, marginTop: 2 }}>
               Tambah jurnal umum untuk pencatatan transaksi
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Save className="mr-2 h-4 w-4" />
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            style={sldsButton("outline")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.bgWhite)}
+          >
+            <Save size={14} />
             Simpan Draft
-          </Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Send className="mr-2 h-4 w-4" />
+          </button>
+          <button
+            style={sldsButton("primary")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.brandHover)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.brand)}
+          >
+            <Send size={14} />
             Terbitkan Jurnal
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Header Info */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="date">Tanggal *</Label>
-              <Input
+      {/* ── Header Info Card ── */}
+      <div style={sldsCard()}>
+        <div style={{ padding: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+            {/* Date */}
+            <div>
+              <label htmlFor="date" style={sldsLabel()}>Tanggal *</label>
+              <input
                 id="date"
                 type="date"
                 value={entryDate}
                 onChange={(e) => setEntryDate(e.target.value)}
+                style={sldsInput()}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
               />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="number">Nomor Jurnal *</Label>
+
+            {/* Journal Number */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <label htmlFor="number" style={sldsLabel({ marginBottom: 0 })}>Nomor Jurnal *</label>
                 <button
                   type="button"
                   onClick={toggleAutoNumber}
-                  className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    fontSize: slds.fontXSmall,
+                    fontWeight: 600,
+                    color: slds.brand,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
                 >
-                  {isAutoNumber ? (
-                    <>
-                      <ToggleRight className="h-4 w-4" />
-                      Otomatis
-                    </>
-                  ) : (
-                    <>
-                      <ToggleLeft className="h-4 w-4" />
-                      Manual
-                    </>
-                  )}
+                  <span style={{ fontSize: 14, lineHeight: 1 }}>{isAutoNumber ? "✓" : "✎"}</span>
+                  {isAutoNumber ? "Otomatis" : "Manual"}
                 </button>
               </div>
-              <Input
+              <input
                 id="number"
                 placeholder="JV.YYYY.MM.00001"
                 value={journalNumber}
                 onChange={(e) => setJournalNumber(e.target.value)}
                 disabled={isAutoNumber}
-                className={isAutoNumber ? "bg-slate-50" : ""}
+                style={sldsInput({
+                  background: isAutoNumber ? slds.bgLight : slds.bgWhite,
+                  cursor: isAutoNumber ? "not-allowed" : "text",
+                })}
+                onFocus={(e) => {
+                  if (!isAutoNumber) e.currentTarget.style.borderColor = slds.brand
+                }}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Tipe Transaksi *</Label>
-              <Select value={transactionType} onValueChange={(v) => setTransactionType(v ?? "")}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih tipe transaksi" />
-                </SelectTrigger>
-                <SelectContent>
-                  {transactionTypes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+            {/* Transaction Type */}
+            <div>
+              <label style={sldsLabel()}>Tipe Transaksi *</label>
+              <select
+                value={transactionType}
+                onChange={(e) => setTransactionType(e.target.value)}
+                style={sldsSelect()}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
+              >
+                <option value="" disabled>Pilih tipe transaksi</option>
+                {transactionTypes.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Balance Warning */}
+      {/* ── Balance Alert ── */}
       {!isBalanced && (totalDebit > 0 || totalCredit > 0) && (
-        <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
-          <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            padding: 14,
+            background: "#fef7e0",
+            border: "1px solid #f9e0a0",
+            borderRadius: slds.radius,
+          }}
+        >
+          <AlertCircle size={18} style={{ color: slds.warning, flexShrink: 0, marginTop: 1 }} />
           <div>
-            <p className="font-medium text-amber-800">
+            <p style={{ fontWeight: 600, fontSize: slds.fontBase, color: "#9a6b00" }}>
               Jurnal tidak seimbang
             </p>
-            <p className="text-sm text-amber-700">
+            <p style={{ fontSize: slds.fontSmall, color: "#9a6b00", marginTop: 2 }}>
               Selisih: {difference > 0 ? "+" : ""}
               {formatIDR(Math.abs(difference))}{" "}
               {difference > 0 ? "(Debit lebih besar)" : "(Kredit lebih besar)"}
@@ -270,171 +385,310 @@ export default function CreateJournalEntryPage() {
         </div>
       )}
 
-      {/* Balanced Success */}
+      {/* ── Balanced Success ── */}
       {isBalanced && (
-        <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
-          <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            padding: 14,
+            background: "#e8f5ed",
+            border: "1px solid #a8d4b5",
+            borderRadius: slds.radius,
+          }}
+        >
+          <CheckCircle2 size={18} style={{ color: slds.success, flexShrink: 0, marginTop: 1 }} />
           <div>
-            <p className="font-medium text-green-800">
+            <p style={{ fontWeight: 600, fontSize: slds.fontBase, color: slds.success }}>
               Jurnal seimbang
             </p>
-            <p className="text-sm text-green-700">
+            <p style={{ fontSize: slds.fontSmall, color: slds.success, marginTop: 2 }}>
               Total Debit = Total Kredit = {formatIDR(totalDebit)}
             </p>
           </div>
         </div>
       )}
 
-      {/* Journal Lines Table */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+      {/* ── Journal Lines Table Card ── */}
+      <div style={sldsCard({ overflow: "hidden" })}>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            borderBottom: `1px solid ${slds.borderLight}`,
+          }}
+        >
           <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-indigo-600" />
-              Detail Jurnal
-            </CardTitle>
-            <CardDescription>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <BookOpen size={16} style={{ color: slds.brand }} />
+              <h2 style={{ fontSize: 15, fontWeight: 600, color: slds.textPrimary }}>Detail Jurnal</h2>
+            </div>
+            <p style={{ fontSize: slds.fontSmall, color: slds.textSecondary, marginTop: 2 }}>
               Minimal 2 baris. Pastikan total debit = total kredit.
-            </CardDescription>
+            </p>
           </div>
-          <Button variant="outline" size="sm" onClick={addLine}>
-            <Plus className="mr-2 h-4 w-4" />
+          <button
+            onClick={addLine}
+            style={sldsButton("outline", { height: 28, fontSize: slds.fontSmall, padding: "0 10px" })}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.bgWhite)}
+          >
+            <Plus size={13} />
             Tambah Baris
-          </Button>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead className="w-[120px] font-semibold text-slate-700">
+          </button>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: slds.fontBase }}>
+            <thead>
+              <tr style={{ background: slds.bgWhite }}>
+                <th
+                  style={{
+                    padding: "10px 12px",
+                    fontSize: slds.fontXSmall,
+                    fontWeight: 600,
+                    color: slds.textSecondary,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    textAlign: "left",
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                    minWidth: 130,
+                  }}
+                >
                   No. Akun
-                </TableHead>
-                <TableHead className="font-semibold text-slate-700">
+                </th>
+                <th
+                  style={{
+                    padding: "10px 12px",
+                    fontSize: slds.fontXSmall,
+                    fontWeight: 600,
+                    color: slds.textSecondary,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    textAlign: "left",
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                  }}
+                >
                   Nama Akun
-                </TableHead>
-                <TableHead className="w-[180px] text-right font-semibold text-slate-700">
+                </th>
+                <th
+                  style={{
+                    padding: "10px 12px",
+                    fontSize: slds.fontXSmall,
+                    fontWeight: 600,
+                    color: slds.textSecondary,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    textAlign: "right",
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                    minWidth: 160,
+                  }}
+                >
                   Debit (Rp)
-                </TableHead>
-                <TableHead className="w-[180px] text-right font-semibold text-slate-700">
+                </th>
+                <th
+                  style={{
+                    padding: "10px 12px",
+                    fontSize: slds.fontXSmall,
+                    fontWeight: 600,
+                    color: slds.textSecondary,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    textAlign: "right",
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                    minWidth: 160,
+                  }}
+                >
                   Kredit (Rp)
-                </TableHead>
-                <TableHead className="w-[60px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+                </th>
+                <th
+                  style={{
+                    padding: "10px 12px",
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                    width: 50,
+                  }}
+                />
+              </tr>
+            </thead>
+            <tbody>
               {lines.map((line) => (
-                <TableRow key={line.id}>
-                  <TableCell>
-                    <Select
+                <tr
+                  key={line.id}
+                  style={{
+                    borderBottom: `1px solid ${slds.borderLight}`,
+                    transition: "background 100ms",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <td style={{ padding: "8px 12px" }}>
+                    <select
                       value={line.accountCode}
-                      onValueChange={(value) =>
-                        updateLine(line.id, "accountCode", value ?? "")
-                      }
+                      onChange={(e) => updateLine(line.id, "accountCode", e.target.value)}
+                      style={sldsSelect({ height: 30, fontSize: slds.fontSmall })}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Pilih akun" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {chartOfAccounts.map((acc) => (
-                          <SelectItem key={acc.code} value={acc.code}>
-                            {acc.code}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-slate-600">
-                      {line.accountName || (
-                        <span className="text-slate-400 italic">Pilih akun terlebih dahulu</span>
-                      )}
+                      <option value="" disabled>Pilih akun</option>
+                      {chartOfAccounts.map((acc) => (
+                        <option key={acc.code} value={acc.code}>
+                          {acc.code}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <span
+                      style={{
+                        fontSize: slds.fontBase,
+                        color: line.accountName ? slds.textPrimary : slds.border,
+                        fontStyle: line.accountName ? "normal" : "italic",
+                      }}
+                    >
+                      {line.accountName || "Pilih akun terlebih dahulu"}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <Input
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <input
                       type="number"
                       placeholder="0"
                       value={line.debit || ""}
-                      onChange={(e) =>
-                        updateLine(
-                          line.id,
-                          "debit",
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      className="text-right font-sans"
+                      onChange={(e) => updateLine(line.id, "debit", parseInt(e.target.value) || 0)}
                       min={0}
+                      style={sldsInput({
+                        height: 30,
+                        fontSize: slds.fontSmall,
+                        textAlign: "right",
+                        fontFamily: "monospace",
+                      })}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <Input
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <input
                       type="number"
                       placeholder="0"
                       value={line.credit || ""}
-                      onChange={(e) =>
-                        updateLine(
-                          line.id,
-                          "credit",
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      className="text-right font-sans"
+                      onChange={(e) => updateLine(line.id, "credit", parseInt(e.target.value) || 0)}
                       min={0}
+                      style={sldsInput({
+                        height: 30,
+                        fontSize: slds.fontSmall,
+                        textAlign: "right",
+                        fontFamily: "monospace",
+                      })}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                  </td>
+                  <td style={{ padding: "8px 12px", textAlign: "center" }}>
+                    <button
                       onClick={() => removeLine(line.id)}
                       disabled={lines.length <= 2}
-                      className="text-slate-400 hover:text-red-600"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 28,
+                        height: 28,
+                        borderRadius: 4,
+                        border: "none",
+                        background: "transparent",
+                        color: lines.length <= 2 ? slds.border : slds.textSecondary,
+                        cursor: lines.length <= 2 ? "not-allowed" : "pointer",
+                        transition: "all 100ms",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (lines.length > 2) {
+                          e.currentTarget.style.background = "#fef1f0"
+                          e.currentTarget.style.color = slds.error
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent"
+                        e.currentTarget.style.color = lines.length <= 2 ? slds.border : slds.textSecondary
+                      }}
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
+        </div>
 
-          {/* Totals Summary */}
-          <div className="border-t border-slate-200 bg-slate-50 px-4 py-4">
-            <div className="flex items-center justify-end">
-              <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-4">
-                <div className="flex justify-between py-2">
-                  <span className="text-sm font-medium text-slate-600">
-                    Total Debit:
-                  </span>
-                  <span className="font-sans font-bold text-slate-900">
-                    {formatIDR(totalDebit)}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-sm font-medium text-slate-600">
-                    Total Kredit:
-                  </span>
-                  <span className="font-sans font-bold text-slate-900">
-                    {formatIDR(totalCredit)}
-                  </span>
-                </div>
-                <div className="border-t border-slate-200 mt-2 pt-2 flex justify-between">
-                  <span className="text-sm font-medium text-slate-600">
-                    Selisih:
-                  </span>
-                  <span
-                    className={`font-sans font-bold ${
-                      isBalanced ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {isBalanced ? "Seimbang ✓" : formatIDR(Math.abs(difference))}
-                  </span>
-                </div>
-              </div>
+        {/* Totals Summary */}
+        <div
+          style={{
+            borderTop: `1px solid ${slds.borderLight}`,
+            background: slds.bgLight,
+            padding: "12px 20px",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 340,
+              background: slds.bgWhite,
+              border: `1px solid ${slds.borderLight}`,
+              borderRadius: slds.radius,
+              padding: 14,
+            }}
+          >
+            {/* Total Debit */}
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
+              <span style={{ fontSize: slds.fontSmall, fontWeight: 600, color: slds.textSecondary }}>
+                Total Debit:
+              </span>
+              <span style={{ fontSize: slds.fontBase, fontWeight: 700, color: slds.textPrimary, fontFamily: "monospace" }}>
+                {formatIDR(totalDebit)}
+              </span>
+            </div>
+            {/* Total Kredit */}
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
+              <span style={{ fontSize: slds.fontSmall, fontWeight: 600, color: slds.textSecondary }}>
+                Total Kredit:
+              </span>
+              <span style={{ fontSize: slds.fontBase, fontWeight: 700, color: slds.textPrimary, fontFamily: "monospace" }}>
+                {formatIDR(totalCredit)}
+              </span>
+            </div>
+            {/* Selisih */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "6px 0",
+                borderTop: `1px solid ${slds.borderLight}`,
+                marginTop: 4,
+              }}
+            >
+              <span style={{ fontSize: slds.fontSmall, fontWeight: 600, color: slds.textSecondary }}>
+                Selisih:
+              </span>
+              <span
+                style={{
+                  fontSize: slds.fontBase,
+                  fontWeight: 700,
+                  color: isBalanced ? slds.success : slds.error,
+                  fontFamily: "monospace",
+                }}
+              >
+                {isBalanced ? "Seimbang ✓" : formatIDR(Math.abs(difference))}
+              </span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

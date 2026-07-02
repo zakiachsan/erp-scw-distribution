@@ -10,8 +10,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -78,31 +76,25 @@ const categoryIcons: Record<string, typeof Building> = {
   Kendaraan: Car,
 }
 
-const statusConfig: Record<
-  FixedAsset["status"],
-  { label: string; className: string; cardColor: string; ringColor: string; textColor: string }
-> = {
-  active: {
-    label: "Aktif",
-    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
-    cardColor: "bg-emerald-100 dark:bg-emerald-900/30",
-    ringColor: "ring-emerald-500",
-    textColor: "text-emerald-600",
-  },
-  "fully-depreciated": {
-    label: "Fully Depreciated",
-    className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-    cardColor: "bg-amber-100 dark:bg-amber-900/30",
-    ringColor: "ring-amber-500",
-    textColor: "text-amber-600",
-  },
-  disposed: {
-    label: "Disposed",
-    className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-    cardColor: "bg-red-100 dark:bg-red-900/30",
-    ringColor: "ring-red-500",
-    textColor: "text-red-600",
-  },
+const statusConfig: Record<FixedAsset["status"], { label: string; className: string }> = {
+  active: { label: "Aktif", className: "bg-emerald-100 text-emerald-800" },
+  "fully-depreciated": { label: "Fully Depreciated", className: "bg-amber-100 text-amber-800" },
+  disposed: { label: "Disposed", className: "bg-red-100 text-red-800" },
+}
+
+const statusBadge = (status: FixedAsset["status"]) => {
+  const config = statusConfig[status]
+  const colors: Record<string, { bg: string; text: string; border: string }> = {
+    active: { bg: "#e8f5ed", text: "#2e844a", border: "#b8dcc5" },
+    "fully-depreciated": { bg: "#fef7e0", text: "#9a6b00", border: "#f9e0a0" },
+    disposed: { bg: "#fef1f0", text: "#ea001e", border: "#fcc8c8" },
+  }
+  const c = colors[status] || colors.active
+  return (
+    <span style={{ fontSize: 11, fontWeight: 600, background: c.bg, color: c.text, border: `1px solid ${c.border}`, padding: "2px 8px", borderRadius: 4 }}>
+      {config.label}
+    </span>
+  )
 }
 
 export default function FixedAssetsPage() {
@@ -113,10 +105,8 @@ export default function FixedAssetsPage() {
   const filteredAssets = useMemo(() => {
     return mockAssets.filter((a) => {
       const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase())
-      const matchesKategori =
-        kategoriFilter === "Semua" || a.category === kategoriFilter
-      const matchesStatus =
-        statusFilter === "all" || a.status === statusFilter
+      const matchesKategori = kategoriFilter === "Semua" || a.category === kategoriFilter
+      const matchesStatus = statusFilter === "all" || a.status === statusFilter
       return matchesSearch && matchesKategori && matchesStatus
     })
   }, [search, kategoriFilter, statusFilter])
@@ -127,11 +117,13 @@ export default function FixedAssetsPage() {
   const disposedCount = mockAssets.filter((a) => a.status === "disposed").length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Aset Tetap</h1>
-          <p className="text-muted-foreground">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
+            Aset Tetap
+          </h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Daftar aset tetap SCW Distribution
           </p>
         </div>
@@ -139,65 +131,65 @@ export default function FixedAssetsPage() {
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "all" ? "2px solid #0176d3" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("all")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Package className="h-5 w-5 text-indigo-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Aset</p>
-                <p className="text-2xl font-bold">{totalAssets}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Aset</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#001526", marginTop: 4 }}>{totalAssets}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#eef4ff" }}>
+                <Package size={18} style={{ color: "#0176d3" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "active" ? "ring-2 ring-emerald-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "active" ? "2px solid #2e844a" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("active")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif</p>
-                <p className="text-2xl font-bold text-emerald-600">{activeCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Aktif</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{activeCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#e8f5ed" }}>
+                <CheckCircle size={18} style={{ color: "#2e844a" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "fully-depreciated" ? "ring-2 ring-amber-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "fully-depreciated" ? "2px solid #fe9339" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("fully-depreciated")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Fully Depreciated</p>
-                <p className="text-2xl font-bold text-amber-600">{depreciatedCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Fully Depreciated</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{depreciatedCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fff4e5" }}>
+                <AlertTriangle size={18} style={{ color: "#fe9339" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "disposed" ? "ring-2 ring-red-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "disposed" ? "2px solid #ea001e" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("disposed")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <XCircle className="h-5 w-5 text-red-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Disposed</p>
-                <p className="text-2xl font-bold text-red-600">{disposedCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Disposed</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#ea001e", marginTop: 4 }}>{disposedCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fef1f0" }}>
+                <XCircle size={18} style={{ color: "#ea001e" }} />
               </div>
             </div>
           </CardContent>
@@ -205,63 +197,79 @@ export default function FixedAssetsPage() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Aset Tetap</CardTitle>
-              <CardDescription>
+              <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Aset Tetap</CardTitle>
+              <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
                 {filteredAssets.length} aset ditemukan
                 {statusFilter !== "all" && (
-                  <span className="ml-1">({statusConfig[statusFilter].label})</span>
+                  <span> ({statusConfig[statusFilter].label})</span>
                 )}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3">
               {statusFilter !== "all" && (
-                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                <button
+                  style={{ padding: "5px 12px", fontSize: 12, fontWeight: 500, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}
+                  onClick={() => setStatusFilter("all")}
+                >
                   Clear filter
-                </Button>
+                </button>
               )}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
+              <div style={{ position: "relative" }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
+                <input
                   placeholder="Search nama aset..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-64 pl-9"
+                  style={{
+                    height: 32, width: 240,
+                    padding: "0 10px 0 32px",
+                    fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6,
+                    outline: "none",
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#0176d3"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#d8d8d8"}
                 />
               </div>
-              <Select value={kategoriFilter} onValueChange={(v) => setKategoriFilter(v ?? "Semua")}>
-                <SelectTrigger className="w-40">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Kategori Aset" />
-                </SelectTrigger>
-                <SelectContent>
+              <div style={{ position: "relative" }}>
+                <Filter size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746", pointerEvents: "none" }} />
+                <select
+                  value={kategoriFilter}
+                  onChange={(e) => setKategoriFilter(e.target.value)}
+                  style={{
+                    height: 32, padding: "0 10px 0 32px",
+                    fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6,
+                    background: "#fff", color: "#001526", outline: "none",
+                    appearance: "none", WebkitAppearance: "none",
+                    minWidth: 140,
+                    cursor: "pointer",
+                  }}
+                >
                   {kategoriFilterOptions.map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {k}
-                    </SelectItem>
+                    <option key={k} value={k}>{k === "Semua" ? "Semua Kategori" : k}</option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[60px]">Nomor #</TableHead>
-                <TableHead>Nama Aset</TableHead>
-                <TableHead>Tanggal Beli</TableHead>
-                <TableHead className="text-center">Kuantitas</TableHead>
-                <TableHead className="text-right">Total Aset</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Nomor #</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Nama Aset</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Tanggal Beli</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Kuantitas</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Total Aset</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAssets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={5} style={{ textAlign: "center", padding: "40px 16px", fontSize: 13, color: "#444746" }}>
                     Tidak ada aset ditemukan
                   </TableCell>
                 </TableRow>
@@ -269,37 +277,24 @@ export default function FixedAssetsPage() {
                 filteredAssets.map((asset) => {
                   const Icon = categoryIcons[asset.category] || Building
                   return (
-                    <TableRow key={asset.id}>
-                      <TableCell className="font-sans text-xs">
-                        <Link
-                          href={`/accounting/fixed-assets/${asset.id}`}
-                          className="text-primary hover:underline"
-                        >
-                          {asset.id}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="font-medium">
+                    <TableRow
+                      key={asset.id}
+                      style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                      onClick={() => window.location.href = `/accounting/fixed-assets/${asset.id}`}
+                    >
+                      <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#0176d3" }}>{asset.id}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#001526" }}>
                         <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4 text-slate-400" />
-                          <Link
-                            href={`/accounting/fixed-assets/${asset.id}`}
-                            className="text-primary hover:underline font-medium"
-                          >
-                            {asset.name}
-                          </Link>
-                          <Badge
-                            variant="outline"
-                            className={statusConfig[asset.status].className}
-                          >
-                            {statusConfig[asset.status].label}
-                          </Badge>
+                          <Icon size={14} style={{ color: "#444746" }} />
+                          <span style={{ fontWeight: 500 }}>{asset.name}</span>
+                          {statusBadge(asset.status)}
                         </div>
                       </TableCell>
-                      <TableCell>{asset.purchaseDate}</TableCell>
-                      <TableCell className="text-center">{asset.quantity}</TableCell>
-                      <TableCell className="text-right font-sans">
-                        {formatIDR(asset.totalAsset)}
-                      </TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#444746" }}>{asset.purchaseDate}</TableCell>
+                      <TableCell style={{ textAlign: "center", fontSize: 13, color: "#001526" }}>{asset.quantity}</TableCell>
+                      <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(asset.totalAsset)}</TableCell>
                     </TableRow>
                   )
                 })

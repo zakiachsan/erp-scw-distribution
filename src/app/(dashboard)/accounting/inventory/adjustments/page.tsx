@@ -2,37 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Search,
-  Plus,
-  SlidersHorizontal,
-  Filter,
-} from "lucide-react"
+import { Search, Plus, SlidersHorizontal, Filter } from "lucide-react"
 
 interface Adjustment {
   id: string
@@ -110,13 +80,106 @@ const adjustments: Adjustment[] = [
   },
 ]
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  Selesai: { label: "Selesai", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  Draft: { label: "Draft", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Dibatalkan: { label: "Dibatalkan", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  Selesai: { label: "Selesai", color: "#2e844a", bg: "#e8f5ed" },
+  Draft: { label: "Draft", color: "#9a6b00", bg: "#fef7e0" },
+  Dibatalkan: { label: "Dibatalkan", color: "#ea001e", bg: "#fef1f0" },
 }
 
 const categoryFilterOptions = ["Semua", "Selesai", "Draft", "Dibatalkan"]
+
+// ── SLDS style constants ──
+const slds = {
+  brand: "#0176d3",
+  brandHover: "#014486",
+  textPrimary: "#001526",
+  textSecondary: "#444746",
+  border: "#d8d8d8",
+  borderLight: "#ecebea",
+  success: "#2e844a",
+  warning: "#fe9339",
+  error: "#ea001e",
+  bgLight: "#f4f6f9",
+  bgWhite: "#ffffff",
+  radius: 6,
+  fontBase: "13px",
+  fontSmall: "12px",
+  fontXSmall: "11px",
+}
+
+const sldsCard = (styles: React.CSSProperties = {}) => ({
+  background: slds.bgWhite,
+  border: `1px solid ${slds.borderLight}`,
+  borderRadius: slds.radius,
+  ...styles,
+})
+
+const sldsInput = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  boxSizing: "border-box" as const,
+  ...styles,
+})
+
+const sldsSelect = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 28px 0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  appearance: "none" as const,
+  WebkitAppearance: "none" as const,
+  cursor: "pointer",
+  ...styles,
+})
+
+const sldsLabel = (styles: React.CSSProperties = {}) => ({
+  fontSize: slds.fontSmall,
+  fontWeight: 600,
+  color: slds.textSecondary,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.04em",
+  display: "block",
+  marginBottom: 4,
+  ...styles,
+})
+
+const sldsButton = (variant: "primary" | "outline" | "ghost" = "primary", styles: React.CSSProperties = {}) => {
+  const base: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    height: 32,
+    padding: "0 14px",
+    fontSize: slds.fontBase,
+    fontWeight: 600,
+    border: `1px solid ${slds.border}`,
+    borderRadius: slds.radius,
+    cursor: "pointer",
+    transition: "all 100ms",
+    whiteSpace: "nowrap",
+    textDecoration: "none",
+    ...styles,
+  }
+  if (variant === "primary") {
+    return { ...base, background: slds.brand, color: "#fff", border: `1px solid ${slds.brand}` }
+  }
+  if (variant === "outline") {
+    return { ...base, background: slds.bgWhite, color: slds.textPrimary, border: `1px solid ${slds.border}` }
+  }
+  return { ...base, background: "transparent", color: slds.textSecondary, border: "1px solid transparent", padding: "0 8px" }
+}
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
@@ -150,180 +213,263 @@ export default function AdjustmentsPage() {
   const draftCount = adjustments.filter((a) => a.status === "Draft").length
   const dibatalkanCount = adjustments.filter((a) => a.status === "Dibatalkan").length
 
+  const summaryCards = [
+    {
+      key: "all",
+      label: "Total",
+      count: totalCount,
+      color: slds.brand,
+      bg: "#e0f0ff",
+      filter: "all" as const,
+    },
+    {
+      key: "Selesai",
+      label: "Selesai",
+      count: selesaiCount,
+      color: slds.success,
+      bg: "#e8f5ed",
+      filter: "Selesai" as const,
+    },
+    {
+      key: "Draft",
+      label: "Draft",
+      count: draftCount,
+      color: slds.warning,
+      bg: "#fef7e0",
+      filter: "Draft" as const,
+    },
+    {
+      key: "Dibatalkan",
+      label: "Dibatalkan",
+      count: dibatalkanCount,
+      color: slds.error,
+      bg: "#fef1f0",
+      filter: "Dibatalkan" as const,
+    },
+  ]
+
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: 24 }}>
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Penyesuaian Persediaan</h1>
-          <p className="text-muted-foreground">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: slds.textPrimary, lineHeight: 1.2 }}>
+            Penyesuaian Persediaan
+          </h1>
+          <p style={{ fontSize: slds.fontBase, color: slds.textSecondary, marginTop: 2 }}>
             Daftar penyesuaian stok persediaan SCW Distribution
           </p>
         </div>
-        <Link href="/accounting/inventory/adjustments/create">
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="mr-2 h-4 w-4" />
-            Buat Penyesuaian
-          </Button>
+        <Link
+          href="/accounting/inventory/adjustments/create"
+          style={sldsButton("primary")}
+          onMouseEnter={(e) => (e.currentTarget.style.background = slds.brandHover)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = slds.brand)}
+        >
+          <Plus size={16} />
+          Buat Penyesuaian
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
-          onClick={() => setStatusFilter("all")}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <SlidersHorizontal className="h-5 w-5 text-indigo-600" />
+      {/* ── Summary cards ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+        {summaryCards.map((card) => (
+          <div
+            key={card.key}
+            onClick={() => setStatusFilter(card.filter)}
+            style={{
+              ...sldsCard({
+                cursor: "pointer",
+                transition: "box-shadow 100ms",
+                ...(statusFilter === card.filter ? { boxShadow: `0 0 0 2px ${card.color}` } : {}),
+              }),
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.boxShadow = statusFilter === card.filter ? `0 0 0 2px ${card.color}` : "0 2px 8px rgba(0,0,0,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = statusFilter === card.filter ? `0 0 0 2px ${card.color}` : "none")}
+          >
+            <div style={{ padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 40,
+                    height: 40,
+                    borderRadius: 8,
+                    background: card.bg,
+                  }}
+                >
+                  <SlidersHorizontal size={20} style={{ color: card.color }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: slds.fontSmall, color: slds.textSecondary }}>{card.label}</p>
+                  <p style={{ fontSize: 22, fontWeight: 700, color: card.color }}>{card.count}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{totalCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Selesai" ? "ring-2 ring-emerald-500" : ""}`}
-          onClick={() => setStatusFilter("Selesai")}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <SlidersHorizontal className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Selesai</p>
-                <p className="text-2xl font-bold text-emerald-600">{selesaiCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Draft" ? "ring-2 ring-amber-500" : ""}`}
-          onClick={() => setStatusFilter("Draft")}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <SlidersHorizontal className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Draft</p>
-                <p className="text-2xl font-bold text-amber-600">{draftCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Dibatalkan" ? "ring-2 ring-red-500" : ""}`}
-          onClick={() => setStatusFilter("Dibatalkan")}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <SlidersHorizontal className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Dibatalkan</p>
-                <p className="text-2xl font-bold text-red-600">{dibatalkanCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Penyesuaian Persediaan</CardTitle>
-              <CardDescription>
-                {filtered.length} penyesuaian persediaan ditemukan
-                {statusFilter !== "all" && (
-                  <span className="ml-1">({statusFilter})</span>
-                )}
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-3">
-              {statusFilter !== "all" && (
-                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
-                  Clear filter
-                </Button>
-              )}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Cari nomor atau keterangan..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-64 pl-9"
-                />
-              </div>
-              <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? "Semua")}>
-                <SelectTrigger className="w-40">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryFilterOptions.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nomor #</TableHead>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Keterangan</TableHead>
-                <TableHead className="text-right">Total Items</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        ))}
+      </div>
+
+      {/* ── Table Card ── */}
+      <div style={sldsCard({ overflow: "hidden" })}>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            borderBottom: `1px solid ${slds.borderLight}`,
+          }}
+        >
+          <div>
+            <h2 style={{ fontSize: 15, fontWeight: 600, color: slds.textPrimary }}>
+              Penyesuaian Persediaan
+            </h2>
+            <p style={{ fontSize: slds.fontSmall, color: slds.textSecondary, marginTop: 2 }}>
+              {filtered.length} penyesuaian persediaan ditemukan
+              {statusFilter !== "all" && (
+                <span style={{ marginLeft: 4 }}>({statusFilter})</span>
+              )}
+            </p>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {statusFilter !== "all" && (
+              <button
+                onClick={() => setStatusFilter("all")}
+                style={sldsButton("outline", { height: 28, fontSize: slds.fontSmall, padding: "0 10px" })}
+                onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = slds.bgWhite)}
+              >
+                Clear filter
+              </button>
+            )}
+            <div style={{ position: "relative" }}>
+              <Search
+                size={14}
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: slds.textSecondary,
+                  pointerEvents: "none",
+                }}
+              />
+              <input
+                placeholder="Cari nomor atau keterangan..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={sldsInput({ width: 220, paddingLeft: 32 })}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
+              />
+            </div>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value ?? "Semua")}
+              style={sldsSelect({ width: 140 })}
+              onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+              onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
+            >
+              {categoryFilterOptions.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: slds.fontBase }}>
+            <thead>
+              <tr style={{ background: slds.bgWhite }}>
+                {["Nomor #", "Tanggal", "Keterangan", "Total Items", "Status"].map((col) => (
+                  <th
+                    key={col}
+                    style={{
+                      padding: "10px 12px",
+                      fontSize: slds.fontXSmall,
+                      fontWeight: 600,
+                      color: slds.textSecondary,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                      textAlign: col === "Total Items" ? "right" : "left",
+                      borderBottom: `1px solid ${slds.borderLight}`,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {filtered.map((adj) => (
-                <TableRow key={adj.id}>
-                  <TableCell className="font-sans text-xs">
+                <tr
+                  key={adj.id}
+                  style={{ borderBottom: `1px solid ${slds.borderLight}`, transition: "background 100ms" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <td style={{ padding: "10px 12px" }}>
                     <Link
                       href={`/accounting/inventory/adjustments/${adj.id}`}
-                      className="text-primary hover:underline"
+                      style={{ fontSize: slds.fontSmall, color: slds.brand, textDecoration: "none", fontFamily: "monospace" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
                     >
                       {adj.number}
                     </Link>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  </td>
+                  <td style={{ padding: "10px 12px", fontSize: slds.fontSmall, color: slds.textSecondary }}>
                     {formatDate(adj.date)}
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-muted-foreground line-clamp-1">
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <span
+                      style={{
+                        fontSize: slds.fontBase,
+                        color: slds.textSecondary,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        display: "block",
+                        maxWidth: 320,
+                      }}
+                    >
                       {adj.keterangan}
                     </span>
-                  </TableCell>
-                  <TableCell className="text-right">
+                  </td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", fontSize: slds.fontSmall, fontFamily: "monospace" }}>
                     {adj.totalItems} item
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={statusConfig[adj.status]?.className || ""}
+                  </td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "2px 10px",
+                        borderRadius: 12,
+                        fontSize: slds.fontXSmall,
+                        fontWeight: 600,
+                        color: statusConfig[adj.status]?.color || slds.textPrimary,
+                        background: statusConfig[adj.status]?.bg || "transparent",
+                        whiteSpace: "nowrap",
+                      }}
                     >
                       {statusConfig[adj.status]?.label || adj.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
+                    </span>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   )
 }

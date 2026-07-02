@@ -15,7 +15,6 @@ import {
   FileText,
   FileSpreadsheet,
   FileBarChart,
-  LineChart,
   PieChart,
   DollarSign,
   TrendingUp,
@@ -24,7 +23,6 @@ import {
   Receipt,
   Package,
   ClipboardList,
-  Factory,
 } from "lucide-react"
 
 type CategoryId =
@@ -105,27 +103,19 @@ const reportsByCategory: Record<CategoryId, ReportItem[]> = {
   ],
 }
 
-const categoryCardColors: Record<CategoryId, { bg: string; iconBg: string; iconText: string }> = {
-  keuangan: { bg: "bg-indigo-100 dark:bg-indigo-900/30", iconBg: "bg-indigo-100 dark:bg-indigo-900/30", iconText: "text-indigo-600" },
-  buku_besar: { bg: "bg-slate-100 dark:bg-slate-900/30", iconBg: "bg-slate-100 dark:bg-slate-900/30", iconText: "text-slate-600" },
-  kas_bank: { bg: "bg-emerald-100 dark:bg-emerald-900/30", iconBg: "bg-emerald-100 dark:bg-emerald-900/30", iconText: "text-emerald-600" },
-  piutang: { bg: "bg-cyan-100 dark:bg-cyan-900/30", iconBg: "bg-cyan-100 dark:bg-cyan-900/30", iconText: "text-cyan-600" },
-  penjualan: { bg: "bg-violet-100 dark:bg-violet-900/30", iconBg: "bg-violet-100 dark:bg-violet-900/30", iconText: "text-violet-600" },
-  pembelian: { bg: "bg-orange-100 dark:bg-orange-900/30", iconBg: "bg-orange-100 dark:bg-orange-900/30", iconText: "text-orange-600" },
-  persediaan: { bg: "bg-teal-100 dark:bg-teal-900/30", iconBg: "bg-teal-100 dark:bg-teal-900/30", iconText: "text-teal-600" },
-}
-
 export default function ReportsPage() {
   const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null)
   const currentReports = activeCategory ? reportsByCategory[activeCategory] : []
   const currentLabel = activeCategory ? categories.find((c) => c.id === activeCategory)?.label : null
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Laporan Keuangan</h1>
-          <p className="text-muted-foreground">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
+            Laporan Keuangan
+          </h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Daftar laporan keuangan dan analisis SCW Distribution
           </p>
         </div>
@@ -135,31 +125,33 @@ export default function ReportsPage() {
         <div>
           <button
             onClick={() => setActiveCategory(null)}
-            className="text-sm text-primary hover:underline mb-4 inline-block"
+            style={{ fontSize: 13, color: "#0176d3", border: "none", background: "none", cursor: "pointer", marginBottom: 12, display: "inline-block" }}
           >
             &larr; Kembali ke Kategori
           </button>
-          <div className="flex items-center justify-between mb-4">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
-              <h2 className="text-lg font-semibold">{currentLabel}</h2>
-              <p className="text-sm text-muted-foreground">
-                {currentReports.length} laporan tersedia
-              </p>
+              <h2 style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>{currentLabel}</h2>
+              <p style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>{currentReports.length} laporan tersedia</p>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {currentReports.map((report) => {
               const Icon = report.icon
+              const colorParts = report.color.split(" ")
               return (
-                <Card key={report.id} className="cursor-pointer transition-shadow hover:shadow-md">
-                  <CardContent className="p-4">
+                <Card key={report.id} style={{ cursor: "pointer", transition: "all 100ms" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
+                >
+                  <CardContent className="p-4" style={{ padding: 16 }}>
                     <div className="flex items-start gap-3">
                       <div className={`flex h-10 w-10 items-center justify-center rounded-lg shrink-0 ${report.color}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium">{report.name}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">{report.description}</p>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{report.name}</h3>
+                        <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{report.description}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -174,21 +166,22 @@ export default function ReportsPage() {
         <div className="grid gap-4 md:grid-cols-4">
           {categories.map((cat) => {
             const Icon = cat.icon
-            const colors = categoryCardColors[cat.id]
             return (
               <Card
                 key={cat.id}
-                className="cursor-pointer transition-shadow hover:shadow-md"
+                style={{ cursor: "pointer", transition: "all 100ms" }}
+                onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"}
+                onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 onClick={() => setActiveCategory(cat.id)}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${colors.iconBg}`}>
-                      <Icon className={`h-5 w-5 ${colors.iconText}`} />
-                    </div>
+                <CardContent className="p-4" style={{ padding: 16 }}>
+                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">{cat.label}</p>
-                      <p className={`text-2xl font-bold ${colors.iconText}`}>{cat.count}</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>{cat.label}</p>
+                      <p style={{ fontSize: 22, fontWeight: 700, color: "#001526", marginTop: 4 }}>{cat.count}</p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#eef4ff" }}>
+                      <Icon size={18} style={{ color: "#0176d3" }} />
                     </div>
                   </div>
                 </CardContent>

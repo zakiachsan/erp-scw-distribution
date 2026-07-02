@@ -10,15 +10,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -32,6 +23,9 @@ import {
   Plus,
   Landmark,
   Filter,
+  CheckCircle2,
+  Clock,
+  XCircle,
 } from "lucide-react"
 
 interface Reconciliation {
@@ -53,7 +47,6 @@ const mockReconciliations: Reconciliation[] = [
 ]
 
 const bankOptions = ["All", "Bank BCA", "Bank Mandiri"]
-const statusOptions = ["All", "Selesai", "Draft", "Dibatalkan"]
 
 function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
@@ -66,6 +59,19 @@ function formatDate(dateStr: string): string {
     month: "short",
     year: "numeric",
   })
+}
+
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "Selesai":
+      return <Badge style={{ background: "#e8f5ed", color: "#2e844a", border: "1px solid #b8dcc5", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Draft":
+      return <Badge style={{ background: "#fef7e0", color: "#9a6b00", border: "1px solid #f9e0a0", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Dibatalkan":
+      return <Badge style={{ background: "#fef1f0", color: "#ea001e", border: "1px solid #fcc8c8", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    default:
+      return <Badge variant="secondary">{status}</Badge>
+  }
 }
 
 export default function ReconciliationPage() {
@@ -90,83 +96,95 @@ export default function ReconciliationPage() {
   const dibatalkanCount = mockReconciliations.filter((r) => r.status === "Dibatalkan").length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Rekonsiliasi Bank</h1>
-          <p className="text-muted-foreground">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
+            Rekonsiliasi Bank
+          </h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Cocokkan data rekening bank dengan jurnal akuntansi
           </p>
         </div>
         <Link href="/accounting/reconciliation/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 600,
+              background: "#0176d3", color: "#fff",
+              border: "1px solid #0176d3", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#014486"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#0176d3"}
+          >
+            <Plus size={15} />
             Tambah Rekonsiliasi
-          </Button>
+          </button>
         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "all" ? "2px solid #0176d3" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("all")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Landmark className="h-5 w-5 text-indigo-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Rekonsiliasi</p>
-                <p className="text-2xl font-bold">{totalReconciliations}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Rekonsiliasi</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#001526", marginTop: 4 }}>{totalReconciliations}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#eef4ff" }}>
+                <Landmark size={18} style={{ color: "#0176d3" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Selesai" ? "ring-2 ring-emerald-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "Selesai" ? "2px solid #2e844a" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("Selesai")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Landmark className="h-5 w-5 text-emerald-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Selesai</p>
-                <p className="text-2xl font-bold text-emerald-600">{selesaiCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Selesai</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{selesaiCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#e8f5ed" }}>
+                <CheckCircle2 size={18} style={{ color: "#2e844a" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Draft" ? "ring-2 ring-amber-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "Draft" ? "2px solid #fe9339" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("Draft")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Landmark className="h-5 w-5 text-amber-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Draft</p>
-                <p className="text-2xl font-bold text-amber-600">{draftCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Draft</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{draftCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fff4e5" }}>
+                <Clock size={18} style={{ color: "#fe9339" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "Dibatalkan" ? "ring-2 ring-red-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "Dibatalkan" ? "2px solid #ea001e" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("Dibatalkan")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <Landmark className="h-5 w-5 text-red-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Dibatalkan</p>
-                <p className="text-2xl font-bold text-red-600">{dibatalkanCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Dibatalkan</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#ea001e", marginTop: 4 }}>{dibatalkanCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fef1f0" }}>
+                <XCircle size={18} style={{ color: "#ea001e" }} />
               </div>
             </div>
           </CardContent>
@@ -174,95 +192,94 @@ export default function ReconciliationPage() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daftar Rekonsiliasi</CardTitle>
-              <CardDescription>
+              <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Daftar Rekonsiliasi</CardTitle>
+              <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
                 {filtered.length} rekonsiliasi ditemukan
                 {statusFilter !== "all" && (
-                  <span className="ml-1">({statusFilter})</span>
+                  <span> ({statusFilter})</span>
                 )}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3">
               {statusFilter !== "all" && (
-                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                <button
+                  style={{ padding: "5px 12px", fontSize: 12, fontWeight: 500, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}
+                  onClick={() => setStatusFilter("all")}
+                >
                   Clear filter
-                </Button>
+                </button>
               )}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
+              <div style={{ position: "relative" }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
+                <input
                   placeholder="Cari nomor atau bank..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-64 pl-9"
+                  style={{
+                    height: 32, width: 240,
+                    padding: "0 10px 0 32px",
+                    fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6,
+                    outline: "none",
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#0176d3"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#d8d8d8"}
                 />
               </div>
-              <Select value={bankFilter} onValueChange={(v) => setBankFilter(v ?? "All")}>
-                <SelectTrigger className="w-40">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bankOptions.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
-                    </SelectItem>
+              <div style={{ position: "relative" }}>
+                <Filter size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746", pointerEvents: "none" }} />
+                <select
+                  value={bankFilter}
+                  onChange={(e) => setBankFilter(e.target.value)}
+                  style={{
+                    height: 32, padding: "0 10px 0 32px",
+                    fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6,
+                    background: "#fff", color: "#001526", outline: "none",
+                    appearance: "none", WebkitAppearance: "none",
+                    minWidth: 140,
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value="All">Semua Bank</option>
+                  {bankOptions.filter(b => b !== "All").map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[180px]">Nomor #</TableHead>
-                <TableHead className="w-[120px]">Tanggal</TableHead>
-                <TableHead className="w-[140px]">Bank</TableHead>
-                <TableHead className="w-[120px]">Periode</TableHead>
-                <TableHead className="w-[160px] text-right">Selisih</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Nomor #</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Tanggal</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Bank</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Periode</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Selisih</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="font-sans text-xs">
-                    <Link
-                      href={`/accounting/reconciliation/${r.id}`}
-                      className="text-primary hover:underline"
-                    >
-                      {r.number}
-                    </Link>
+                <TableRow
+                  key={r.id}
+                  style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  onClick={() => window.location.href = `/accounting/reconciliation/${r.id}`}
+                >
+                  <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#0176d3" }}>{r.number}</TableCell>
+                  <TableCell style={{ fontSize: 13, color: "#444746" }}>{formatDate(r.date)}</TableCell>
+                  <TableCell style={{ fontSize: 12, color: "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4, display: "inline-block" }}>{r.bank}</TableCell>
+                  <TableCell style={{ fontSize: 13, color: "#001526" }}>{r.period}</TableCell>
+                  <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: r.selisih > 0 ? "#ea001e" : "#001526", fontWeight: 500 }}>
+                    {r.selisih === 0 ? "-" : formatIDR(r.selisih)}
                   </TableCell>
-                  <TableCell>{formatDate(r.date)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{r.bank}</Badge>
-                  </TableCell>
-                  <TableCell>{r.period}</TableCell>
-                  <TableCell className="text-right font-sans text-sm font-medium">
-                    <span className={r.selisih > 0 ? "text-red-600" : ""}>
-                      {r.selisih === 0 ? "-" : formatIDR(r.selisih)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        r.status === "Selesai"
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                          : r.status === "Draft"
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                      }
-                    >
-                      {r.status}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{statusBadge(r.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

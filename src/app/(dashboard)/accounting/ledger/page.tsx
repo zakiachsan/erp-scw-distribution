@@ -9,16 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -27,12 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Separator } from "@/components/ui/separator"
 import {
   BookOpen,
   Download,
-  Calendar,
   TrendingUp,
+  Search,
 } from "lucide-react"
 
 interface LedgerEntry {
@@ -91,106 +80,156 @@ function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
+const typeBadge = (type: string) => {
+  const colorMap: Record<string, string> = {
+    Asset: "#0176d3",
+    Liability: "#ea001e",
+    Equity: "#2e844a",
+    Revenue: "#7b4c9e",
+    Expense: "#fe9339",
+  }
+  return (
+    <span style={{ fontSize: 11, fontWeight: 600, color: colorMap[type] || "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4 }}>
+      {type}
+    </span>
+  )
+}
+
 export default function LedgerPage() {
   const [selectedAccount, setSelectedAccount] = useState("1101")
   const [period, setPeriod] = useState("current-month")
+  const [searchDesc, setSearchDesc] = useState("")
 
   const accountInfo = accounts.find((a) => a.code === selectedAccount)
-  const entries = ledgerData[selectedAccount] || []
+  const entries = useMemo(() => {
+    const data = ledgerData[selectedAccount] || []
+    if (!searchDesc) return data
+    return data.filter((e) =>
+      e.description.toLowerCase().includes(searchDesc.toLowerCase())
+    )
+  }, [selectedAccount, searchDesc])
 
   const totalDebit = entries.reduce((sum, e) => sum + e.debit, 0)
   const totalCredit = entries.reduce((sum, e) => sum + e.credit, 0)
   const currentBalance = entries.length > 0 ? entries[0].balance : 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             General Ledger
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Buku besar umum - catatan transaksi per rekening
           </p>
         </div>
-        <Button variant="outline">
-          <Download className="mr-2 h-4 w-4" />
+        <button
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "7px 14px", fontSize: 13, fontWeight: 500,
+            background: "#fff", color: "#0176d3",
+            border: "1px solid #d8d8d8", borderRadius: 6,
+            cursor: "pointer", transition: "all 100ms",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+        >
+          <Download size={14} />
           Export
-        </Button>
+        </button>
       </div>
 
       {/* Account Summary */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Account</p>
-            <p className="text-lg font-bold text-slate-900">
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Account</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: "#001526", marginTop: 4 }}>
               {selectedAccount} - {accountInfo?.name || "Select Account"}
             </p>
-            <Badge className="mt-1 bg-indigo-100 text-indigo-700">
-              {accountInfo?.type || ""}
-            </Badge>
+            <div style={{ marginTop: 4 }}>{typeBadge(accountInfo?.type || "")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Debit</p>
-            <p className="text-lg font-bold text-blue-600">{formatIDR(totalDebit)}</p>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Debit</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: "#0176d3", marginTop: 4 }}>{formatIDR(totalDebit)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Credit</p>
-            <p className="text-lg font-bold text-indigo-600">{formatIDR(totalCredit)}</p>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Credit</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalCredit)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Current Balance</p>
-            <p className="text-lg font-bold text-slate-900">{formatIDR(currentBalance)}</p>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Current Balance</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: "#001526", marginTop: 4 }}>{formatIDR(currentBalance)}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4" style={{ padding: 16 }}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label>Select Account</Label>
-              <Select value={selectedAccount} onValueChange={(v) => setSelectedAccount(v ?? '')}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {accounts.map((acc) => (
-                    <SelectItem key={acc.code} value={acc.code}>
-                      {acc.code} - {acc.name} ({acc.type})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4 }}>Select Account</p>
+              <select
+                value={selectedAccount}
+                onChange={(e) => setSelectedAccount(e.target.value)}
+                style={{
+                  height: 32, width: "100%", padding: "0 10px",
+                  fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6,
+                  background: "#fff", color: "#001526", outline: "none",
+                  cursor: "pointer",
+                }}
+              >
+                {accounts.map((acc) => (
+                  <option key={acc.code} value={acc.code}>
+                    {acc.code} - {acc.name} ({acc.type})
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="space-y-2">
-              <Label>Period</Label>
-              <Select value={period} onValueChange={(v) => setPeriod(v ?? '')}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="current-month">Current Month</SelectItem>
-                  <SelectItem value="last-month">Last Month</SelectItem>
-                  <SelectItem value="quarter">This Quarter</SelectItem>
-                  <SelectItem value="year">This Year</SelectItem>
-                </SelectContent>
-              </Select>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4 }}>Period</p>
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                style={{
+                  height: 32, width: "100%", padding: "0 10px",
+                  fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6,
+                  background: "#fff", color: "#001526", outline: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="current-month">Current Month</option>
+                <option value="last-month">Last Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+              </select>
             </div>
-            <div className="space-y-2">
-              <Label>Search Description</Label>
-              <div className="relative">
-                <BookOpen className="absolute left-3 top-1/2 h-4 w-4 text-slate-400 -translate-y-1/2" />
-                <Input placeholder="Search transactions..." className="pl-10" />
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4 }}>Search Description</p>
+              <div style={{ position: "relative" }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
+                <input
+                  placeholder="Search transactions..."
+                  value={searchDesc}
+                  onChange={(e) => setSearchDesc(e.target.value)}
+                  style={{
+                    height: 32, width: "100%",
+                    padding: "0 10px 0 32px",
+                    fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6,
+                    outline: "none", boxSizing: "border-box",
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#0176d3"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#d8d8d8"}
+                />
               </div>
             </div>
           </div>
@@ -199,71 +238,62 @@ export default function LedgerPage() {
 
       {/* Ledger Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-indigo-600" />
-            Transaction History
-          </CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={16} style={{ color: "#0176d3" }} />
+            <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Transaction History</CardTitle>
+          </div>
+          <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
             Transaksi untuk rekening {selectedAccount} - {accountInfo?.name}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {entries.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Debit</TableHead>
-                  <TableHead className="text-right">Credit</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Date</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Reference</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Description</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Debit</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Credit</TableHead>
+                  <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Balance</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {entries.map((entry, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell className="text-slate-600">{entry.date}</TableCell>
-                    <TableCell className="font-sans text-sm font-medium">
-                      {entry.reference}
-                    </TableCell>
-                    <TableCell className="max-w-[350px] truncate text-slate-600">
-                      {entry.description}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
+                  <TableRow key={idx} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    <TableCell style={{ fontSize: 13, color: "#444746" }}>{entry.date}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{entry.reference}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#444746", maxWidth: 350 }} className="truncate">{entry.description}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: entry.debit > 0 ? "#001526" : "#444746" }}>
                       {entry.debit > 0 ? formatIDR(entry.debit) : "-"}
                     </TableCell>
-                    <TableCell className="text-right font-sans">
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: entry.credit > 0 ? "#001526" : "#444746" }}>
                       {entry.credit > 0 ? formatIDR(entry.credit) : "-"}
                     </TableCell>
-                    <TableCell className="text-right font-sans font-bold text-slate-900">
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526", fontWeight: 700 }}>
                       {formatIDR(entry.balance)}
                     </TableCell>
                   </TableRow>
                 ))}
                 {/* Totals Row */}
-                <TableRow className="border-t-2 border-slate-300 bg-slate-50">
-                  <TableCell colSpan={3} className="font-bold text-slate-700">
-                    Total
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-blue-600">
-                    {formatIDR(totalDebit)}
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-indigo-600">
-                    {formatIDR(totalCredit)}
-                  </TableCell>
-                  <TableCell className="text-right font-sans font-bold text-slate-900">
-                    {formatIDR(currentBalance)}
-                  </TableCell>
+                <TableRow style={{ borderTop: "2px solid #ecebea", background: "#f4f6f9" }}>
+                  <TableCell colSpan={3} style={{ fontSize: 13, fontWeight: 700, color: "#001526", padding: "8px 12px" }}>Total</TableCell>
+                  <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#0176d3", padding: "8px 12px" }}>{formatIDR(totalDebit)}</TableCell>
+                  <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a", padding: "8px 12px" }}>{formatIDR(totalCredit)}</TableCell>
+                  <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#001526", padding: "8px 12px" }}>{formatIDR(currentBalance)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-12 text-slate-500">
-              <BookOpen className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-              <p className="font-medium">No transactions found</p>
-              <p className="text-sm">
+            <div style={{ textAlign: "center", padding: 48 }}>
+              <BookOpen size={48} style={{ color: "#d8d8d8", margin: "0 auto 8px" }} />
+              <p style={{ fontSize: 14, fontWeight: 500, color: "#444746" }}>No transactions found</p>
+              <p style={{ fontSize: 12, color: "#444746", marginTop: 4 }}>
                 Tidak ada transaksi untuk rekening ini pada periode yang dipilih.
               </p>
             </div>

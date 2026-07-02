@@ -46,6 +46,17 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /* SLDS Brand Colors */
+  --color-brand: #0176d3;
+  --color-brand-dark: #014486;
+  --color-brand-light: #eef4ff;
+  --color-brand-secondary: #f28500;
+  --color-slds-text-primary: #001526;
+  --color-slds-text-secondary: #444746;
+  --color-slds-success: #2e844a;
+  --color-slds-warning: #fe9339;
+  --color-slds-error: #ea001e;
+  --color-slds-inverse: #032d47;
 }
 
 :root {

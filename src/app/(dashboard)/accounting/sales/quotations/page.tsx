@@ -13,14 +13,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
   Search,
   Plus,
   FileText,
@@ -48,10 +40,10 @@ const quotations: Quotation[] = [
 ]
 
 const statusConfig: Record<string, { className: string }> = {
-  Draft: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Approved: { className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  Rejected: { className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-  Expired: { className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
+  Draft: { className: "bg-amber-100 text-amber-800" },
+  Approved: { className: "bg-emerald-100 text-emerald-800" },
+  Rejected: { className: "bg-red-100 text-red-800" },
+  Expired: { className: "bg-gray-100 text-gray-800" },
 }
 
 type FilterValue = "all" | "approved" | "draft" | "rejected"
@@ -84,85 +76,85 @@ export default function QuotationsPage() {
   const rejectedCount = quotations.filter((q) => q.status === "Rejected" || q.status === "Expired").length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Penawaran Penjualan</h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-[#706e6b] mt-0.5">
             Daftar penawaran penjualan kepada pelanggan
           </p>
         </div>
         <Link href="/accounting/sales/quotations/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button className="bg-[#0176d3] hover:bg-[#014486] text-white h-8 text-sm px-4">
+            <Plus className="mr-1.5 h-4 w-4" />
             Buat Penawaran
           </Button>
         </Link>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - SLDS style */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          className={`cursor-pointer border border-[#e0e0e0] shadow-sm transition-all hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-[#0176d3]" : ""}`}
           onClick={() => setStatusFilter("all")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <FileText className="h-5 w-5 text-indigo-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f3f3f3]">
+                <FileText className="h-5 w-5 text-[#0176d3]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Penawaran</p>
-                <p className="text-2xl font-bold">{totalCount}</p>
+                <p className="text-[11px] uppercase tracking-wide text-[#706e6b] font-medium">Total Penawaran</p>
+                <p className="text-2xl font-bold text-[#181818]">{totalCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "approved" ? "ring-2 ring-emerald-500" : ""}`}
+          className={`cursor-pointer border border-[#e0e0e0] shadow-sm transition-all hover:shadow-md ${statusFilter === "approved" ? "ring-2 ring-[#2e844a]" : ""}`}
           onClick={() => setStatusFilter("approved")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <FileText className="h-5 w-5 text-emerald-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f3f3f3]">
+                <FileText className="h-5 w-5 text-[#2e844a]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Disetujui</p>
-                <p className="text-2xl font-bold text-emerald-600">{approvedCount}</p>
+                <p className="text-[11px] uppercase tracking-wide text-[#706e6b] font-medium">Disetujui</p>
+                <p className="text-2xl font-bold text-[#2e844a]">{approvedCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "draft" ? "ring-2 ring-amber-500" : ""}`}
+          className={`cursor-pointer border border-[#e0e0e0] shadow-sm transition-all hover:shadow-md ${statusFilter === "draft" ? "ring-2 ring-[#d4503c]" : ""}`}
           onClick={() => setStatusFilter("draft")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <FileText className="h-5 w-5 text-amber-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f3f3f3]">
+                <FileText className="h-5 w-5 text-[#d4503c]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Draft</p>
-                <p className="text-2xl font-bold text-amber-600">{draftCount}</p>
+                <p className="text-[11px] uppercase tracking-wide text-[#706e6b] font-medium">Draft</p>
+                <p className="text-2xl font-bold text-[#d4503c]">{draftCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "rejected" ? "ring-2 ring-red-500" : ""}`}
+          className={`cursor-pointer border border-[#e0e0e0] shadow-sm transition-all hover:shadow-md ${statusFilter === "rejected" ? "ring-2 ring-[#ba0517]" : ""}`}
           onClick={() => setStatusFilter("rejected")}
         >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <FileText className="h-5 w-5 text-red-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f3f3f3]">
+                <FileText className="h-5 w-5 text-[#ba0517]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Dibatalkan</p>
-                <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
+                <p className="text-[11px] uppercase tracking-wide text-[#706e6b] font-medium">Dibatalkan</p>
+                <p className="text-2xl font-bold text-[#ba0517]">{rejectedCount}</p>
               </div>
             </div>
           </CardContent>
@@ -170,15 +162,15 @@ export default function QuotationsPage() {
       </div>
 
       {/* Table Card */}
-      <Card>
-        <CardHeader>
+      <Card className="border border-[#e0e0e0] shadow-sm">
+        <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daftar Penawaran</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-sm font-bold text-[#181818]">Daftar Penawaran</CardTitle>
+              <CardDescription className="text-[11px] text-[#706e6b]">
                 {filtered.length} penawaran ditemukan
                 {statusFilter !== "all" && (
-                  <span className="ml-1 capitalize">
+                  <span className="ml-1">
                     ({statusFilter === "approved" ? "Disetujui" : statusFilter === "draft" ? "Draft" : "Dibatalkan"})
                   </span>
                 )}
@@ -186,71 +178,67 @@ export default function QuotationsPage() {
             </div>
             <div className="flex items-center gap-3">
               {statusFilter !== "all" && (
-                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")} className="h-8 text-xs">
                   Clear filter
                 </Button>
               )}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#706e6b]" />
                 <Input
                   placeholder="Cari nomor / pelanggan..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-64 pl-9"
+                  className="h-8 pl-8 w-64 text-[13px] border-[#e0e0e0]"
                 />
               </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nomor #</TableHead>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Pelanggan</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12">
-                    <p className="text-muted-foreground">Tidak ada penawaran ditemukan</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filtered.map((q) => (
-                  <TableRow key={q.id} className="cursor-pointer hover:bg-muted/50">
-                    <TableCell>
-                      <Link
-                        href={`/accounting/sales/quotations/${q.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {q.id}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{q.date}</TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/accounting/sales/quotations/${q.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {q.customer}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={statusConfig[q.status].className}>
-                        {q.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">{formatIDR(q.total)}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-[#f0f0f0] bg-white">
+                  <th className="px-4 py-3 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left">Nomor #</th>
+                  <th className="px-4 py-3 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left">Tanggal</th>
+                  <th className="px-4 py-3 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left">Pelanggan</th>
+                  <th className="px-4 py-3 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left">Status</th>
+                  <th className="px-4 py-3 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-12 px-4">
+                      <p className="text-[13px] text-[#706e6b]">Tidak ada penawaran ditemukan</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((q) => (
+                    <tr
+                      key={q.id}
+                      className="border-b border-[#f0f0f0] cursor-pointer hover:bg-[#f0f7ff] transition-colors"
+                      onClick={() => window.location.href = `/accounting/sales/quotations/${q.id}`}
+                    >
+                      <td className="px-4 py-3 text-[13px]">
+                        <span className="text-[#0176d3] hover:underline">{q.id}</span>
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-[#706e6b]">{q.date}</td>
+                      <td className="px-4 py-3 text-[13px]">
+                        <span className="text-[#0176d3] hover:underline">{q.customer}</span>
+                      </td>
+                      <td className="px-4 py-3 text-[13px]">
+                        <Badge variant="outline" className={`border-0 ${statusConfig[q.status].className} text-[11px] font-medium px-2 py-0.5`}>
+                          {q.status}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-right font-medium text-[#181818]">{formatIDR(q.total)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </div>

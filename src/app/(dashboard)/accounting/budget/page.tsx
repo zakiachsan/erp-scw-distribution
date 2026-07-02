@@ -9,7 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import {
   Select,
@@ -26,12 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Download,
-  TrendingUp,
-  TrendingDown,
-  AlertTriangle,
-} from "lucide-react"
+import { Download, AlertTriangle } from "lucide-react"
 import {
   BarChart,
   Bar,
@@ -87,6 +81,20 @@ function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
+const utilizationBadge = (utilization: number) => {
+  if (utilization > 95)
+    return <Badge style={{ background: "#fef1f0", color: "#ea001e", border: "1px solid #fcc8c8", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{utilization}%</Badge>
+  if (utilization > 80)
+    return <Badge style={{ background: "#fef7e0", color: "#9a6b00", border: "1px solid #f9e0a0", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{utilization}%</Badge>
+  return <Badge style={{ background: "#e8f5ed", color: "#2e844a", border: "1px solid #b8dcc5", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{utilization}%</Badge>
+}
+
+const progressColor = (utilization: number) => {
+  if (utilization > 95) return { bg: "#fcc8c8", fg: "#ea001e" }
+  if (utilization > 80) return { bg: "#f9e0a0", fg: "#fe9339" }
+  return { bg: "#e8f5ed", fg: "#2e844a" }
+}
+
 export default function BudgetPage() {
   const [selectedDivision, setSelectedDivision] = useState("All Divisions")
 
@@ -99,11 +107,8 @@ export default function BudgetPage() {
   const totalSpent = filteredBudget.reduce((s, b) => s + b.spent, 0)
   const totalRemaining = totalAllocated - totalSpent
   const totalUtilization =
-    totalAllocated > 0
-      ? ((totalSpent / totalAllocated) * 100).toFixed(1)
-      : "0"
+    totalAllocated > 0 ? ((totalSpent / totalAllocated) * 100).toFixed(1) : "0"
 
-  // Chart data: aggregate by division
   const chartData = divisions
     .filter((d) => d !== "All Divisions")
     .map((div) => {
@@ -118,57 +123,56 @@ export default function BudgetPage() {
   const overBudgetItems = filteredBudget.filter((b) => b.utilization > 95)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             Budget Management
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Pengelolaan anggaran per divisi SCW Distribution
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-        </div>
+        <button
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "7px 14px", fontSize: 13, fontWeight: 500,
+            background: "#fff", color: "#0176d3",
+            border: "1px solid #d8d8d8", borderRadius: 6,
+            cursor: "pointer", transition: "all 100ms",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+        >
+          <Download size={14} />
+          Export
+        </button>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Budget</p>
-            <p className="text-xl font-bold text-blue-600">
-              {formatIDR(totalAllocated)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #0176d3" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Budget</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#0176d3", marginTop: 4 }}>{formatIDR(totalAllocated)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-indigo-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Spent</p>
-            <p className="text-xl font-bold text-indigo-600">
-              {formatIDR(totalSpent)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #7b4c9e" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Spent</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#7b4c9e", marginTop: 4 }}>{formatIDR(totalSpent)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Remaining</p>
-            <p className="text-xl font-bold text-green-600">
-              {formatIDR(totalRemaining)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Remaining</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalRemaining)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Utilization</p>
-            <p className="text-xl font-bold text-amber-600">
-              {totalUtilization}%
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #fe9339" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Utilization</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{totalUtilization}%</p>
             <Progress value={parseFloat(totalUtilization)} className="mt-2 h-2" />
           </CardContent>
         </Card>
@@ -176,13 +180,13 @@ export default function BudgetPage() {
 
       {/* Over Budget Warning */}
       {overBudgetItems.length > 0 && (
-        <div className="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
-          <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+        <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#fef1f0", border: "1px solid #fcc8c8", borderRadius: 8, padding: 16 }}>
+          <AlertTriangle size={20} style={{ color: "#ea001e", flexShrink: 0 }} />
           <div>
-            <p className="font-medium text-red-800">
+            <p style={{ fontWeight: 500, color: "#ea001e" }}>
               {overBudgetItems.length} item mendekati/penggunaan melebihi budget
             </p>
-            <p className="text-sm text-red-700">
+            <p style={{ fontSize: 12, color: "#ea001e" }}>
               {overBudgetItems.map((b) => b.category).join(", ")}
             </p>
           </div>
@@ -190,43 +194,22 @@ export default function BudgetPage() {
       )}
 
       {/* Filter + Chart */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg">Budget vs Actual by Division</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Budget vs Actual by Division</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[350px]">
+            <div style={{ height: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 11 }}
-                    angle={-20}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11 }}
-                    tickFormatter={(v) => `${v}M`}
-                  />
-                  <Tooltip
-                    formatter={(value) => `Rp ${Number(value ?? 0).toLocaleString()} Juta`}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ecebea" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#444746" }} angle={-20} textAnchor="end" height={60} />
+                  <YAxis tick={{ fontSize: 11, fill: "#444746" }} tickFormatter={(v) => `${v}M`} />
+                  <Tooltip formatter={(value) => `Rp ${Number(value ?? 0).toLocaleString()} Juta`} />
                   <Legend />
-                  <Bar
-                    dataKey="allocated"
-                    name="Budget"
-                    fill="#6366f1"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="spent"
-                    name="Actual"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Bar dataKey="allocated" name="Budget" fill="#0176d3" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="spent" name="Actual" fill="#7b4c9e" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -234,54 +217,41 @@ export default function BudgetPage() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Division Selector</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Division Selector</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select value={selectedDivision} onValueChange={(v) => setSelectedDivision(v ?? '')}>
-              <SelectTrigger>
+              <SelectTrigger style={{ height: 32, fontSize: 12, borderRadius: 6 }}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {divisions.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
+                  <SelectItem key={d} value={d}>{d}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Division utilization bars */}
             <div className="space-y-3">
-              {divisions
-                .filter((d) => d !== "All Divisions")
-                .map((div) => {
-                  const divItems = budgetData.filter((b) => b.division === div)
-                  const divAllocated = divItems.reduce((s, b) => s + b.allocated, 0)
-                  const divSpent = divItems.reduce((s, b) => s + b.spent, 0)
-                  const pct = divAllocated > 0 ? (divSpent / divAllocated) * 100 : 0
+              {divisions.filter((d) => d !== "All Divisions").map((div) => {
+                const divItems = budgetData.filter((b) => b.division === div)
+                const divAllocated = divItems.reduce((s, b) => s + b.allocated, 0)
+                const divSpent = divItems.reduce((s, b) => s + b.spent, 0)
+                const pct = divAllocated > 0 ? (divSpent / divAllocated) * 100 : 0
+                const colors = progressColor(pct)
 
-                  return (
-                    <div key={div}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-slate-600">{div}</span>
-                        <span className="font-sans text-slate-500">
-                          {pct.toFixed(0)}%
-                        </span>
-                      </div>
-                      <Progress
-                        value={pct}
-                        className={`h-2 ${
-                          pct > 95
-                            ? "bg-red-200"
-                            : pct > 80
-                            ? "bg-amber-200"
-                            : ""
-                        }`}
-                      />
+                return (
+                  <div key={div}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
+                      <span style={{ color: "#444746" }}>{div}</span>
+                      <span style={{ fontFamily: "monospace", color: "#444746" }}>{pct.toFixed(0)}%</span>
                     </div>
-                  )
-                })}
+                    <div style={{ width: "100%", height: 8, background: colors.bg, borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ width: `${pct}%`, height: "100%", background: colors.fg, borderRadius: 4, transition: "width 300ms" }} />
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </CardContent>
         </Card>
@@ -289,93 +259,55 @@ export default function BudgetPage() {
 
       {/* Budget Allocation Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>
             Budget Allocation - {selectedDivision}
           </CardTitle>
-          <CardDescription>
+          <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
             Detail anggaran per kategori divisi
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Division</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Allocated</TableHead>
-                <TableHead className="text-right">Spent</TableHead>
-                <TableHead className="text-right">Remaining</TableHead>
-                <TableHead className="text-center">Utilization</TableHead>
-                <TableHead className="w-[200px]">Progress</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Division</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Category</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Allocated</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Spent</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Remaining</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Utilization</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Progress</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredBudget.map((item, idx) => (
-                <TableRow key={idx}>
-                  <TableCell className="font-medium">{item.division}</TableCell>
-                  <TableCell className="text-slate-600">{item.category}</TableCell>
-                  <TableCell className="text-right font-sans">
-                    {formatIDR(item.allocated)}
-                  </TableCell>
-                  <TableCell className="text-right font-sans">
-                    {formatIDR(item.spent)}
-                  </TableCell>
-                  <TableCell className="text-right font-sans">
-                    <span
-                      className={
-                        item.remaining === 0
-                          ? "text-slate-400"
-                          : "text-green-600"
-                      }
-                    >
-                      {formatIDR(item.remaining)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      className={
-                        item.utilization > 95
-                          ? "bg-red-100 text-red-700 hover:bg-red-100"
-                          : item.utilization > 80
-                          ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                          : "bg-green-100 text-green-700 hover:bg-green-100"
-                      }
-                    >
-                      {item.utilization}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Progress
-                      value={item.utilization}
-                      className={`h-2 ${
-                        item.utilization > 95
-                          ? "bg-red-200 [&>div]:bg-red-500"
-                          : item.utilization > 80
-                          ? "bg-amber-200 [&>div]:bg-amber-500"
-                          : ""
-                      }`}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredBudget.map((item, idx) => {
+                const colors = progressColor(item.utilization)
+                return (
+                  <TableRow key={idx} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{item.division}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#444746" }}>{item.category}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.allocated)}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(item.spent)}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: item.remaining === 0 ? "#444746" : "#2e844a" }}>
+                      {item.remaining === 0 ? "-" : formatIDR(item.remaining)}
+                    </TableCell>
+                    <TableCell style={{ textAlign: "center" }}>{utilizationBadge(item.utilization)}</TableCell>
+                    <TableCell>
+                      <div style={{ width: "100%", height: 8, background: colors.bg, borderRadius: 4, overflow: "hidden" }}>
+                        <div style={{ width: `${item.utilization}%`, height: "100%", background: colors.fg, borderRadius: 4 }} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
               {/* Totals Row */}
-              <TableRow className="border-t-2 border-slate-300 bg-slate-50">
-                <TableCell colSpan={2} className="font-bold text-slate-700">
-                  Total
-                </TableCell>
-                <TableCell className="text-right font-sans font-bold text-slate-700">
-                  {formatIDR(totalAllocated)}
-                </TableCell>
-                <TableCell className="text-right font-sans font-bold text-slate-700">
-                  {formatIDR(totalSpent)}
-                </TableCell>
-                <TableCell className="text-right font-sans font-bold text-green-600">
-                  {formatIDR(totalRemaining)}
-                </TableCell>
-                <TableCell className="text-center font-bold">
-                  {totalUtilization}%
-                </TableCell>
+              <TableRow style={{ borderTop: "2px solid #ecebea", background: "#f4f6f9" }}>
+                <TableCell colSpan={2} style={{ fontSize: 13, fontWeight: 700, color: "#001526", padding: "8px 12px" }}>Total</TableCell>
+                <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#001526", padding: "8px 12px" }}>{formatIDR(totalAllocated)}</TableCell>
+                <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#001526", padding: "8px 12px" }}>{formatIDR(totalSpent)}</TableCell>
+                <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a", padding: "8px 12px" }}>{formatIDR(totalRemaining)}</TableCell>
+                <TableCell style={{ textAlign: "center", fontWeight: 700, fontSize: 13, padding: "8px 12px" }}>{totalUtilization}%</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableBody>

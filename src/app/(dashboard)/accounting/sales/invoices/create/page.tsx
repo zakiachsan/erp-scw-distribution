@@ -169,28 +169,29 @@ export default function CreateInvoicePage() {
     return (
       <div className="space-y-4 p-6">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Faktur Penjualan</h1>
-          <p className="text-xs text-gray-500">Buat faktur penjualan baru</p>
+          <h1 className="text-lg font-bold text-[#181818]">Faktur Penjualan</h1>
+          <p className="text-xs text-[#706e6b]">Buat faktur penjualan baru</p>
         </div>
-        <Card>
+        <Card className="border border-[#e0e0e0] shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
               <CheckCircle2 className="h-7 w-7 text-emerald-600" />
             </div>
-            <h2 className="mb-1 text-lg font-semibold">Faktur Dibuat!</h2>
-            <p className="mb-1 text-sm text-muted-foreground">
+            <h2 className="mb-1 text-lg font-semibold text-[#181818]">Faktur Dibuat!</h2>
+            <p className="mb-1 text-sm text-[#706e6b]">
               Faktur untuk <strong>{selectedCustomerData?.name}</strong> dengan nomor <strong>{invoiceNumber}</strong>
             </p>
-            <p className="mb-5 text-lg font-bold">{formatIDR(total)}</p>
+            <p className="mb-5 text-lg font-bold text-[#181818]">{formatIDR(total)}</p>
             <div className="flex gap-2">
               <Link href="/accounting/sales/invoices">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="h-8 text-xs">
                   <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
                   Kembali
                 </Button>
               </Link>
               <Button
                 size="sm"
+                className="h-8 text-xs bg-[#0176d3] hover:bg-[#014486] text-white"
                 onClick={() => {
                   setSubmitted(false)
                   setSelectedCustomer("")
@@ -222,8 +223,8 @@ export default function CreateInvoicePage() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-gray-900">Buat Faktur Penjualan</h1>
-            <p className="text-xs text-gray-500">Isi data faktur untuk pelanggan</p>
+            <h1 className="text-lg font-bold text-[#181818]">Buat Faktur Penjualan</h1>
+            <p className="text-xs text-[#706e6b]">Isi data faktur untuk pelanggan</p>
           </div>
         </div>
 
@@ -231,45 +232,45 @@ export default function CreateInvoicePage() {
           {/* Main Content */}
           <div className="space-y-4">
             {/* Header Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
+            <Card className="border border-[#e0e0e0] shadow-sm">
+              <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
+                <CardTitle className="text-sm font-bold text-[#181818] flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   Data Faktur
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+              <CardContent className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label className="text-xs">Nomor Faktur</Label>
+                    <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Nomor Faktur</Label>
                     <Input
                       value={invoiceNumber}
                       onChange={(e) => setInvoiceNumber(e.target.value)}
-                      className="h-8 text-sm font-mono"
+                      className="h-8 text-[13px] font-mono border-[#e0e0e0]"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Tanggal Faktur *</Label>
+                    <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Tanggal Faktur *</Label>
                     <Input
                       type="date"
                       value={invoiceDate}
                       onChange={(e) => setInvoiceDate(e.target.value)}
-                      className="h-8 text-sm"
+                      className="h-8 text-[13px] border-[#e0e0e0]"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Jatuh Tempo</Label>
+                    <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Jatuh Tempo</Label>
                     <Input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="h-8 text-sm"
+                      className="h-8 text-[13px] border-[#e0e0e0]"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Payment Terms</Label>
+                    <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Payment Terms</Label>
                     <Select value={paymentTerms} onValueChange={(v) => setPaymentTerms(v ?? "Net 30")}>
-                      <SelectTrigger className="h-8 text-sm">
+                      <SelectTrigger className="h-8 text-[13px] border-[#e0e0e0]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -286,15 +287,15 @@ export default function CreateInvoicePage() {
             </Card>
 
             {/* Customer */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Pelanggan</CardTitle>
+            <Card className="border border-[#e0e0e0] shadow-sm">
+              <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
+                <CardTitle className="text-sm font-bold text-[#181818]">Pelanggan</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  <Label className="text-xs">Cari / Pilih Pelanggan *</Label>
+              <CardContent className="p-4 space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Cari / Pilih Pelanggan *</Label>
                   <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground z-10" />
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#706e6b] z-10" />
                     <Input
                       placeholder="Ketik nama atau kode pelanggan..."
                       value={selectedCustomer ? selectedCustomerData?.name || "" : customerSearch}
@@ -307,12 +308,12 @@ export default function CreateInvoicePage() {
                       }}
                       onFocus={() => setShowCustomerDropdown(true)}
                       onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
-                      className="h-8 pl-8 text-sm"
+                      className="h-8 pl-8 text-[13px] border-[#e0e0e0]"
                     />
                     {showCustomerDropdown && !selectedCustomer && customerSearch && (
-                      <div className="absolute z-20 mt-1 w-full rounded-md border bg-white shadow-lg">
+                      <div className="absolute z-20 mt-1 w-full rounded-md border border-[#e0e0e0] bg-white shadow-lg">
                         {filteredCustomers.length === 0 ? (
-                          <div className="px-3 py-2 text-sm text-muted-foreground">
+                          <div className="px-3 py-2 text-[13px] text-[#706e6b]">
                             Tidak ada pelanggan ditemukan
                           </div>
                         ) : (
@@ -328,10 +329,10 @@ export default function CreateInvoicePage() {
                                 setSelectedQuotation("")
                                 setItems([])
                               }}
-                              className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
+                              className="flex w-full items-center justify-between px-3 py-2 text-[13px] hover:bg-[#f0f7ff] transition-colors"
                             >
                               <span>{c.name}</span>
-                              <span className="text-xs text-muted-foreground">{c.tier}</span>
+                              <span className="text-xs text-[#706e6b]">{c.tier}</span>
                             </button>
                           ))
                         )}
@@ -339,8 +340,8 @@ export default function CreateInvoicePage() {
                     )}
                   </div>
                   {selectedCustomerData && (
-                    <div className="flex items-center gap-2 rounded-lg border bg-slate-50 p-2.5">
-                      <span className="text-sm font-medium">{selectedCustomerData.name}</span>
+                    <div className="flex items-center gap-2 rounded-lg border border-[#e0e0e0] bg-[#f8f8f8] p-2.5">
+                      <span className="text-[13px] font-medium text-[#181818]">{selectedCustomerData.name}</span>
                       <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-medium text-indigo-700">
                         {selectedCustomerData.tier}
                       </span>
@@ -362,10 +363,10 @@ export default function CreateInvoicePage() {
 
                 {/* Quotation Selector */}
                 {selectedCustomer && customerQuotations.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-xs">Muat dari Penawaran (opsional)</Label>
+                  <div className="space-y-1">
+                    <Label className="text-[11px] uppercase tracking-wider font-bold text-[#3e3e3c]">Muat dari Penawaran (opsional)</Label>
                     <Select value={selectedQuotation} onValueChange={(v) => { if (v) loadFromQuotation(v) }}>
-                      <SelectTrigger className="h-8 text-sm">
+                      <SelectTrigger className="h-8 text-[13px] border-[#e0e0e0]">
                         <SelectValue placeholder="Pilih penawaran untuk dijadikan faktur" />
                       </SelectTrigger>
                       <SelectContent>
@@ -382,37 +383,37 @@ export default function CreateInvoicePage() {
             </Card>
 
             {/* Item Table */}
-            <Card>
-              <CardHeader>
+            <Card className="border border-[#e0e0e0] shadow-sm">
+              <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">Item Faktur</CardTitle>
-                    <CardDescription>Daftar produk yang difakturkan</CardDescription>
+                    <CardTitle className="text-sm font-bold text-[#181818]">Item Faktur</CardTitle>
+                    <CardDescription className="text-[11px] text-[#706e6b]">Daftar produk yang difakturkan</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" size="sm" onClick={addItem}>
+                  <Button type="button" variant="outline" size="sm" onClick={addItem} className="h-8 text-xs border-[#e0e0e0]">
                     <Plus className="mr-1.5 h-3.5 w-3.5" />
                     Tambah Item
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {items.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-[#706e6b]">
                     <FileText className="mx-auto h-8 w-8 mb-2 opacity-50" />
-                    <p className="text-sm">Belum ada item. Klik &quot;Tambah Item&quot; atau muat dari penawaran.</p>
+                    <p className="text-[13px]">Belum ada item. Klik &quot;Tambah Item&quot; atau muat dari penawaran.</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full">
                       <thead>
-                        <tr className="border-b bg-slate-50 text-left text-xs font-medium text-slate-500">
-                          <th className="px-3 py-2">Nama Item</th>
-                          <th className="px-3 py-2 w-28">Kode #</th>
-                          <th className="px-3 py-2 w-20 text-center">Qty</th>
-                          <th className="px-3 py-2 w-16">Satuan</th>
-                          <th className="px-3 py-2 text-right w-28">@Harga</th>
-                          <th className="px-3 py-2 text-right w-20">Disc %</th>
-                          <th className="px-3 py-2 text-right w-32">Total Harga</th>
+                        <tr className="border-b border-[#f0f0f0] bg-white">
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left">Nama Item</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left w-28">Kode #</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-center w-20">Qty</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-left w-16">Satuan</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-right w-28">@Harga</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-right w-20">Disc %</th>
+                          <th className="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-[#706e6b] text-right w-32">Total Harga</th>
                           <th className="px-3 py-2 w-10"></th>
                         </tr>
                       </thead>
@@ -423,13 +424,13 @@ export default function CreateInvoicePage() {
                             item.price * item.qty * (1 - item.discountPct / 100)
                           )
                           return (
-                            <tr key={index} className="border-b last:border-0">
+                            <tr key={index} className="border-b border-[#f0f0f0] last:border-0 hover:bg-[#f0f7ff]">
                               <td className="px-3 py-1.5">
                                 <Select
                                   value={item.productId}
                                   onValueChange={(v) => updateItem(index, "productId", v ?? "")}
                                 >
-                                  <SelectTrigger className="w-full h-8 text-xs">
+                                  <SelectTrigger className="w-full h-8 text-[13px] border-[#e0e0e0]">
                                     <SelectValue placeholder="Pilih produk">
                                       {product ? product.name : "Pilih produk"}
                                     </SelectValue>
@@ -443,7 +444,7 @@ export default function CreateInvoicePage() {
                                   </SelectContent>
                                 </Select>
                               </td>
-                              <td className="px-3 py-1.5 text-xs text-muted-foreground font-mono">
+                              <td className="px-3 py-1.5 text-[13px] text-[#706e6b] font-mono">
                                 {product?.sku || "-"}
                               </td>
                               <td className="px-3 py-1.5">
@@ -454,13 +455,13 @@ export default function CreateInvoicePage() {
                                   onChange={(e) =>
                                     updateItem(index, "qty", parseInt(e.target.value) || 1)
                                   }
-                                  className="h-8 text-xs w-16 text-center"
+                                  className="h-8 text-[13px] w-16 text-center border-[#e0e0e0]"
                                 />
                               </td>
-                              <td className="px-3 py-1.5 text-xs text-muted-foreground">
+                              <td className="px-3 py-1.5 text-[13px] text-[#706e6b]">
                                 {product?.unit || "pcs"}
                               </td>
-                              <td className="px-3 py-1.5 text-xs text-right">
+                              <td className="px-3 py-1.5 text-[13px] text-right">
                                 {formatIDR(item.price)}
                               </td>
                               <td className="px-3 py-1.5">
@@ -476,10 +477,10 @@ export default function CreateInvoicePage() {
                                       Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
                                     )
                                   }
-                                  className="h-8 text-xs w-14 text-right"
+                                  className="h-8 text-[13px] w-14 text-right border-[#e0e0e0]"
                                 />
                               </td>
-                              <td className="px-3 py-1.5 text-xs text-right font-medium">
+                              <td className="px-3 py-1.5 text-[13px] text-right font-medium text-[#181818]">
                                 {formatIDR(lineTotal)}
                               </td>
                               <td className="px-3 py-1.5">
@@ -502,17 +503,17 @@ export default function CreateInvoicePage() {
             </Card>
 
             {/* Notes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Catatan</CardTitle>
+            <Card className="border border-[#e0e0e0] shadow-sm">
+              <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
+                <CardTitle className="text-sm font-bold text-[#181818]">Catatan</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <Textarea
                   placeholder="Catatan untuk faktur ini..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="text-sm"
+                  className="text-[13px] border-[#e0e0e0]"
                 />
               </CardContent>
             </Card>
@@ -520,73 +521,73 @@ export default function CreateInvoicePage() {
 
           {/* Sidebar Summary */}
           <div>
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
+            <Card className="sticky top-4 border border-[#e0e0e0] shadow-sm">
+              <CardHeader className="px-4 py-3 border-b border-[#e0e0e0]">
+                <CardTitle className="text-sm font-bold text-[#181818] flex items-center gap-2">
                   <CreditCard className="h-4 w-4" />
                   Ringkasan Faktur
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-sm">
+              <CardContent className="p-4 space-y-3">
+                <div className="space-y-2 text-[13px]">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Nomor</span>
-                    <span className="font-mono text-xs">{invoiceNumber}</span>
+                    <span className="text-[#706e6b]">Nomor</span>
+                    <span className="font-mono text-xs text-[#181818]">{invoiceNumber}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tanggal</span>
-                    <span>{invoiceDate}</span>
+                    <span className="text-[#706e6b]">Tanggal</span>
+                    <span className="text-[#181818]">{invoiceDate}</span>
                   </div>
                   {dueDate && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Jatuh Tempo</span>
-                      <span>{dueDate}</span>
+                      <span className="text-[#706e6b]">Jatuh Tempo</span>
+                      <span className="text-[#181818]">{dueDate}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Terms</span>
-                    <span>{paymentTerms}</span>
+                    <span className="text-[#706e6b]">Terms</span>
+                    <span className="text-[#181818]">{paymentTerms}</span>
                   </div>
                   {selectedCustomerData && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Pelanggan</span>
-                      <span className="text-right max-w-[150px] truncate">{selectedCustomerData.name}</span>
+                      <span className="text-[#706e6b]">Pelanggan</span>
+                      <span className="text-right max-w-[150px] truncate text-[#181818]">{selectedCustomerData.name}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Jumlah Item</span>
-                    <span>{items.length} produk</span>
+                    <span className="text-[#706e6b]">Jumlah Item</span>
+                    <span className="text-[#181818]">{items.length} produk</span>
                   </div>
                 </div>
 
-                <div className="border-t pt-3 space-y-2">
+                <div className="border-t border-[#e0e0e0] pt-3 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Sub Total</span>
-                    <span>{formatIDR(subtotal)}</span>
+                    <span className="text-[#706e6b]">Sub Total</span>
+                    <span className="text-[#181818]">{formatIDR(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Diskon</span>
+                    <span className="text-[#706e6b]">Diskon</span>
                     <span className="text-emerald-600">
                       {totalDiscount > 0 ? `-${formatIDR(totalDiscount)}` : "-"}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm font-bold border-t pt-2">
-                    <span>Total Faktur</span>
-                    <span>{formatIDR(total)}</span>
+                  <div className="flex justify-between text-[13px] font-bold border-t border-[#e0e0e0] pt-2">
+                    <span className="text-[#181818]">Total Faktur</span>
+                    <span className="text-[#181818]">{formatIDR(total)}</span>
                   </div>
                 </div>
 
                 <div className="pt-3 space-y-2">
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full h-8 text-xs bg-[#0176d3] hover:bg-[#014486] text-white"
                     size="sm"
                     disabled={!selectedCustomer || items.length === 0 || isSubmitting}
                   >
                     {isSubmitting ? "Menyimpan..." : "Simpan Faktur"}
                   </Button>
                   <Link href="/accounting/sales/invoices" className="block">
-                    <Button type="button" variant="outline" className="w-full" size="sm">
+                    <Button type="button" variant="outline" className="w-full h-8 text-xs border-[#e0e0e0]" size="sm">
                       Batal
                     </Button>
                   </Link>

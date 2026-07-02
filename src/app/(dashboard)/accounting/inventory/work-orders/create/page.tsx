@@ -2,32 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Save,
-  Send,
-  ClipboardList,
-} from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Save, Send, ClipboardList } from "lucide-react"
 
 interface WorkOrderLine {
   id: number
@@ -47,6 +22,98 @@ const inventoryItems = [
   { code: "SCW-WS-1L", name: "SCW Wheel Shiner 1L", unit: "Liter" },
   { code: "SCW-APC-5L", name: "SCW All Purpose Cleaner 5L", unit: "Liter" },
 ]
+
+// ── SLDS style constants ──
+const slds = {
+  brand: "#0176d3",
+  brandHover: "#014486",
+  textPrimary: "#001526",
+  textSecondary: "#444746",
+  border: "#d8d8d8",
+  borderLight: "#ecebea",
+  success: "#2e844a",
+  warning: "#fe9339",
+  error: "#ea001e",
+  bgLight: "#f4f6f9",
+  bgWhite: "#ffffff",
+  radius: 6,
+  fontBase: "13px",
+  fontSmall: "12px",
+  fontXSmall: "11px",
+}
+
+const sldsCard = (styles: React.CSSProperties = {}) => ({
+  background: slds.bgWhite,
+  border: `1px solid ${slds.borderLight}`,
+  borderRadius: slds.radius,
+  ...styles,
+})
+
+const sldsInput = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  boxSizing: "border-box" as const,
+  ...styles,
+})
+
+const sldsSelect = (styles: React.CSSProperties = {}) => ({
+  height: 32,
+  padding: "0 28px 0 10px",
+  fontSize: slds.fontBase,
+  border: `1px solid ${slds.border}`,
+  borderRadius: slds.radius,
+  outline: "none",
+  color: slds.textPrimary,
+  background: slds.bgWhite,
+  width: "100%",
+  appearance: "none" as const,
+  WebkitAppearance: "none" as const,
+  cursor: "pointer",
+  ...styles,
+})
+
+const sldsLabel = (styles: React.CSSProperties = {}) => ({
+  fontSize: slds.fontSmall,
+  fontWeight: 600,
+  color: slds.textSecondary,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.04em",
+  display: "block",
+  marginBottom: 4,
+  ...styles,
+})
+
+const sldsButton = (variant: "primary" | "outline" | "ghost" = "primary", styles: React.CSSProperties = {}) => {
+  const base: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    height: 32,
+    padding: "0 14px",
+    fontSize: slds.fontBase,
+    fontWeight: 600,
+    border: `1px solid ${slds.border}`,
+    borderRadius: slds.radius,
+    cursor: "pointer",
+    transition: "all 100ms",
+    whiteSpace: "nowrap",
+    ...styles,
+  }
+  if (variant === "primary") {
+    return { ...base, background: slds.brand, color: "#fff", border: `1px solid ${slds.brand}` }
+  }
+  if (variant === "outline") {
+    return { ...base, background: slds.bgWhite, color: slds.textPrimary, border: `1px solid ${slds.border}` }
+  }
+  return { ...base, background: "transparent", color: slds.textSecondary, border: "1px solid transparent", padding: "0 8px" }
+}
 
 function generateWorkOrderNumber(): string {
   const now = new Date()
@@ -103,142 +170,203 @@ export default function CreateWorkOrderPage() {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/accounting/inventory/work-orders">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Link
+            href="/accounting/inventory/work-orders"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 32,
+              height: 32,
+              borderRadius: slds.radius,
+              color: slds.textSecondary,
+              textDecoration: "none",
+              transition: "background 100ms",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <ArrowLeft size={16} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: slds.textPrimary, lineHeight: 1.2 }}>
               Buat Pekerjaan Pesanan
             </h1>
-            <p className="text-sm text-slate-500">
+            <p style={{ fontSize: slds.fontBase, color: slds.textSecondary, marginTop: 2 }}>
               Buat pekerjaan pesanan baru untuk proses produksi
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Save className="mr-2 h-4 w-4" />
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            style={sldsButton("outline")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.bgWhite)}
+          >
+            <Save size={14} />
             Simpan Draft
-          </Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Send className="mr-2 h-4 w-4" />
+          </button>
+          <button
+            style={sldsButton("primary")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.brandHover)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.brand)}
+          >
+            <Send size={14} />
             Terbitkan Pekerjaan
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Header Info */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="date">Tanggal *</Label>
-              <Input
+      {/* ── Header Info Card ── */}
+      <div style={sldsCard()}>
+        <div style={{ padding: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+            {/* Date */}
+            <div>
+              <label htmlFor="date" style={sldsLabel()}>Tanggal *</label>
+              <input
                 id="date"
                 type="date"
                 value={entryDate}
                 onChange={(e) => setEntryDate(e.target.value)}
+                style={sldsInput()}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="number">Nomor Pekerjaan *</Label>
-              <Input
+            {/* Number */}
+            <div>
+              <label htmlFor="number" style={sldsLabel()}>Nomor Pekerjaan *</label>
+              <input
                 id="number"
                 placeholder="JC.YYYY.MM.00001"
                 value={workOrderNumber}
                 onChange={(e) => setWorkOrderNumber(e.target.value)}
-                className="bg-slate-50"
+                style={sldsInput({ background: slds.bgLight })}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="batch">Batch No (Job Costing)</Label>
-              <Input
+            {/* Batch No */}
+            <div>
+              <label htmlFor="batch" style={sldsLabel()}>Batch No (Job Costing)</label>
+              <input
                 id="batch"
                 placeholder="Masukkan nomor batch..."
                 value={batchNo}
                 onChange={(e) => setBatchNo(e.target.value)}
+                style={sldsInput()}
+                onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
               />
             </div>
           </div>
-          <div className="mt-4">
-            <Label htmlFor="keterangan">Keterangan</Label>
-            <Input
+          <div style={{ marginTop: 16 }}>
+            <label htmlFor="keterangan" style={sldsLabel()}>Keterangan</label>
+            <input
               id="keterangan"
               placeholder="Deskripsi pekerjaan pesanan..."
               value={keterangan}
               onChange={(e) => setKeterangan(e.target.value)}
+              style={sldsInput()}
+              onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+              onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Item Lines Table */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+      {/* ── Item Lines Table Card ── */}
+      <div style={sldsCard({ overflow: "hidden" })}>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            borderBottom: `1px solid ${slds.borderLight}`,
+          }}
+        >
           <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-indigo-600" />
-              Detail Item Pekerjaan
-            </CardTitle>
-            <CardDescription>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <ClipboardList size={16} style={{ color: slds.brand }} />
+              <h2 style={{ fontSize: 15, fontWeight: 600, color: slds.textPrimary }}>Detail Item Pekerjaan</h2>
+            </div>
+            <p style={{ fontSize: slds.fontSmall, color: slds.textSecondary, marginTop: 2 }}>
               Daftar item yang akan dikerjakan dalam pesanan ini
-            </CardDescription>
+            </p>
           </div>
-          <Button variant="outline" size="sm" onClick={addLine}>
-            <Plus className="mr-2 h-4 w-4" />
+          <button
+            onClick={addLine}
+            style={sldsButton("outline", { height: 28, fontSize: slds.fontSmall, padding: "0 10px" })}
+            onMouseEnter={(e) => (e.currentTarget.style.background = slds.bgLight)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = slds.bgWhite)}
+          >
+            <Plus size={13} />
             Tambah Item
-          </Button>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead className="w-[50px] font-semibold text-slate-700">
-                  No.
-                </TableHead>
-                <TableHead className="font-semibold text-slate-700">
-                  Nama Item
-                </TableHead>
-                <TableHead className="w-[140px] font-semibold text-slate-700">
-                  Kode #
-                </TableHead>
-                <TableHead className="w-[120px] text-right font-semibold text-slate-700">
-                  Jumlah
-                </TableHead>
-                <TableHead className="w-[100px] font-semibold text-slate-700">
-                  Satuan
-                </TableHead>
-                <TableHead className="w-[60px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          </button>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: slds.fontBase }}>
+            <thead>
+              <tr style={{ background: slds.bgLight }}>
+                {["No.", "Nama Item", "Kode #", "Jumlah", "Satuan", ""].map((col) => (
+                  <th
+                    key={col}
+                    style={{
+                      padding: "10px 12px",
+                      fontSize: slds.fontXSmall,
+                      fontWeight: 600,
+                      color: slds.textSecondary,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                      textAlign: col === "Jumlah" ? "right" : "left",
+                      borderBottom: `1px solid ${slds.borderLight}`,
+                      whiteSpace: "nowrap",
+                      ...(col === "No." ? { width: 50 } : {}),
+                      ...(col === "Kode #" ? { width: 140 } : {}),
+                      ...(col === "Jumlah" ? { width: 120 } : {}),
+                      ...(col === "Satuan" ? { width: 100 } : {}),
+                      ...(col === "" ? { width: 60 } : {}),
+                    }}
+                  >
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {lines.map((line, idx) => (
-                <TableRow key={line.id}>
-                  <TableCell>
-                    <span className="text-sm text-slate-500">{idx + 1}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-slate-800">
-                      {line.itemName || (
-                        <span className="text-slate-400 italic">Pilih kode item</span>
-                      )}
+                <tr
+                  key={line.id}
+                  style={{ borderBottom: `1px solid ${slds.borderLight}`, transition: "background 100ms" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <td style={{ padding: "8px 12px" }}>
+                    <span style={{ fontSize: slds.fontSmall, color: slds.textSecondary }}>{idx + 1}</span>
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <span style={{ fontSize: slds.fontBase, color: line.itemName ? slds.textPrimary : slds.border, fontStyle: line.itemName ? "normal" : "italic" }}>
+                      {line.itemName || "Pilih kode item"}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <Input
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <input
                       placeholder="Pilih kode"
                       value={line.code}
-                      onChange={(e) =>
-                        updateLine(line.id, "code", e.target.value)
-                      }
-                      className="text-sm"
+                      onChange={(e) => updateLine(line.id, "code", e.target.value)}
                       list="item-codes"
+                      style={sldsInput({ height: 30, fontSize: slds.fontSmall })}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
                     />
                     <datalist id="item-codes">
                       {inventoryItems.map((item) => (
@@ -247,60 +375,83 @@ export default function CreateWorkOrderPage() {
                         </option>
                       ))}
                     </datalist>
-                  </TableCell>
-                  <TableCell>
-                    <Input
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <input
                       type="number"
                       placeholder="0"
                       value={line.quantity || ""}
-                      onChange={(e) =>
-                        updateLine(
-                          line.id,
-                          "quantity",
-                          parseInt(e.target.value) || 0
-                        )
-                      }
-                      className="text-right font-sans text-sm"
+                      onChange={(e) => updateLine(line.id, "quantity", parseInt(e.target.value) || 0)}
                       min={0}
+                      style={sldsInput({ height: 30, fontSize: slds.fontSmall, textAlign: "right", fontFamily: "monospace" })}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = slds.brand)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = slds.border)}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-slate-600">
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <span style={{ fontSize: slds.fontSmall, color: slds.textSecondary }}>
                       {line.unit || "-"}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                  </td>
+                  <td style={{ padding: "8px 12px", textAlign: "center" }}>
+                    <button
                       onClick={() => removeLine(line.id)}
                       disabled={lines.length <= 1}
-                      className="text-slate-400 hover:text-red-600"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 28,
+                        height: 28,
+                        borderRadius: 4,
+                        border: "none",
+                        background: "transparent",
+                        color: lines.length <= 1 ? slds.border : slds.textSecondary,
+                        cursor: lines.length <= 1 ? "not-allowed" : "pointer",
+                        transition: "all 100ms",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (lines.length > 1) {
+                          e.currentTarget.style.background = "#fef1f0"
+                          e.currentTarget.style.color = slds.error
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent"
+                        e.currentTarget.style.color = lines.length <= 1 ? slds.border : slds.textSecondary
+                      }}
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
+        </div>
 
-          {/* Summary Footer */}
-          <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">
-                Total {lines.filter((l) => l.code).length} item
-              </span>
-              <span className="text-sm text-slate-500">
-                Total Jumlah:{" "}
-                <strong className="text-slate-900">
-                  {lines.reduce((sum, l) => sum + l.quantity, 0)}
-                </strong>
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Summary Footer */}
+        <div
+          style={{
+            borderTop: `1px solid ${slds.borderLight}`,
+            background: slds.bgLight,
+            padding: "12px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontSize: slds.fontSmall, color: slds.textSecondary }}>
+            Total {lines.filter((l) => l.code).length} item
+          </span>
+          <span style={{ fontSize: slds.fontSmall, color: slds.textSecondary }}>
+            Total Jumlah:{" "}
+            <strong style={{ color: slds.textPrimary, fontFamily: "monospace" }}>
+              {lines.reduce((sum, l) => sum + l.quantity, 0)}
+            </strong>
+          </span>
+        </div>
+      </div>
     </div>
   )
 }

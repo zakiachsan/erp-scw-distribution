@@ -9,7 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -28,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Download, Calculator, FileText, Users, Building2 } from "lucide-react"
+import { Download, Calculator, Users, Building2 } from "lucide-react"
 
 interface Employee {
   id: string
@@ -72,39 +71,43 @@ function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
 }
 
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "Paid":
+      return <Badge style={{ background: "#e8f5ed", color: "#2e844a", border: "1px solid #b8dcc5", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Pending":
+      return <Badge style={{ background: "#fef7e0", color: "#9a6b00", border: "1px solid #f9e0a0", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    default:
+      return <Badge variant="secondary">{status}</Badge>
+  }
+}
+
 export default function TaxPage() {
   const [taxMonth, setTaxMonth] = useState("2026-06")
   const [activeTab, setActiveTab] = useState("pph21")
 
-  // PPh 21 Summary
   const totalPPh21 = employees.reduce((sum, e) => sum + e.taxAmount, 0)
-  const totalPPh21Paid = employees
-    .filter((e) => e.status === "Paid")
-    .reduce((sum, e) => sum + e.taxAmount, 0)
+  const totalPPh21Paid = employees.filter((e) => e.status === "Paid").reduce((sum, e) => sum + e.taxAmount, 0)
   const totalPPh21Pending = totalPPh21 - totalPPh21Paid
 
-  // PPh 23 Summary
   const totalPPh23 = vendors.reduce((sum, v) => sum + v.taxAmount, 0)
-  const totalPPh23Paid = vendors
-    .filter((v) => v.status === "Paid")
-    .reduce((sum, v) => sum + v.taxAmount, 0)
+  const totalPPh23Paid = vendors.filter((v) => v.status === "Paid").reduce((sum, v) => sum + v.taxAmount, 0)
   const totalPPh23Pending = totalPPh23 - totalPPh23Paid
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             Tax Management - PPh 21 & PPh 23
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Pengelolaan pajak penghasilan karyawan dan vendor
           </p>
         </div>
         <div className="flex gap-2">
           <Select value={taxMonth} onValueChange={(v) => setTaxMonth(v ?? '')}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" style={{ height: 32, fontSize: 12, borderRadius: 6 }}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -113,67 +116,64 @@ export default function TaxPage() {
               <SelectItem value="2026-04">April 2026</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 500,
+              background: "#fff", color: "#0176d3",
+              border: "1px solid #d8d8d8", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+          >
+            <Download size={14} />
             Export
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
-              <p className="text-sm text-slate-500">Total PPh 21</p>
-            </div>
-            <p className="text-xl font-bold text-blue-600">{formatIDR(totalPPh21)}</p>
-            <p className="text-xs text-slate-400">{employees.length} karyawan</p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #0176d3" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total PPh 21</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#0176d3", marginTop: 4 }}>{formatIDR(totalPPh21)}</p>
+            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{employees.length} karyawan</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-green-600" />
-              <p className="text-sm text-slate-500">Total PPh 23</p>
-            </div>
-            <p className="text-xl font-bold text-green-600">{formatIDR(totalPPh23)}</p>
-            <p className="text-xs text-slate-400">{vendors.length} vendor</p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total PPh 23</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalPPh23)}</p>
+            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{vendors.length} vendor</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-emerald-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Paid</p>
-            <p className="text-xl font-bold text-emerald-600">
-              {formatIDR(totalPPh21Paid + totalPPh23Paid)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Paid</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalPPh21Paid + totalPPh23Paid)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Pending</p>
-            <p className="text-xl font-bold text-amber-600">
-              {formatIDR(totalPPh21Pending + totalPPh23Pending)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #fe9339" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Pending</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{formatIDR(totalPPh21Pending + totalPPh23Pending)}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tax Calculation Form */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-indigo-600" />
-            Tax Calculation
-          </CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Tax Calculation</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div className="space-y-2">
-              <Label>Tax Type</Label>
+            <div>
+              <Label style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4, display: "block" }}>Tax Type</Label>
               <Select defaultValue="pph21">
-                <SelectTrigger>
+                <SelectTrigger style={{ height: 32, fontSize: 12, borderRadius: 6 }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,100 +182,89 @@ export default function TaxPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Monthly Salary / Fee (IDR)</Label>
-              <Input type="number" placeholder="e.g. 15000000" />
+            <div>
+              <Label style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4, display: "block" }}>Monthly Salary / Fee (IDR)</Label>
+              <Input type="number" placeholder="e.g. 15000000" style={{ height: 32, fontSize: 13, borderRadius: 6, border: "1px solid #d8d8d8" }} />
             </div>
-            <div className="space-y-2">
-              <Label>Tax Rate (%)</Label>
-              <Input type="number" placeholder="e.g. 15" defaultValue="15" />
+            <div>
+              <Label style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4, display: "block" }}>Tax Rate (%)</Label>
+              <Input type="number" placeholder="e.g. 15" defaultValue="15" style={{ height: 32, fontSize: 13, borderRadius: 6, border: "1px solid #d8d8d8" }} />
             </div>
-            <div className="space-y-2">
-              <Label>Tax Amount</Label>
-              <div className="flex items-center h-10 px-3 rounded-md border bg-slate-50 font-sans font-bold text-indigo-700">
+            <div>
+              <Label style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4, display: "block" }}>Tax Amount</Label>
+              <div style={{ display: "flex", alignItems: "center", height: 32, padding: "0 12px", borderRadius: 6, border: "1px solid #d8d8d8", background: "#f4f6f9", fontFamily: "monospace", fontWeight: 700, color: "#0176d3", fontSize: 13 }}>
                 Rp 0
               </div>
             </div>
           </div>
-          <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
-            <Calculator className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12,
+              padding: "7px 14px", fontSize: 13, fontWeight: 600,
+              background: "#0176d3", color: "#fff",
+              border: "1px solid #0176d3", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#014486"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#0176d3"}
+          >
+            <Calculator size={14} />
             Calculate Tax
-          </Button>
+          </button>
         </CardContent>
       </Card>
 
       {/* PPh 21 / PPh 23 Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v ?? '')}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="pph21" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-2" style={{ background: "#f4f6f9", borderRadius: 6 }}>
+          <TabsTrigger value="pph21" style={{ fontSize: 12, fontWeight: 500, borderRadius: 4 }}>
+            <Users size={14} style={{ marginRight: 6 }} />
             PPh 21 - Employees ({employees.length})
           </TabsTrigger>
-          <TabsTrigger value="pph23" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
+          <TabsTrigger value="pph23" style={{ fontSize: 12, fontWeight: 500, borderRadius: 4 }}>
+            <Building2 size={14} style={{ marginRight: 6 }} />
             PPh 23 - Vendors ({vendors.length})
           </TabsTrigger>
         </TabsList>
 
-        {/* PPh 21 Tab */}
         <TabsContent value="pph21">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">PPh 21 Employee Tax Report</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>PPh 21 Employee Tax Report</CardTitle>
+              <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
                 Pajak penghasilan pasal 21 untuk karyawan tetap
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Employee ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead className="text-right">Monthly Salary</TableHead>
-                    <TableHead className="text-center">Tax Rate</TableHead>
-                    <TableHead className="text-right">Tax Amount</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Employee ID</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Name</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Position</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Monthly Salary</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Tax Rate</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Tax Amount</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {employees.map((emp) => (
-                    <TableRow key={emp.id}>
-                      <TableCell className="font-sans text-sm">{emp.id}</TableCell>
-                      <TableCell className="font-medium">{emp.name}</TableCell>
-                      <TableCell className="text-slate-600">{emp.position}</TableCell>
-                      <TableCell className="text-right font-sans">
-                        {formatIDR(emp.monthlySalary)}
+                    <TableRow key={emp.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{emp.id}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#001526" }}>{emp.name}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#444746" }}>{emp.position}</TableCell>
+                      <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(emp.monthlySalary)}</TableCell>
+                      <TableCell style={{ textAlign: "center" }}>
+                        <span style={{ fontSize: 12, color: "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4 }}>{emp.taxRate}%</span>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Badge className="bg-slate-100 text-slate-700">
-                          {emp.taxRate}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-sans font-bold text-blue-700">
-                        {formatIDR(emp.taxAmount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            emp.status === "Paid"
-                              ? "bg-green-100 text-green-700 hover:bg-green-100"
-                              : "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                          }
-                        >
-                          {emp.status}
-                        </Badge>
-                      </TableCell>
+                      <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#0176d3" }}>{formatIDR(emp.taxAmount)}</TableCell>
+                      <TableCell>{statusBadge(emp.status)}</TableCell>
                     </TableRow>
                   ))}
-                  <TableRow className="border-t-2 border-slate-300 bg-blue-50">
-                    <TableCell colSpan={5} className="font-bold text-slate-700">
-                      Total PPh 21
-                    </TableCell>
-                    <TableCell className="text-right font-sans font-bold text-blue-700">
-                      {formatIDR(totalPPh21)}
-                    </TableCell>
+                  <TableRow style={{ borderTop: "2px solid #ecebea", background: "#eef4ff" }}>
+                    <TableCell colSpan={5} style={{ fontSize: 13, fontWeight: 700, color: "#001526", padding: "8px 12px" }}>Total PPh 21</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#0176d3", padding: "8px 12px" }}>{formatIDR(totalPPh21)}</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableBody>
@@ -284,69 +273,46 @@ export default function TaxPage() {
           </Card>
         </TabsContent>
 
-        {/* PPh 23 Tab */}
         <TabsContent value="pph23">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">PPh 23 Vendor Tax Report</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>PPh 23 Vendor Tax Report</CardTitle>
+              <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
                 Pajak penghasilan pasal 23 untuk pembayaran jasa vendor
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Vendor ID</TableHead>
-                    <TableHead>Vendor Name</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Invoice No</TableHead>
-                    <TableHead className="text-right">Fee Amount</TableHead>
-                    <TableHead className="text-center">Tax Rate</TableHead>
-                    <TableHead className="text-right">Tax Amount</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Vendor ID</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Vendor Name</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Service</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Invoice No</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Fee Amount</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Tax Rate</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Tax Amount</TableHead>
+                    <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vendors.map((ven) => (
-                    <TableRow key={ven.id}>
-                      <TableCell className="font-sans text-sm">{ven.id}</TableCell>
-                      <TableCell className="font-medium">{ven.name}</TableCell>
-                      <TableCell className="text-slate-600 max-w-[180px] truncate">
-                        {ven.service}
+                    <TableRow key={ven.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                      <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{ven.id}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#001526" }}>{ven.name}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#444746", maxWidth: 180 }} className="truncate">{ven.service}</TableCell>
+                      <TableCell style={{ fontSize: 13, color: "#444746" }}>{ven.invoiceNo}</TableCell>
+                      <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(ven.fee)}</TableCell>
+                      <TableCell style={{ textAlign: "center" }}>
+                        <span style={{ fontSize: 12, color: "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4 }}>{ven.taxRate}%</span>
                       </TableCell>
-                      <TableCell className="font-sans text-sm">{ven.invoiceNo}</TableCell>
-                      <TableCell className="text-right font-sans">
-                        {formatIDR(ven.fee)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge className="bg-slate-100 text-slate-700">
-                          {ven.taxRate}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-sans font-bold text-green-700">
-                        {formatIDR(ven.taxAmount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            ven.status === "Paid"
-                              ? "bg-green-100 text-green-700 hover:bg-green-100"
-                              : "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                          }
-                        >
-                          {ven.status}
-                        </Badge>
-                      </TableCell>
+                      <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a" }}>{formatIDR(ven.taxAmount)}</TableCell>
+                      <TableCell>{statusBadge(ven.status)}</TableCell>
                     </TableRow>
                   ))}
-                  <TableRow className="border-t-2 border-slate-300 bg-green-50">
-                    <TableCell colSpan={6} className="font-bold text-slate-700">
-                      Total PPh 23
-                    </TableCell>
-                    <TableCell className="text-right font-sans font-bold text-green-700">
-                      {formatIDR(totalPPh23)}
-                    </TableCell>
+                  <TableRow style={{ borderTop: "2px solid #ecebea", background: "#e8f5ed" }}>
+                    <TableCell colSpan={6} style={{ fontSize: 13, fontWeight: 700, color: "#001526", padding: "8px 12px" }}>Total PPh 23</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a", padding: "8px 12px" }}>{formatIDR(totalPPh23)}</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableBody>

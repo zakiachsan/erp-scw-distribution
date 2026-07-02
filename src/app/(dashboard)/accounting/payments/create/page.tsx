@@ -120,47 +120,49 @@ export default function CreatePaymentPage() {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
+    <div className="space-y-5">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/accounting/payments">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="text-slds-text-secondary hover:text-brand">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slds-text-primary">
               Tambah Pembayaran
             </h1>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slds-text-secondary">
               Catat pembayaran keluar dari kas atau bank
             </p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" className="border-slds-text-secondary/20 text-slds-text-primary">
             <Save className="mr-2 h-4 w-4" />
             Simpan Draft
           </Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
+          <Button className="bg-brand hover:bg-brand-dark text-white">
             <Send className="mr-2 h-4 w-4" />
             Terbitkan
           </Button>
         </div>
       </div>
 
-      {/* Header Info */}
-      <Card>
+      {/* Header Information Card */}
+      <Card className="border border-slds-text-secondary/10 shadow-sm">
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-4">
             {/* Cash/Bank Search */}
-            <div className="space-y-2">
-              <Label>Kas/Bank *</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                Kas/Bank <span className="text-slds-error">*</span>
+              </Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 text-slate-400 -translate-y-1/2" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 text-slds-text-secondary -translate-y-1/2" />
                 <Select value={selectedCashBank} onValueChange={(v) => setSelectedCashBank(v ?? "")}>
-                  <SelectTrigger className="pl-10">
+                  <SelectTrigger className="pl-10 border-slds-text-secondary/20 text-slds-text-primary">
                     <SelectValue placeholder="Cari Kas/Bank..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -175,75 +177,96 @@ export default function CreatePaymentPage() {
             </div>
 
             {/* Date */}
-            <div className="space-y-2">
-              <Label htmlFor="date">Tanggal *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="date" className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                Tanggal <span className="text-slds-error">*</span>
+              </Label>
               <Input
                 id="date"
                 type="date"
                 value={paymentDate}
                 onChange={(e) => setPaymentDate(e.target.value)}
+                className="border-slds-text-secondary/20 text-slds-text-primary"
               />
             </div>
 
             {/* Voucher No */}
-            <div className="space-y-2">
-              <Label htmlFor="voucherNo">Nomor Bukti (Bank) *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="voucherNo" className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                Nomor Bukti (Bank) <span className="text-slds-error">*</span>
+              </Label>
               <Input
                 id="voucherNo"
                 value={voucherNo}
                 onChange={(e) => setVoucherNo(e.target.value)}
-                className="font-mono"
+                className="font-mono border-slds-text-secondary/20 text-slds-text-primary"
               />
             </div>
 
             {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Keterangan</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="description" className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                Keterangan
+              </Label>
               <Input
                 id="description"
                 placeholder="Deskripsi pembayaran..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                className="border-slds-text-secondary/20 text-slds-text-primary placeholder:text-slds-text-secondary/50"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Rincian Pembayaran */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+      {/* Payment Lines Table Card */}
+      <Card className="border border-slds-text-secondary/10 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between px-6 py-4 border-b border-slds-text-secondary/10">
           <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <span className="text-indigo-600">Rp</span>
+            <CardTitle className="text-base flex items-center gap-2 text-slds-text-primary">
+              <span className="text-brand font-bold">Rp</span>
               Rincian Pembayaran
             </CardTitle>
-            <CardDescription>Daftar akun yang akan dibebaskan dari pembayaran ini</CardDescription>
+            <CardDescription className="text-xs text-slds-text-secondary">
+              Daftar akun yang akan dibebaskan dari pembayaran ini
+            </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={addLine}>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={addLine}
+            className="border-brand text-brand hover:bg-brand-light"
+          >
+            <Plus className="mr-1.5 h-4 w-4" />
             Tambah Baris
           </Button>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead className="w-[120px] font-semibold text-slate-700">Akun</TableHead>
-                <TableHead className="font-semibold text-slate-700">Nama Akun</TableHead>
-                <TableHead className="w-[200px] text-right font-semibold text-slate-700">Nilai (Rp)</TableHead>
+              <TableRow className="bg-slds-text-primary/[0.03]">
+                <TableHead className="w-[130px] text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                  Akun
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                  Nama Akun
+                </TableHead>
+                <TableHead className="w-[200px] text-right text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                  Nilai (Rp)
+                </TableHead>
                 <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {lines.map((line) => (
-                <TableRow key={line.id}>
+                <TableRow key={line.id} className="border-b border-slds-text-secondary/10">
                   <TableCell>
                     <Select
                       value={line.account}
                       onValueChange={(v) => updateLine(line.id, "account", v ?? "")}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full border-slds-text-secondary/20 text-slds-text-primary text-sm">
                         <SelectValue placeholder="Pilih akun" />
                       </SelectTrigger>
                       <SelectContent>
@@ -256,9 +279,9 @@ export default function CreatePaymentPage() {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-slate-600">
+                    <span className="text-sm text-slds-text-primary">
                       {line.accountName || (
-                        <span className="text-slate-400 italic">Pilih akun terlebih dahulu</span>
+                        <span className="text-slds-text-secondary/50 italic">Pilih akun terlebih dahulu</span>
                       )}
                     </span>
                   </TableCell>
@@ -268,7 +291,7 @@ export default function CreatePaymentPage() {
                       placeholder="0"
                       value={line.amount || ""}
                       onChange={(e) => updateLine(line.id, "amount", parseInt(e.target.value) || 0)}
-                      className="text-right font-sans"
+                      className="text-right font-sans border-slds-text-secondary/20 text-slds-text-primary"
                       min={0}
                     />
                   </TableCell>
@@ -278,7 +301,7 @@ export default function CreatePaymentPage() {
                       size="icon"
                       onClick={() => removeLine(line.id)}
                       disabled={lines.length <= 1}
-                      className="text-slate-400 hover:text-red-600"
+                      className="text-slds-text-secondary hover:text-slds-error"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -288,13 +311,15 @@ export default function CreatePaymentPage() {
             </TableBody>
           </Table>
 
-          {/* Total */}
-          <div className="border-t border-slate-200 bg-slate-50 px-4 py-4">
+          {/* Total Section */}
+          <div className="border-t border-slds-text-secondary/10 bg-slds-text-primary/[0.02] px-6 py-4">
             <div className="flex items-center justify-end">
-              <div className="w-full max-w-xs rounded-lg border border-slate-200 bg-white p-4">
-                <div className="flex justify-between py-2">
-                  <span className="text-sm font-medium text-slate-600">Total Pembayaran:</span>
-                  <span className="font-sans font-bold text-slate-900">{formatIDR(totalAmount)}</span>
+              <div className="w-full max-w-xs rounded-md border border-slds-text-secondary/10 bg-white px-5 py-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slds-text-secondary">
+                    Total Pembayaran
+                  </span>
+                  <span className="font-sans font-bold text-slds-text-primary">{formatIDR(totalAmount)}</span>
                 </div>
               </div>
             </div>

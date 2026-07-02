@@ -9,8 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -77,6 +75,19 @@ const categoryIcons: Record<string, typeof Building> = {
   monitor: Monitor,
 }
 
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "Active":
+      return <Badge style={{ background: "#e8f5ed", color: "#2e844a", border: "1px solid #b8dcc5", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Fully Depreciated":
+      return <Badge style={{ background: "#f4f6f9", color: "#444746", border: "1px solid #e0e0e0", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Disposed":
+      return <Badge style={{ background: "#fef1f0", color: "#ea001e", border: "1px solid #fcc8c8", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    default:
+      return <Badge variant="secondary">{status}</Badge>
+  }
+}
+
 export default function FixedAssetPage() {
   const [categoryFilter, setCategoryFilter] = useState("All")
 
@@ -86,72 +97,85 @@ export default function FixedAssetPage() {
       : assets.filter((a) => a.category === categoryFilter)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             Fixed Asset Management
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Pengelolaan aset tetap SCW Distribution
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 500,
+              background: "#fff", color: "#0176d3",
+              border: "1px solid #d8d8d8", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+          >
+            <Download size={14} />
             Export
-          </Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="mr-2 h-4 w-4" />
+          </button>
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 600,
+              background: "#0176d3", color: "#fff",
+              border: "1px solid #0176d3", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#014486"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#0176d3"}
+          >
+            <Plus size={15} />
             Add Asset
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Assets</p>
-            <p className="text-xl font-bold text-blue-600">{assets.length}</p>
-            <p className="text-xs text-slate-400">items registered</p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #0176d3" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Assets</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#0176d3", marginTop: 4 }}>{assets.length}</p>
+            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>items registered</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-indigo-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Total Purchase Value</p>
-            <p className="text-xl font-bold text-indigo-600">
-              {formatIDR(totalPurchaseValue)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #7b4c9e" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Purchase Value</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#7b4c9e", marginTop: 4 }}>{formatIDR(totalPurchaseValue)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Accumulated Depreciation</p>
-            <p className="text-xl font-bold text-amber-600">
-              {formatIDR(totalAccumDep)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #fe9339" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Accumulated Depreciation</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{formatIDR(totalAccumDep)}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4">
-            <p className="text-sm text-slate-500">Net Book Value</p>
-            <p className="text-xl font-bold text-green-600">
-              {formatIDR(totalBookValue)}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Net Book Value</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{formatIDR(totalBookValue)}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Filter */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4" style={{ padding: 16 }}>
           <div className="flex items-center gap-4">
-            <div className="space-y-1">
-              <Label>Category</Label>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", marginBottom: 4 }}>Category</p>
               <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? '')}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger style={{ width: 200, height: 32, fontSize: 12, borderRadius: 6 }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,89 +193,56 @@ export default function FixedAssetPage() {
 
       {/* Asset Register Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Building className="h-5 w-5 text-indigo-600" />
-            Asset Register
-          </CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Asset Register</CardTitle>
+          <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
             Daftar aset tetap beserta jadwal depresiasi
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Asset ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Purchase Date</TableHead>
-                <TableHead className="text-right">Purchase Value</TableHead>
-                <TableHead className="text-right">Accum. Depr.</TableHead>
-                <TableHead className="text-right">Book Value</TableHead>
-                <TableHead className="text-center">Useful Life</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Asset ID</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Name</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Category</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Purchase Date</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Purchase Value</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Accum. Depr.</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Book Value</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Useful Life</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAssets.map((asset) => {
                 const Icon = categoryIcons[asset.icon] || Building
-                const deprPercentage = (
-                  (asset.accumulatedDepreciation / asset.purchaseValue) *
-                  100
-                ).toFixed(0)
+                const deprPercentage = ((asset.accumulatedDepreciation / asset.purchaseValue) * 100).toFixed(0)
 
                 return (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-sans text-sm font-medium">
-                      {asset.id}
-                    </TableCell>
-                    <TableCell>
+                  <TableRow key={asset.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{asset.id}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#001526" }}>
                       <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-slate-400" />
-                        <span className="font-medium">{asset.name}</span>
+                        <Icon size={14} style={{ color: "#444746" }} />
+                        <span style={{ fontWeight: 500 }}>{asset.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">
-                        {asset.category}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-600">
-                      {asset.purchaseDate}
-                    </TableCell>
-                    <TableCell className="text-right font-sans">
-                      {formatIDR(asset.purchaseValue)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex flex-col items-end">
-                        <span className="font-sans text-sm text-amber-600">
-                          {formatIDR(asset.accumulatedDepreciation)}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {deprPercentage}%
-                        </span>
+                    <TableCell><span style={{ fontSize: 12, color: "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4 }}>{asset.category}</span></TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#444746" }}>{asset.purchaseDate}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(asset.purchaseValue)}</TableCell>
+                    <TableCell style={{ textAlign: "right" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                        <span style={{ fontSize: 13, fontFamily: "monospace", color: "#9a6b00" }}>{formatIDR(asset.accumulatedDepreciation)}</span>
+                        <span style={{ fontSize: 11, color: "#444746" }}>{deprPercentage}%</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-sans font-bold text-green-700">
-                      {formatIDR(asset.bookValue)}
-                    </TableCell>
-                    <TableCell className="text-center text-sm text-slate-600">
-                      {asset.usefulLife} years
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          asset.status === "Active"
-                            ? "bg-green-100 text-green-700 hover:bg-green-100"
-                            : asset.status === "Fully Depreciated"
-                            ? "bg-slate-100 text-slate-700 hover:bg-slate-100"
-                            : "bg-red-100 text-red-700 hover:bg-red-100"
-                        }
-                      >
-                        {asset.status}
-                      </Badge>
-                    </TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a" }}>{formatIDR(asset.bookValue)}</TableCell>
+                    <TableCell style={{ textAlign: "center", fontSize: 12, color: "#444746" }}>{asset.usefulLife} years</TableCell>
+                    <TableCell>{statusBadge(asset.status)}</TableCell>
                   </TableRow>
                 )
               })}
@@ -262,53 +253,40 @@ export default function FixedAssetPage() {
 
       {/* Depreciation Schedule Summary */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-amber-600" />
-            Depreciation Summary by Category
-          </CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Depreciation Summary by Category</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-center">Count</TableHead>
-                <TableHead className="text-right">Purchase Value</TableHead>
-                <TableHead className="text-right">Accum. Depreciation</TableHead>
-                <TableHead className="text-right">Net Book Value</TableHead>
-                <TableHead className="text-center">Avg. Depr. Rate</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Category</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Count</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Purchase Value</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Accum. Depreciation</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Net Book Value</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Avg. Depr. Rate</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {["Building", "Equipment", "Vehicle", "IT Equipment"].map(
-                (cat) => {
-                  const catAssets = assets.filter((a) => a.category === cat)
-                  const totalPV = catAssets.reduce((s, a) => s + a.purchaseValue, 0)
-                  const totalAD = catAssets.reduce((s, a) => s + a.accumulatedDepreciation, 0)
-                  const totalBV = catAssets.reduce((s, a) => s + a.bookValue, 0)
-                  const avgRate = totalPV > 0 ? ((totalAD / totalPV) * 100).toFixed(1) : "0"
+              {["Building", "Equipment", "Vehicle", "IT Equipment"].map((cat) => {
+                const catAssets = assets.filter((a) => a.category === cat)
+                const totalPV = catAssets.reduce((s, a) => s + a.purchaseValue, 0)
+                const totalAD = catAssets.reduce((s, a) => s + a.accumulatedDepreciation, 0)
+                const totalBV = catAssets.reduce((s, a) => s + a.bookValue, 0)
+                const avgRate = totalPV > 0 ? ((totalAD / totalPV) * 100).toFixed(1) : "0"
 
-                  return (
-                    <TableRow key={cat}>
-                      <TableCell className="font-medium">{cat}</TableCell>
-                      <TableCell className="text-center">{catAssets.length}</TableCell>
-                      <TableCell className="text-right font-sans">
-                        {formatIDR(totalPV)}
-                      </TableCell>
-                      <TableCell className="text-right font-sans text-amber-600">
-                        {formatIDR(totalAD)}
-                      </TableCell>
-                      <TableCell className="text-right font-sans font-bold text-green-700">
-                        {formatIDR(totalBV)}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-slate-600">
-                        {avgRate}%
-                      </TableCell>
-                    </TableRow>
-                  )
-                }
-              )}
+                return (
+                  <TableRow key={cat} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#001526" }}>{cat}</TableCell>
+                    <TableCell style={{ textAlign: "center", fontSize: 13, color: "#001526" }}>{catAssets.length}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526" }}>{formatIDR(totalPV)}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#9a6b00" }}>{formatIDR(totalAD)}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", fontWeight: 700, color: "#2e844a" }}>{formatIDR(totalBV)}</TableCell>
+                    <TableCell style={{ textAlign: "center", fontSize: 12, color: "#444746" }}>{avgRate}%</TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </CardContent>

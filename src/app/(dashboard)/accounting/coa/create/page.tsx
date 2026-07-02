@@ -3,33 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { ArrowLeft, PlusCircle, BookOpen, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, PlusCircle, CheckCircle2 } from "lucide-react"
 
 // ── Account types for Indonesian COA ──
 const accountTypes = [
@@ -43,23 +17,127 @@ const accountTypes = [
 // ── Format helper ──
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
+// ── SLDS-style label ──
+const SldsLabel = ({
+  htmlFor,
+  children,
+  required,
+}: {
+  htmlFor?: string
+  children: React.ReactNode
+  required?: boolean
+}) => (
+  <label
+    htmlFor={htmlFor}
+    className="block text-[11px] uppercase tracking-[0.025em] font-bold text-[#444746] mb-1"
+  >
+    {children}
+    {required && <span className="text-[#ea001e] ml-0.5">*</span>}
+  </label>
+)
+
+// ── SLDS-style input ──
+const SldsInput = ({
+  id,
+  placeholder,
+  value,
+  onChange,
+  className = "",
+  type = "text",
+}: {
+  id?: string
+  placeholder?: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  className?: string
+  type?: string
+}) => (
+  <input
+    id={id}
+    type={type}
+    placeholder={placeholder}
+    value={value}
+    onChange={onChange}
+    className={`w-full h-8 px-3 text-sm text-[#001526] bg-white border border-[#d8d8d8] rounded-[6px] placeholder:text-[#747474] focus:border-[#0176d3] focus:ring-1 focus:ring-[#0176d3] focus:outline-none transition-colors ${className}`}
+  />
+)
+
+// ── SLDS-style select ──
+const SldsSelect = ({
+  id,
+  value,
+  onChange,
+  placeholder,
+  children,
+}: {
+  id?: string
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  children: React.ReactNode
+}) => (
+  <select
+    id={id}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    className={`w-full h-8 px-3 text-sm text-[#001526] bg-white border border-[#d8d8d8] rounded-[6px] appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23747474' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")] bg-no-repeat bg-[right_8px_center] pr-8 focus:border-[#0176d3] focus:ring-1 focus:ring-[#0176d3] focus:outline-none transition-colors ${
+      !value ? "text-[#747474]" : ""
+    }`}
+  >
+    {placeholder && (
+      <option value="" disabled>
+        {placeholder}
+      </option>
+    )}
+    {children}
+  </select>
+)
+
+// ── SLDS-style checkbox toggle ──
+const SldsToggle = ({
+  id,
+  checked,
+  onCheckedChange,
+  label,
+}: {
+  id: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  label: string
+}) => (
+  <div className="flex items-center gap-3 py-2">
+    <button
+      type="button"
+      id={id}
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onCheckedChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#0176d3] focus:ring-offset-1 ${
+        checked ? "bg-[#0176d3]" : "bg-[#c9c9c9]"
+      }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition-transform ${
+          checked ? "translate-x-4" : "translate-x-0"
+        }`}
+      />
+    </button>
+    <span className="text-xs text-[#444746] select-none">{label}</span>
+  </div>
+)
+
 export default function CreateCOAPage() {
   const router = useRouter()
 
   const [accountType, setAccountType] = useState("")
-  const [isSubAccount, setIsSubAccount] = useState(false)
-  const [parentAccount, setParentAccount] = useState("")
+  const [isActive, setIsActive] = useState(true)
   const [accountCode, setAccountCode] = useState("")
   const [accountName, setAccountName] = useState("")
-  const [openingBalance, setOpeningBalance] = useState("")
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [confirmSuccess, setConfirmSuccess] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-
-  // Parse balance input
-  const parsedBalance = parseInt(openingBalance.replace(/[^0-9-]/g, "")) || 0
 
   const handleSubmit = () => {
     // Validation
@@ -83,11 +161,6 @@ export default function CreateCOAPage() {
       setConfirmOpen(true)
       return
     }
-    if (isSubAccount && !parentAccount) {
-      setErrorMessage("Pilih akun induk untuk sub akun.")
-      setConfirmOpen(true)
-      return
-    }
 
     // Simulate save
     setIsSubmitting(true)
@@ -107,265 +180,151 @@ export default function CreateCOAPage() {
   }
 
   return (
-    <div className="space-y-4 p-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
+    <div className="space-y-5 p-6 max-w-3xl">
+      {/* ── Page Header ── */}
+      <div className="flex items-center gap-3 pb-1">
         <Link
           href="/accounting/coa"
-          className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded-[4px] hover:bg-[#f3f3f3] transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 text-[#444746]" />
         </Link>
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Tambah Akun Perkiraan</h1>
-          <p className="text-xs text-gray-500">
+          <h1 className="text-lg font-bold text-[#001526]">Tambah Akun Perkiraan</h1>
+          <p className="text-[11px] text-[#444746]">
             Tambahkan akun baru ke dalam Chart of Accounts
           </p>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        {/* Main Form */}
-        <div className="space-y-4">
-          {/* Account Type */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-indigo-600" />
-                Informasi Akun
-              </CardTitle>
-              <CardDescription>
-                Pilih tipe akun dan masukkan data dasar akun
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Tipe Akun */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Tipe Akun *</Label>
-                <Select value={accountType} onValueChange={(v) => setAccountType(v ?? "")}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Pilih tipe akun..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accountTypes.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Sub Akun Checkbox */}
-              <div className="flex items-center gap-2 py-2">
-                <Checkbox
-                  id="sub-account"
-                  checked={isSubAccount}
-                  onCheckedChange={(checked) => {
-                    setIsSubAccount(!!checked)
-                    if (!checked) setParentAccount("")
-                  }}
-                  className="h-4 w-4"
-                />
-                <Label
-                  htmlFor="sub-account"
-                  className="text-xs font-medium cursor-pointer"
-                >
-                  Sub Akun (akun ini adalah anak dari akun induk lain)
-                </Label>
-              </div>
-
-              {/* Parent Account (conditional) */}
-              {isSubAccount && (
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Akun Induk *</Label>
-                  <Select value={parentAccount} onValueChange={(v) => setParentAccount(v ?? "")}>
-                    <SelectTrigger className="h-8 text-sm">
-                      <SelectValue placeholder="Pilih akun induk..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1101">1101 - Kas & Bank</SelectItem>
-                      <SelectItem value="1210">1210 - Piutang Dagang</SelectItem>
-                      <SelectItem value="1220">1220 - Piutang Lain-lain</SelectItem>
-                      <SelectItem value="1300">1300 - Persediaan Barang Dagang</SelectItem>
-                      <SelectItem value="1400">1400 - Aset Tetap</SelectItem>
-                      <SelectItem value="2101">2101 - Utang Dagang</SelectItem>
-                      <SelectItem value="2201">2201 - Utang Bank</SelectItem>
-                      <SelectItem value="2301">2301 - Utang Lain-lain</SelectItem>
-                      <SelectItem value="3100">3100 - Modal</SelectItem>
-                      <SelectItem value="3200">3200 - Laba Ditahan</SelectItem>
-                      <SelectItem value="4101">4101 - Penjualan Produk</SelectItem>
-                      <SelectItem value="5101">5101 - Harga Pokok Penjualan</SelectItem>
-                      <SelectItem value="6101">6101 - Beban Gaji</SelectItem>
-                      <SelectItem value="6201">6201 - Beban Sewa</SelectItem>
-                      <SelectItem value="6301">6301 - Beban Utilitas</SelectItem>
-                      <SelectItem value="6401">6401 - Beban Marketing</SelectItem>
-                      <SelectItem value="6501">6501 - Beban Transport & Kirim</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Kode Perkiraan */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Kode Perkiraan *</Label>
-                <Input
-                  placeholder="Contoh: 110105"
-                  value={accountCode}
-                  onChange={(e) => setAccountCode(e.target.value.replace(/[^0-9]/g, ""))}
-                  className="h-8 text-sm font-mono"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  {isSubAccount && parentAccount
-                    ? `Akun induk: ${parentAccount} — Kode harus diawali dengan ${parentAccount}`
-                    : "Masukkan kode unik akun (angka saja)"}
-                </p>
-              </div>
-
-              {/* Nama Akun */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Nama Akun *</Label>
-                <Input
-                  placeholder="Contoh: Kas Kecil"
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  className="h-8 text-sm"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Opening Balance */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <span className="text-indigo-600">Rp</span>
-                Saldo Awal
-              </CardTitle>
-              <CardDescription>
-                Masukkan saldo awal untuk akun ini (opsional)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Saldo Awal (Rp)</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                    Rp
-                  </span>
-                  <Input
-                    type="text"
-                    placeholder="0"
-                    value={openingBalance}
-                    onChange={(e) => {
-                      const raw = e.target.value.replace(/[^0-9-]/g, "")
-                      setOpeningBalance(raw)
-                    }}
-                    className="h-8 text-sm pl-10 font-sans text-right"
-                  />
-                </div>
-                {parsedBalance !== 0 && (
-                  <p className="text-[11px] text-muted-foreground">
-                    Saldo: {parsedBalance < 0 ? "(" + formatIDR(Math.abs(parsedBalance)).replace("Rp ", "") + ")" : formatIDR(parsedBalance)}
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Link href="/accounting/coa">
-              <Button type="button" variant="outline" size="sm">
-                Batal
-              </Button>
-            </Link>
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                "Menyimpan..."
-              ) : (
-                <>
-                  <PlusCircle className="mr-1.5 h-3.5 w-3.5" />
-                  Simpan Akun
-                </>
-              )}
-            </Button>
-          </div>
+      {/* ── Informasi Akun Section ── */}
+      <div className="space-y-4">
+        <div className="border-b border-[#d8d8d8] pb-2">
+          <h2 className="text-sm font-bold text-[#001526]">Informasi Akun</h2>
         </div>
 
-        {/* Sidebar - Preview */}
-        <div>
-          <Card className="sticky top-4">
-            <CardHeader>
-              <CardTitle className="text-base">Preview Akun</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {accountName ? (
-                <>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Kode Perkiraan</p>
-                    <p className="text-sm font-mono font-medium">
-                      {accountCode || "—"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Nama Akun</p>
-                    <p className="text-sm font-medium">{accountName}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Tipe Akun</p>
-                    <p className="text-sm">{accountType || "—"}</p>
-                  </div>
-                  {isSubAccount && parentAccount && (
-                    <div>
-                      <p className="text-xs text-muted-foreground">Akun Induk</p>
-                      <p className="text-sm">{parentAccount}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-xs text-muted-foreground">Saldo Awal</p>
-                    <p className={`text-sm font-sans font-bold ${parsedBalance < 0 ? "text-red-600" : "text-slate-900"}`}>
-                      {parsedBalance === 0 ? "Rp 0" : formatIDR(parsedBalance)}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <div className="py-8 text-center">
-                  <BookOpen className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-                  <p className="text-xs text-muted-foreground">
-                    Isi form untuk melihat preview
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Tipe Akun */}
+          <div className="space-y-0.5">
+            <SldsLabel htmlFor="account-type" required>
+              Tipe Akun
+            </SldsLabel>
+            <SldsSelect
+              id="account-type"
+              value={accountType}
+              onChange={(v) => setAccountType(v)}
+              placeholder="Pilih tipe akun..."
+            >
+              {accountTypes.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </SldsSelect>
+          </div>
+
+          {/* Kode Perkiraan */}
+          <div className="space-y-0.5">
+            <SldsLabel htmlFor="account-code" required>
+              Kode Perkiraan
+            </SldsLabel>
+            <SldsInput
+              id="account-code"
+              placeholder="Contoh: 110105"
+              value={accountCode}
+              onChange={(e) => setAccountCode(e.target.value.replace(/[^0-9]/g, ""))}
+            />
+          </div>
+
+          {/* Nama Akun */}
+          <div className="space-y-0.5">
+            <SldsLabel htmlFor="account-name" required>
+              Nama Akun
+            </SldsLabel>
+            <SldsInput
+              id="account-name"
+              placeholder="Contoh: Kas Kecil"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+            />
+          </div>
+
+          {/* Active Toggle */}
+          <div className="flex items-end pb-1">
+            <SldsToggle
+              id="is-active"
+              checked={isActive}
+              onCheckedChange={setIsActive}
+              label="Akun Aktif"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Confirm/Error Dialog */}
-      <Dialog open={confirmOpen} onOpenChange={handleDialogClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {confirmSuccess ? "Berhasil" : "Perhatian"}
-            </DialogTitle>
-            <DialogDescription>
-              {confirmSuccess
-                ? `Akun "${accountName}" (${accountCode}) berhasil ditambahkan ke Chart of Accounts.`
-                : errorMessage}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={handleDialogClose}>
+      {/* ── Actions ── */}
+      <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#d8d8d8]">
+        <Link href="/accounting/coa">
+          <button
+            type="button"
+            className="inline-flex items-center justify-center h-8 px-5 text-sm font-bold text-[#0176d3] bg-white border border-[#d8d8d8] rounded-[6px] hover:bg-[#f3f3f3] transition-colors cursor-pointer"
+          >
+            Batal
+          </button>
+        </Link>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="inline-flex items-center justify-center h-8 px-5 text-sm font-bold text-white bg-[#0176d3] border border-[#0176d3] rounded-[6px] hover:bg-[#014486] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        >
+          {isSubmitting ? (
+            "Menyimpan..."
+          ) : (
+            <>
+              <PlusCircle className="mr-1.5 h-3.5 w-3.5" />
+              Simpan
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* ── Success/Error Dialog (minimal SLDS modal) ── */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={handleDialogClose}
+          />
+          {/* Modal */}
+          <div className="relative w-full max-w-sm bg-white rounded-[8px] shadow-xl p-6 mx-4">
+            <div className="text-center">
+              {confirmSuccess ? (
+                <CheckCircle2 className="mx-auto h-10 w-10 text-[#2e844a] mb-3" />
+              ) : (
+                <div className="mx-auto h-10 w-10 rounded-full bg-[#fef3f2] flex items-center justify-center mb-3">
+                  <span className="text-[#ea001e] text-xl font-bold">!</span>
+                </div>
+              )}
+              <h3 className="text-base font-bold text-[#001526] mb-1">
+                {confirmSuccess ? "Berhasil" : "Perhatian"}
+              </h3>
+              <p className="text-sm text-[#444746] mb-5">
+                {confirmSuccess
+                  ? `Akun "${accountName}" (${accountCode}) berhasil ditambahkan ke Chart of Accounts.`
+                  : errorMessage}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleDialogClose}
+              className="w-full inline-flex items-center justify-center h-8 px-5 text-sm font-bold text-white bg-[#0176d3] border border-[#0176d3] rounded-[6px] hover:bg-[#014486] transition-colors cursor-pointer"
+            >
               {confirmSuccess ? "Kembali" : "Tutup"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

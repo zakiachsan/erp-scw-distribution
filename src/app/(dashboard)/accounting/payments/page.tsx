@@ -10,8 +10,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -24,6 +22,9 @@ import {
   Search,
   Plus,
   Landmark,
+  CheckCircle2,
+  Clock,
+  XCircle,
 } from "lucide-react"
 
 interface Payment {
@@ -45,16 +46,23 @@ const payments: Payment[] = [
   { id: "PB.2026.05.00007", date: "2026-05-20", cashBank: "Bank BCA", description: "Pembelian peralatan produksi coating line", amount: 85000000, status: "Dibatalkan" },
 ]
 
-const statusConfig: Record<string, { className: string }> = {
-  Lunas: { className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  Pending: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Dibatalkan: { className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-}
-
 type FilterValue = "all" | "lunas" | "pending" | "dibatalkan"
 
 const formatIDR = (val: number) =>
   `Rp ${val.toLocaleString("id-ID")}`
+
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "Lunas":
+      return <Badge style={{ background: "#e8f5ed", color: "#2e844a", border: "1px solid #b8dcc5", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Pending":
+      return <Badge style={{ background: "#fef7e0", color: "#9a6b00", border: "1px solid #f9e0a0", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    case "Dibatalkan":
+      return <Badge style={{ background: "#fef1f0", color: "#ea001e", border: "1px solid #fcc8c8", fontSize: 11, fontWeight: 600, borderRadius: 4 }}>{status}</Badge>
+    default:
+      return <Badge variant="secondary">{status}</Badge>
+  }
+}
 
 export default function PaymentsPage() {
   const [statusFilter, setStatusFilter] = useState<FilterValue>("all")
@@ -82,85 +90,97 @@ export default function PaymentsPage() {
   const dibatalkanCount = payments.filter((p) => p.status === "Dibatalkan").length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pembayaran</h1>
-          <p className="text-muted-foreground">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
+            Pembayaran
+          </h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Daftar pembayaran kas & bank SCW Distribution
           </p>
         </div>
         <Link href="/accounting/payments/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 600,
+              background: "#0176d3", color: "#fff",
+              border: "1px solid #0176d3", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#014486"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#0176d3"}
+          >
+            <Plus size={15} />
             Tambah Pembayaran
-          </Button>
+          </button>
         </Link>
       </div>
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-indigo-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "all" ? "2px solid #0176d3" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("all")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                <Landmark className="h-5 w-5 text-indigo-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Pembayaran</p>
-                <p className="text-2xl font-bold">{totalCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Pembayaran</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#001526", marginTop: 4 }}>{totalCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#eef4ff" }}>
+                <Landmark size={18} style={{ color: "#0176d3" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "lunas" ? "ring-2 ring-emerald-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "lunas" ? "2px solid #2e844a" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("lunas")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                <Landmark className="h-5 w-5 text-emerald-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Lunas</p>
-                <p className="text-2xl font-bold text-emerald-600">{lunasCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Lunas</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{lunasCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#e8f5ed" }}>
+                <CheckCircle2 size={18} style={{ color: "#2e844a" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "pending" ? "ring-2 ring-amber-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "pending" ? "2px solid #fe9339" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("pending")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Landmark className="h-5 w-5 text-amber-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Pending</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#9a6b00", marginTop: 4 }}>{pendingCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fff4e5" }}>
+                <Clock size={18} style={{ color: "#fe9339" }} />
               </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-shadow hover:shadow-md ${statusFilter === "dibatalkan" ? "ring-2 ring-red-500" : ""}`}
+          style={{ cursor: "pointer", transition: "all 100ms", border: statusFilter === "dibatalkan" ? "2px solid #ea001e" : "1px solid #ecebea" }}
           onClick={() => setStatusFilter("dibatalkan")}
         >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
-                <Landmark className="h-5 w-5 text-red-600" />
-              </div>
+          <CardContent className="p-4" style={{ padding: 16 }}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Dibatalkan</p>
-                <p className="text-2xl font-bold text-red-600">{dibatalkanCount}</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Dibatalkan</p>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "#ea001e", marginTop: 4 }}>{dibatalkanCount}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#fef1f0" }}>
+                <XCircle size={18} style={{ color: "#ea001e" }} />
               </div>
             </div>
           </CardContent>
@@ -169,79 +189,81 @@ export default function PaymentsPage() {
 
       {/* Table Card */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daftar Pembayaran</CardTitle>
-              <CardDescription>
+              <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Daftar Pembayaran</CardTitle>
+              <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
                 {filtered.length} pembayaran ditemukan
                 {statusFilter !== "all" && (
-                  <span className="ml-1 capitalize">
-                    ({statusFilter === "lunas" ? "Lunas" : statusFilter === "pending" ? "Pending" : "Dibatalkan"})
-                  </span>
+                  <span> ({statusFilter === "lunas" ? "Lunas" : statusFilter === "pending" ? "Pending" : "Dibatalkan"})</span>
                 )}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3">
               {statusFilter !== "all" && (
-                <Button variant="outline" size="sm" onClick={() => setStatusFilter("all")}>
+                <button
+                  style={{ padding: "5px 12px", fontSize: 12, fontWeight: 500, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}
+                  onClick={() => setStatusFilter("all")}
+                >
                   Clear filter
-                </Button>
+                </button>
               )}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
+              <div style={{ position: "relative" }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
+                <input
                   placeholder="Cari nomor / kas / keterangan..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-64 pl-9"
+                  style={{
+                    height: 32, width: 240,
+                    padding: "0 10px 0 32px",
+                    fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6,
+                    outline: "none",
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = "#0176d3"}
+                  onBlur={(e) => e.currentTarget.style.borderColor = "#d8d8d8"}
                 />
               </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nomor #</TableHead>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Kas/Bank</TableHead>
-                <TableHead>Keterangan</TableHead>
-                <TableHead className="text-right">Nilai</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Nomor #</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Tanggal</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Kas/Bank</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Keterangan</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "right" }}>Nilai</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12">
-                    <p className="text-muted-foreground">Tidak ada pembayaran ditemukan</p>
+                  <TableCell colSpan={6} style={{ textAlign: "center", padding: "48px 16px", fontSize: 13, color: "#444746" }}>
+                    Tidak ada pembayaran ditemukan
                   </TableCell>
                 </TableRow>
               ) : (
                 filtered.map((p) => (
-                  <TableRow key={p.id} className="cursor-pointer hover:bg-muted/50">
-                    <TableCell>
-                      <Link
-                        href={`/accounting/payments/${p.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {p.id}
-                      </Link>
+                  <TableRow
+                    key={p.id}
+                    style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    onClick={() => window.location.href = `/accounting/payments/${p.id}`}
+                  >
+                    <TableCell style={{ fontSize: 13, fontWeight: 500, color: "#0176d3" }}>{p.id}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#444746" }}>{p.date}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#444746" }}>
+                      <span style={{ fontSize: 12, color: "#444746", background: "#f4f6f9", padding: "2px 8px", borderRadius: 4 }}>{p.cashBank}</span>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{p.date}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{p.cashBank}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/accounting/payments/${p.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {p.description}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">{formatIDR(p.amount)}</TableCell>
+                    <TableCell style={{ fontSize: 13, color: "#001526", maxWidth: 300 }} className="truncate">{p.description}</TableCell>
+                    <TableCell style={{ fontSize: 13, fontFamily: "monospace", textAlign: "right", color: "#001526", fontWeight: 500 }}>{formatIDR(p.amount)}</TableCell>
+                    <TableCell>{statusBadge(p.status)}</TableCell>
                   </TableRow>
                 ))
               )}

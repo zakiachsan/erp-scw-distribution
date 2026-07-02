@@ -3,38 +3,7 @@
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  ArrowLeft,
-  PlusCircle,
-  Building2,
-  Calculator,
-} from "lucide-react"
+import { ArrowLeft, PlusCircle, Building2, Calculator } from "lucide-react"
 
 const metodePenyusutanOptions = [
   { value: "garis_lurus", label: "Garis Lurus" },
@@ -68,6 +37,93 @@ const bebanPenyusutanOptions = [
 
 function formatIDR(amount: number): string {
   return `Rp ${amount.toLocaleString("id-ID")}`
+}
+
+// --- SLDS shared styles ---
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "11px",
+  textTransform: "uppercase",
+  color: "#444746",
+  fontWeight: 500,
+  marginBottom: "4px",
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  height: "32px",
+  border: "1px solid #d8d8d8",
+  borderRadius: "6px",
+  padding: "0 12px",
+  fontSize: "13px",
+  color: "#1a1a1a",
+  backgroundColor: "#fff",
+  outline: "none",
+  boxSizing: "border-box",
+}
+
+const selectTriggerStyle: React.CSSProperties = {
+  width: "100%",
+  height: "32px",
+  border: "1px solid #d8d8d8",
+  borderRadius: "6px",
+  padding: "0 12px",
+  fontSize: "13px",
+  color: "#1a1a1a",
+  backgroundColor: "#fff",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  boxSizing: "border-box",
+}
+
+const btnPrimaryStyle: React.CSSProperties = {
+  backgroundColor: "#0176d3",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  padding: "0 16px",
+  height: "32px",
+  fontSize: "13px",
+  fontWeight: 600,
+  cursor: "pointer",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  whiteSpace: "nowrap",
+}
+
+const btnOutlineStyle: React.CSSProperties = {
+  backgroundColor: "#fff",
+  color: "#0176d3",
+  border: "1px solid #d8d8d8",
+  borderRadius: "6px",
+  padding: "0 16px",
+  height: "32px",
+  fontSize: "13px",
+  fontWeight: 600,
+  cursor: "pointer",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  whiteSpace: "nowrap",
+}
+
+const cardStyle: React.CSSProperties = {
+  border: "1px solid #d8d8d8",
+  borderRadius: "8px",
+  backgroundColor: "#fff",
+  overflow: "hidden",
+}
+
+const cardHeaderStyle: React.CSSProperties = {
+  padding: "16px 20px 0 20px",
+}
+
+const cardContentStyle: React.CSSProperties = {
+  padding: "16px 20px 20px 20px",
 }
 
 export default function CreateFixedAssetPage() {
@@ -144,400 +200,514 @@ export default function CreateFixedAssetPage() {
     }
   }
 
+  // Shared select arrow SVG
+  const selectArrowBg = {
+    appearance: "none" as const,
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 10px center",
+    paddingRight: "32px",
+  }
+
   return (
-    <div className="space-y-4 p-6">
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "24px" }}>
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/accounting/fixed-assets"
-          className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <Link href="/accounting/fixed-assets" style={{ display: "flex" }}>
+          <button
+            style={{
+              ...btnOutlineStyle,
+              width: "32px",
+              height: "32px",
+              padding: 0,
+              justifyContent: "center",
+            }}
+          >
+            <ArrowLeft style={{ width: "16px", height: "16px" }} />
+          </button>
         </Link>
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Tambah Aset Tetap</h1>
-          <p className="text-xs text-gray-500">
+          <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
+            Tambah Aset Tetap
+          </h1>
+          <p style={{ fontSize: "12px", color: "#666", margin: "2px 0 0 0" }}>
             Tambahkan aset tetap baru ke dalam register aset
           </p>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <div style={{ display: "grid", gap: "24px", gridTemplateColumns: "2fr 1fr" }}>
         {/* Main Form */}
-        <div className="space-y-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* Informasi Dasar */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-indigo-600" />
-                Informasi Aset
-              </CardTitle>
-              <CardDescription>
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "2px" }}>
+                <Building2 style={{ width: "16px", height: "16px", color: "#0176d3" }} />
+                <h2 style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
+                  Informasi Aset
+                </h2>
+              </div>
+              <p style={{ fontSize: "12px", color: "#666", margin: "2px 0 0 0" }}>
                 Masukkan data dasar aset tetap
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Nama Aset */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Nama Aset *</Label>
-                <Input
-                  placeholder="Contoh: Gedung Gudang Surabaya"
-                  value={nama}
-                  onChange={(e) => setNama(e.target.value)}
-                  className="h-8 text-sm"
-                />
-              </div>
+              </p>
+            </div>
+            <div style={cardContentStyle}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {/* Nama Aset */}
+                <div>
+                  <label style={labelStyle}>Nama Aset *</label>
+                  <input
+                    placeholder="Contoh: Gedung Gudang Surabaya"
+                    value={nama}
+                    onChange={(e) => setNama(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
 
-              {/* Tanggal Beli & Tanggal Pakai */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Tanggal Beli *</Label>
-                  <Input
-                    type="date"
-                    value={tanggalBeli}
-                    onChange={(e) => setTanggalBeli(e.target.value)}
-                    className="h-8 text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Tanggal Pakai</Label>
-                  <Input
-                    type="date"
-                    value={tanggalPakai}
-                    onChange={(e) => setTanggalPakai(e.target.value)}
-                    className="h-8 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Kode Aset & Harga Beli */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Kode Aset (Fixed Asset) *</Label>
-                  <Input
-                    placeholder="Contoh: FA-013"
-                    value={kodeAset}
-                    onChange={(e) => setKodeAset(e.target.value)}
-                    className="h-8 text-sm font-mono"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Harga Beli (Rp)</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                      Rp
-                    </span>
-                    <Input
-                      type="text"
-                      placeholder="0"
-                      value={hargaBeli}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9-]/g, "")
-                        setHargaBeli(raw)
-                      }}
-                      className="h-8 text-sm pl-10 font-sans text-right"
+                {/* Tanggal Beli & Tanggal Pakai */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Tanggal Beli *</label>
+                    <input
+                      type="date"
+                      value={tanggalBeli}
+                      onChange={(e) => setTanggalBeli(e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Tanggal Pakai</label>
+                    <input
+                      type="date"
+                      value={tanggalPakai}
+                      onChange={(e) => setTanggalPakai(e.target.value)}
+                      style={inputStyle}
                     />
                   </div>
                 </div>
+
+                {/* Kode Aset & Harga Beli */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Kode Aset (Fixed Asset) *</label>
+                    <input
+                      placeholder="Contoh: FA-013"
+                      value={kodeAset}
+                      onChange={(e) => setKodeAset(e.target.value)}
+                      style={{ ...inputStyle, fontFamily: "'Courier New', monospace" }}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Harga Beli (Rp)</label>
+                    <div style={{ position: "relative" }}>
+                      <span style={{
+                        position: "absolute",
+                        left: "12px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        fontSize: "13px",
+                        color: "#666",
+                        fontWeight: 500,
+                        pointerEvents: "none",
+                      }}>
+                        Rp
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="0"
+                        value={hargaBeli}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^0-9-]/g, "")
+                          setHargaBeli(raw)
+                        }}
+                        style={{ ...inputStyle, paddingLeft: "40px", textAlign: "right" }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Informasi Umum */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Calculator className="h-4 w-4 text-indigo-600" />
-                Informasi Umum
-              </CardTitle>
-              <CardDescription>
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "2px" }}>
+                <Calculator style={{ width: "16px", height: "16px", color: "#0176d3" }} />
+                <h2 style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
+                  Informasi Umum
+                </h2>
+              </div>
+              <p style={{ fontSize: "12px", color: "#666", margin: "2px 0 0 0" }}>
                 Pengaturan penyusutan dan akun terkait
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Aset Tidak Berwujud Checkbox */}
-              <div className="flex items-center gap-2 py-2">
-                <Checkbox
-                  id="intangible"
-                  checked={asetTidakBerwujud}
-                  onCheckedChange={(checked) => setAsetTidakBerwujud(!!checked)}
-                  className="h-4 w-4"
-                />
-                <Label
-                  htmlFor="intangible"
-                  className="text-xs font-medium cursor-pointer"
-                >
-                  Aset Tidak Berwujud
-                </Label>
-              </div>
-
-              {/* Metode Penyusutan */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Metode Penyusutan</Label>
-                <Select value={metodePenyusutan} onValueChange={(v) => setMetodePenyusutan(v ?? "")}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Pilih metode penyusutan..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {metodePenyusutanOptions.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Akun Aset, Akum. Penyusutan, Beban Penyusutan */}
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Akun Aset *</Label>
-                <Select value={akunAset} onValueChange={(v) => setAkunAset(v ?? "")}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Pilih akun aset..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {akunAsetOptions.map((a) => (
-                      <SelectItem key={a.value} value={a.value}>
-                        {a.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Akumulasi Penyusutan</Label>
-                <Select value={akumPenyusutan} onValueChange={(v) => setAkumPenyusutan(v ?? "")}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Pilih akun akumulasi penyusutan..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {akumPenyusutanOptions.map((a) => (
-                      <SelectItem key={a.value} value={a.value}>
-                        {a.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Beban Penyusutan</Label>
-                <Select value={bebanPenyusutan} onValueChange={(v) => setBebanPenyusutan(v ?? "")}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Pilih akun beban penyusutan..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {bebanPenyusutanOptions.map((b) => (
-                      <SelectItem key={b.value} value={b.value}>
-                        {b.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Kuantitas & Umur Aset */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Kuantitas</Label>
-                  <Input
-                    type="number"
-                    value={kuantitas}
-                    onChange={(e) => setKuantitas(e.target.value)}
-                    className="h-8 text-sm font-sans"
-                    min="1"
+              </p>
+            </div>
+            <div style={cardContentStyle}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {/* Aset Tidak Berwujud Checkbox */}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 0" }}>
+                  <input
+                    type="checkbox"
+                    id="intangible"
+                    checked={asetTidakBerwujud}
+                    onChange={(e) => setAsetTidakBerwujud(e.target.checked)}
+                    style={{ width: "16px", height: "16px", margin: 0, cursor: "pointer" }}
                   />
+                  <label htmlFor="intangible" style={{ fontSize: "13px", color: "#444746", cursor: "pointer", margin: 0 }}>
+                    Aset Tidak Berwujud
+                  </label>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Umur Aset (Tahun)</Label>
-                  <Input
-                    type="number"
-                    value={umurTahun}
-                    onChange={(e) => setUmurTahun(e.target.value)}
-                    className="h-8 text-sm font-sans"
-                    min="0"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Umur Aset (Bulan)</Label>
-                  <Input
-                    type="number"
-                    value={umurBulan}
-                    onChange={(e) => setUmurBulan(e.target.value)}
-                    className="h-8 text-sm font-sans"
-                    min="0"
-                    max="11"
-                  />
-                </div>
-              </div>
 
-              {/* Rasio & Nilai Sisa */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Rasio (%)</Label>
-                  <div className="relative">
-                    <Input
+                {/* Metode Penyusutan */}
+                <div>
+                  <label style={labelStyle}>Metode Penyusutan</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={metodePenyusutan}
+                      onChange={(e) => setMetodePenyusutan(e.target.value)}
+                      style={{ ...selectTriggerStyle, ...selectArrowBg }}
+                    >
+                      <option value="">Pilih metode penyusutan...</option>
+                      {metodePenyusutanOptions.map((m) => (
+                        <option key={m.value} value={m.value}>
+                          {m.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Akun Aset */}
+                <div>
+                  <label style={labelStyle}>Akun Aset *</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={akunAset}
+                      onChange={(e) => setAkunAset(e.target.value)}
+                      style={{ ...selectTriggerStyle, ...selectArrowBg }}
+                    >
+                      <option value="">Pilih akun aset...</option>
+                      {akunAsetOptions.map((a) => (
+                        <option key={a.value} value={a.value}>
+                          {a.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Akumulasi Penyusutan */}
+                <div>
+                  <label style={labelStyle}>Akumulasi Penyusutan</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={akumPenyusutan}
+                      onChange={(e) => setAkumPenyusutan(e.target.value)}
+                      style={{ ...selectTriggerStyle, ...selectArrowBg }}
+                    >
+                      <option value="">Pilih akun akumulasi penyusutan...</option>
+                      {akumPenyusutanOptions.map((a) => (
+                        <option key={a.value} value={a.value}>
+                          {a.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Beban Penyusutan */}
+                <div>
+                  <label style={labelStyle}>Beban Penyusutan</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      value={bebanPenyusutan}
+                      onChange={(e) => setBebanPenyusutan(e.target.value)}
+                      style={{ ...selectTriggerStyle, ...selectArrowBg }}
+                    >
+                      <option value="">Pilih akun beban penyusutan...</option>
+                      {bebanPenyusutanOptions.map((b) => (
+                        <option key={b.value} value={b.value}>
+                          {b.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Kuantitas & Umur Aset */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Kuantitas</label>
+                    <input
                       type="number"
-                      value={rasio}
-                      onChange={(e) => setRasio(e.target.value)}
-                      className="h-8 text-sm font-sans text-right pr-8"
-                      min="0"
-                      max="100"
+                      value={kuantitas}
+                      onChange={(e) => setKuantitas(e.target.value)}
+                      style={inputStyle}
+                      min="1"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      %
-                    </span>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Umur Aset (Tahun)</label>
+                    <input
+                      type="number"
+                      value={umurTahun}
+                      onChange={(e) => setUmurTahun(e.target.value)}
+                      style={inputStyle}
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Umur Aset (Bulan)</label>
+                    <input
+                      type="number"
+                      value={umurBulan}
+                      onChange={(e) => setUmurBulan(e.target.value)}
+                      style={inputStyle}
+                      min="0"
+                      max="11"
+                    />
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Nilai Sisa (Rp)</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-                      Rp
-                    </span>
-                    <Input
-                      type="text"
-                      placeholder="0"
-                      value={nilaiSisa}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9-]/g, "")
-                        setNilaiSisa(raw)
-                      }}
-                      className="h-8 text-sm pl-10 font-sans text-right"
-                    />
+
+                {/* Rasio & Nilai Sisa */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Rasio (%)</label>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type="number"
+                        value={rasio}
+                        onChange={(e) => setRasio(e.target.value)}
+                        style={{ ...inputStyle, textAlign: "right", paddingRight: "32px" }}
+                        min="0"
+                        max="100"
+                      />
+                      <span style={{
+                        position: "absolute",
+                        right: "12px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        fontSize: "13px",
+                        color: "#666",
+                        pointerEvents: "none",
+                      }}>
+                        %
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Nilai Sisa (Rp)</label>
+                    <div style={{ position: "relative" }}>
+                      <span style={{
+                        position: "absolute",
+                        left: "12px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        fontSize: "13px",
+                        color: "#666",
+                        fontWeight: 500,
+                        pointerEvents: "none",
+                      }}>
+                        Rp
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="0"
+                        value={nilaiSisa}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^0-9-]/g, "")
+                          setNilaiSisa(raw)
+                        }}
+                        style={{ ...inputStyle, paddingLeft: "40px", textAlign: "right" }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2">
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
             <Link href="/accounting/fixed-assets">
-              <Button type="button" variant="outline" size="sm">
+              <button type="button" style={btnOutlineStyle}>
                 Batal
-              </Button>
+              </button>
             </Link>
-            <Button
-              size="sm"
+            <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              style={{
+                ...btnPrimaryStyle,
+                opacity: isSubmitting ? 0.65 : 1,
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
             >
               {isSubmitting ? (
                 "Menyimpan..."
               ) : (
                 <>
-                  <PlusCircle className="mr-1.5 h-3.5 w-3.5" />
+                  <PlusCircle style={{ width: "14px", height: "14px" }} />
                   Simpan Aset
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Sidebar - Preview */}
         <div>
-          <Card className="sticky top-4">
-            <CardHeader>
-              <CardTitle className="text-base">Preview Aset</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {nama ? (
-                <>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Nama Aset</p>
-                    <p className="text-sm font-medium">{nama}</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Kode Aset</p>
-                    <p className="text-sm font-mono font-medium">{kodeAset || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Tanggal Beli</p>
-                    <p className="text-sm">{tanggalBeli || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Tanggal Pakai</p>
-                    <p className="text-sm">{tanggalPakai || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Harga Beli</p>
-                    <p className="text-sm font-sans font-bold">
-                      {parsedHargaBeli > 0 ? formatIDR(parsedHargaBeli) : "Rp 0"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Kuantitas</p>
-                    <p className="text-sm">{parsedKuantitas}</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Umur Aset</p>
-                    <p className="text-sm">{umurTahun} Tahun {umurBulan} Bulan</p>
-                  </div>
-                  {asetTidakBerwujud && (
+          <div style={{ ...cardStyle, position: "sticky", top: "16px" }}>
+            <div style={cardHeaderStyle}>
+              <h2 style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
+                Preview Aset
+              </h2>
+            </div>
+            <div style={cardContentStyle}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {nama ? (
+                  <>
                     <div>
-                      <p className="text-[11px] text-muted-foreground">Tipe</p>
-                      <p className="text-xs font-medium text-indigo-600">Aset Tidak Berwujud</p>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Nama Aset
+                      </p>
+                      <p style={{ fontSize: "13px", fontWeight: 500, color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {nama}
+                      </p>
                     </div>
-                  )}
-                  <div className="border-t pt-3 mt-3 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-xs text-slate-600">Total Aset</span>
-                      <span className="text-sm font-sans font-bold text-slate-900">
-                        {formatIDR(totalAset)}
-                      </span>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Kode Aset
+                      </p>
+                      <p style={{ fontSize: "13px", fontFamily: "'Courier New', monospace", fontWeight: 500, color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {kodeAset || "\u2014"}
+                      </p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs text-slate-600">Nilai Sisa</span>
-                      <span className="text-sm font-sans font-medium text-amber-600">
-                        {parsedNilaiSisa > 0 ? formatIDR(parsedNilaiSisa) : "Rp 0"}
-                      </span>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Tanggal Beli
+                      </p>
+                      <p style={{ fontSize: "13px", color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {tanggalBeli || "\u2014"}
+                      </p>
                     </div>
-                    <div className="border-t pt-2">
-                      <div className="flex justify-between">
-                        <span className="text-xs font-medium text-slate-700">Nilai Buku</span>
-                        <span className="text-sm font-sans font-bold text-green-700">
-                          {formatIDR(nilaiBuku)}
-                        </span>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Tanggal Pakai
+                      </p>
+                      <p style={{ fontSize: "13px", color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {tanggalPakai || "\u2014"}
+                      </p>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Harga Beli
+                      </p>
+                      <p style={{ fontSize: "13px", fontWeight: 700, color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {parsedHargaBeli > 0 ? formatIDR(parsedHargaBeli) : "Rp 0"}
+                      </p>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Kuantitas
+                      </p>
+                      <p style={{ fontSize: "13px", color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {parsedKuantitas}
+                      </p>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                        Umur Aset
+                      </p>
+                      <p style={{ fontSize: "13px", color: "#1a1a1a", margin: "2px 0 0 0" }}>
+                        {umurTahun} Tahun {umurBulan} Bulan
+                      </p>
+                    </div>
+                    {asetTidakBerwujud && (
+                      <div>
+                        <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#444746", margin: 0 }}>
+                          Tipe
+                        </p>
+                        <p style={{ fontSize: "12px", fontWeight: 500, color: "#0176d3", margin: "2px 0 0 0" }}>
+                          Aset Tidak Berwujud
+                        </p>
+                      </div>
+                    )}
+                    <div style={{ borderTop: "1px solid #d8d8d8", paddingTop: "12px", marginTop: "12px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ fontSize: "12px", color: "#444746" }}>Total Aset</span>
+                          <span style={{ fontSize: "13px", fontWeight: 700, color: "#1a1a1a" }}>
+                            {formatIDR(totalAset)}
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ fontSize: "12px", color: "#444746" }}>Nilai Sisa</span>
+                          <span style={{ fontSize: "13px", fontWeight: 500, color: "#e68a2e" }}>
+                            {parsedNilaiSisa > 0 ? formatIDR(parsedNilaiSisa) : "Rp 0"}
+                          </span>
+                        </div>
+                        <div style={{ borderTop: "1px solid #d8d8d8", paddingTop: "8px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#444746" }}>Nilai Buku</span>
+                            <span style={{ fontSize: "13px", fontWeight: 700, color: "#2e844a" }}>
+                              {formatIDR(nilaiBuku)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  </>
+                ) : (
+                  <div style={{ padding: "32px 0", textAlign: "center" }}>
+                    <Building2 style={{ margin: "0 auto 8px auto", width: "32px", height: "32px", color: "#c0c0c0" }} />
+                    <p style={{ fontSize: "12px", color: "#999", margin: 0 }}>
+                      Isi form untuk melihat preview
+                    </p>
                   </div>
-                </>
-              ) : (
-                <div className="py-8 text-center">
-                  <Building2 className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-                  <p className="text-xs text-muted-foreground">
-                    Isi form untuk melihat preview
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Confirm/Error Dialog */}
-      <Dialog open={confirmOpen} onOpenChange={handleDialogClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
+      {confirmOpen && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            padding: "24px",
+            maxWidth: "480px",
+            width: "100%",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+          }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px 0" }}>
               {confirmSuccess ? "Berhasil" : "Perhatian"}
-            </DialogTitle>
-            <DialogDescription>
+            </h2>
+            <p style={{ fontSize: "13px", color: "#444746", margin: "8px 0 20px 0" }}>
               {confirmSuccess
                 ? `Aset "${nama}" (${kodeAset}) berhasil ditambahkan ke register aset tetap.`
                 : errorMessage}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={handleDialogClose}>
-              {confirmSuccess ? "Kembali" : "Tutup"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button onClick={handleDialogClose} style={btnPrimaryStyle}>
+                {confirmSuccess ? "Kembali" : "Tutup"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

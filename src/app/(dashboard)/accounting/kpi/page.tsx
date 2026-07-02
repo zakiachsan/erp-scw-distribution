@@ -9,7 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -154,15 +153,15 @@ const employees: EmployeeKPI[] = [
 ]
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-600"
-  if (score >= 60) return "text-amber-600"
-  return "text-red-600"
+  if (score >= 80) return "#2e844a"
+  if (score >= 60) return "#9a6b00"
+  return "#ea001e"
 }
 
 function getScoreBg(score: number): string {
-  if (score >= 80) return "bg-green-100 text-green-700"
-  if (score >= 60) return "bg-amber-100 text-amber-700"
-  return "bg-red-100 text-red-700"
+  if (score >= 80) return "#e8f5ed"
+  if (score >= 60) return "#fef7e0"
+  return "#fef1f0"
 }
 
 function getScoreLabel(score: number): string {
@@ -191,177 +190,148 @@ export default function KPIPage() {
 
   const avgScore =
     filteredEmployees.length > 0
-      ? (
-          filteredEmployees.reduce((s, e) => s + e.averageScore, 0) /
-          filteredEmployees.length
-        ).toFixed(1)
+      ? (filteredEmployees.reduce((s, e) => s + e.averageScore, 0) / filteredEmployees.length).toFixed(1)
       : "0"
 
-  const excellentCount = filteredEmployees.filter(
-    (e) => e.averageScore >= 80
-  ).length
-  const goodCount = filteredEmployees.filter(
-    (e) => e.averageScore >= 60 && e.averageScore < 80
-  ).length
-  const needsImprovementCount = filteredEmployees.filter(
-    (e) => e.averageScore < 60
-  ).length
+  const excellentCount = filteredEmployees.filter((e) => e.averageScore >= 80).length
+  const goodCount = filteredEmployees.filter((e) => e.averageScore >= 60 && e.averageScore < 80).length
+  const needsImprovementCount = filteredEmployees.filter((e) => e.averageScore < 60).length
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
             KPI Dashboard
           </h1>
-          <p className="text-slate-500">
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
             Key Performance Indicators per individu - 3 level KPI scoring
           </p>
         </div>
         <div className="flex gap-2">
           <Select value={selectedDept} onValueChange={(v) => setSelectedDept(v ?? '')}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[200px]" style={{ height: 32, fontSize: 12, borderRadius: 6 }}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {departments.map((d) => (
-                <SelectItem key={d} value={d}>
-                  {d}
-                </SelectItem>
+                <SelectItem key={d} value={d}>{d}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", fontSize: 13, fontWeight: 500,
+              background: "#fff", color: "#0176d3",
+              border: "1px solid #d8d8d8", borderRadius: 6,
+              cursor: "pointer", transition: "all 100ms",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8d8d8" }}
+          >
+            <Download size={14} />
             Export
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card className="border-l-4 border-l-indigo-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-indigo-600" />
-              <p className="text-sm text-slate-500">Total Employees</p>
-            </div>
-            <p className="text-xl font-bold text-indigo-600">
-              {filteredEmployees.length}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #7b4c9e" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Employees</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#7b4c9e", marginTop: 4 }}>{filteredEmployees.length}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
-              <p className="text-sm text-slate-500">Average Score</p>
-            </div>
-            <p className={`text-xl font-bold ${getScoreColor(parseFloat(avgScore))}`}>
-              {avgScore}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #0176d3" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Average Score</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: getScoreColor(parseFloat(avgScore)), marginTop: 4 }}>{avgScore}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-green-600" />
-              <p className="text-sm text-slate-500">Excellent (≥80)</p>
-            </div>
-            <p className="text-xl font-bold text-green-600">{excellentCount}</p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #2e844a" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Excellent (≥80)</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#2e844a", marginTop: 4 }}>{excellentCount}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-amber-600" />
-              <p className="text-sm text-slate-500">Needs Improvement (&lt;60)</p>
-            </div>
-            <p className="text-xl font-bold text-red-600">
-              {needsImprovementCount}
-            </p>
+        <Card>
+          <CardContent className="p-4" style={{ padding: 16, borderLeft: "4px solid #fe9339" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em" }}>Needs Improvement (&lt;60)</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#ea001e", marginTop: 4 }}>{needsImprovementCount}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Legend */}
-      <div className="flex gap-4 text-sm">
+      <div className="flex gap-4" style={{ fontSize: 12 }}>
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full bg-green-500" />
-          <span className="text-slate-600">Excellent (Score ≥ 80)</span>
+          <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#2e844a" }} />
+          <span style={{ color: "#444746" }}>Excellent (Score ≥ 80)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full bg-amber-500" />
-          <span className="text-slate-600">Good (Score 60-79)</span>
+          <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#fe9339" }} />
+          <span style={{ color: "#444746" }}>Good (Score 60-79)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded-full bg-red-500" />
-          <span className="text-slate-600">Needs Improvement (Score &lt; 60)</span>
+          <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ea001e" }} />
+          <span style={{ color: "#444746" }}>Needs Improvement (Score &lt; 60)</span>
         </div>
       </div>
 
       {/* KPI Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Target className="h-5 w-5 text-indigo-600" />
-            Employee KPI Performance
-          </CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Employee KPI Performance</CardTitle>
+          <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
             3 KPI metrics per employee dengan scoring 1-100
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>KPI Metric 1</TableHead>
-                <TableHead className="text-center">Score 1</TableHead>
-                <TableHead>KPI Metric 2</TableHead>
-                <TableHead className="text-center">Score 2</TableHead>
-                <TableHead>KPI Metric 3</TableHead>
-                <TableHead className="text-center">Score 3</TableHead>
-                <TableHead className="text-center">Average</TableHead>
-                <TableHead>Rating</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Employee</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Department</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>KPI Metric 1</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Score 1</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>KPI Metric 2</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Score 2</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>KPI Metric 3</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Score 3</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", textAlign: "center" }}>Average</TableHead>
+                <TableHead style={{ fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff" }}>Rating</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredEmployees.map((emp) => (
-                <TableRow key={emp.id}>
-                  <TableCell>
+                <TableRow key={emp.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                  <TableCell style={{ fontSize: 13, color: "#001526" }}>
                     <div>
-                      <p className="font-medium">{emp.name}</p>
-                      <p className="text-xs text-slate-400">{emp.position}</p>
+                      <p style={{ fontWeight: 500 }}>{emp.name}</p>
+                      <p style={{ fontSize: 11, color: "#444746", marginTop: 1 }}>{emp.position}</p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
-                      {emp.department}
-                    </Badge>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#0176d3", background: "#eef4ff", padding: "2px 8px", borderRadius: 4 }}>{emp.department}</span>
                   </TableCell>
                   {emp.metrics.map((metric, idx) => (
-                    <TableCell key={idx} className="text-center">
-                      <Badge className={getScoreBg(metric.score)}>
+                    <TableCell key={idx} style={{ textAlign: "center" }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: getScoreColor(metric.score), background: getScoreBg(metric.score), padding: "2px 8px", borderRadius: 4 }}>
                         {metric.score}
-                      </Badge>
+                      </span>
                     </TableCell>
                   ))}
-                  <TableCell className="text-center">
-                    <span
-                      className={`text-lg font-bold ${getScoreColor(
-                        emp.averageScore
-                      )}`}
-                    >
+                  <TableCell style={{ textAlign: "center" }}>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: getScoreColor(emp.averageScore) }}>
                       {emp.averageScore.toFixed(1)}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getScoreBg(emp.averageScore)}>
+                    <span style={{ fontSize: 11, fontWeight: 600, background: getScoreBg(emp.averageScore), color: getScoreColor(emp.averageScore), padding: "2px 8px", borderRadius: 4 }}>
                       {getScoreLabel(emp.averageScore)}
-                    </Badge>
+                    </span>
                   </TableCell>
                 </TableRow>
               ))}
@@ -372,54 +342,39 @@ export default function KPIPage() {
 
       {/* Detailed KPI Breakdown */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Detailed KPI Breakdown</CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-3">
+          <CardTitle style={{ fontSize: 15, fontWeight: 600, color: "#001526" }}>Detailed KPI Breakdown</CardTitle>
+          <CardDescription style={{ fontSize: 12, color: "#444746", marginTop: 2 }}>
             Detail metric weights dan scores per employee
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredEmployees.map((emp) => (
-              <Card key={emp.id} className="border border-slate-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
+              <Card key={emp.id} style={{ border: "1px solid #ecebea" }}>
+                <CardContent className="p-4" style={{ padding: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
                     <div>
-                      <p className="font-bold text-slate-900">{emp.name}</p>
-                      <p className="text-xs text-slate-500">
-                        {emp.department} - {emp.position}
-                      </p>
+                      <p style={{ fontWeight: 700, color: "#001526" }}>{emp.name}</p>
+                      <p style={{ fontSize: 11, color: "#444746", marginTop: 1 }}>{emp.department} - {emp.position}</p>
                     </div>
-                    <div
-                      className={`text-2xl font-bold ${getScoreColor(
-                        emp.averageScore
-                      )}`}
-                    >
+                    <div style={{ fontSize: 22, fontWeight: 700, color: getScoreColor(emp.averageScore) }}>
                       {emp.averageScore.toFixed(1)}
                     </div>
                   </div>
                   <div className="space-y-2">
                     {emp.metrics.map((metric, idx) => (
                       <div key={idx}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-slate-600 truncate max-w-[180px]">
-                            {metric.name}
-                          </span>
-                          <span className="text-slate-500">
-                            {metric.weight}% weight | Score: {metric.score}
-                          </span>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 2 }}>
+                          <span style={{ color: "#444746", maxWidth: 180 }} className="truncate">{metric.name}</span>
+                          <span style={{ color: "#444746" }}>{metric.weight}% weight | Score: {metric.score}</span>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full ${
-                              metric.score >= 80
-                                ? "bg-green-500"
-                                : metric.score >= 60
-                                ? "bg-amber-500"
-                                : "bg-red-500"
-                            }`}
-                            style={{ width: `${metric.score}%` }}
-                          />
+                        <div style={{ width: "100%", height: 8, background: "#f0f0f0", borderRadius: 4, overflow: "hidden" }}>
+                          <div style={{
+                            width: `${metric.score}%`, height: "100%",
+                            background: metric.score >= 80 ? "#2e844a" : metric.score >= 60 ? "#fe9339" : "#ea001e",
+                            borderRadius: 4, transition: "width 300ms",
+                          }} />
                         </div>
                       </div>
                     ))}
