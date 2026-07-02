@@ -15,3 +15,7 @@ node_modules/
 .git-rewrite/
 
 /src/generated/prisma
+
+.dev.vars*
+!.dev.vars.example
+!.env.example
