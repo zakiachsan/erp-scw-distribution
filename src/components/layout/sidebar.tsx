@@ -39,6 +39,7 @@ import {
   Image,
   Ticket,
   Star,
+  Building,
 } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
@@ -70,6 +71,7 @@ const iconMap: Record<string, React.ElementType> = {
   Image,
   Ticket,
   Star,
+  Building,
 }
 
 export function Sidebar() {
