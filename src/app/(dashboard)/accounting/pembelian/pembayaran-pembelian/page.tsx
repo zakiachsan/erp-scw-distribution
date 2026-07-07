@@ -1,82 +1,110 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter } from "lucide-react"
+import { Plus, RefreshCw, Search, Filter } from "lucide-react"
+import { dummyPayments } from "@/lib/accounting-dummy-data"
+
+function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
+
+const selectStyle: React.CSSProperties = {
+  height: 32, padding: "0 24px 0 10px", fontSize: 13,
+  border: "1px solid #d8d8d8", borderRadius: 6,
+  background: "#fff", color: "#001526", cursor: "pointer",
+  appearance: "none" as const,
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat" as const, backgroundPosition: "right 10px center",
+}
+const inputStyle: React.CSSProperties = {
+  height: 32, padding: "0 10px", fontSize: 13,
+  border: "1px solid #d8d8d8", borderRadius: 6,
+  outline: "none", width: "100%", boxSizing: "border-box",
+}
+const labelStyle: React.CSSProperties = { fontSize: 13, color: "#444746", minWidth: 100 }
+const thStyle: React.CSSProperties = { padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", borderBottom: "1px solid #e0e0e0" }
+const thRight: React.CSSProperties = { ...thStyle, textAlign: "right" }
+const tdStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, color: "#001526" }
+const tdMono: React.CSSProperties = { ...tdStyle, fontFamily: "monospace", fontSize: 12 }
+const rowStyle: React.CSSProperties = { borderBottom: "1px solid #f0f0f0" }
+const btnIcon: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
+const btnIconOutline: React.CSSProperties = { ...btnIcon, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8" }
 
 export default function PembayaranPembelianPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
-  const [filterMetode, setFilterMetode] = useState("semua")
-  const [formData, setFormData] = useState({
-    paymentTo: "", bank: "", paymentAmount: 0,
-    voucherOtomatis: true, tipeVoucher: "Bank", paymentDate: "07/07/2026",
-  })
-  const filtered: any[] = []
-  const handleSave = () => { setShowForm(false) }
-  const selectStyle = { padding: "5px 24px 5px 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 4, background: "#fff", color: "#001526", cursor: "pointer", appearance: "none" as const, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat" as const, backgroundPosition: "right 6px center" }
-  const inputStyle = { padding: "6px 8px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 4, outline: "none", width: "100%", boxSizing: "border-box" as const }
-  const labelStyle = { fontSize: 12, color: "#444746", minWidth: 100 }
+  const payments = dummyPayments.filter(p => p.tipe === "pembayaran")
+  const filtered = payments.filter(i => !search || i.nomor.toLowerCase().includes(search.toLowerCase()) || i.keterangan.toLowerCase().includes(search.toLowerCase()))
+  const handleSave = () => setShowForm(false)
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
-        <div><h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Pembayaran Pembelian</h1><p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Catat pembayaran ke pemasok</p></div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+        <div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Pembayaran Pembelian</h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Catat pembayaran ke pemasok</p>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
           <select style={selectStyle}><option>Tanggal: Semua</option></select>
-          <select value={filterMetode} onChange={(e) => setFilterMetode(e.target.value)} style={selectStyle}><option value="semua">Metode Bayar: Semua</option><option>Cash</option><option>Transfer Bank</option><option>Cek/Giro</option></select>
           <select style={selectStyle}><option>Bank: Semua</option></select>
-          <select style={selectStyle}><option>Tanggal Cek: Semua</option></select>
-          <select style={selectStyle}><option>Pembayaran ke: Semua</option></select>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 4, cursor: "pointer" }}><Filter size={12} /></button>
+          <button style={btnIcon}><Filter size={14} /></button>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}><Plus size={16} /></button>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}><RefreshCw size={14} /></button>
+          <button onClick={() => setShowForm(!showForm)} style={btnIcon}><Plus size={16} /></button>
+          <button style={btnIconOutline}><RefreshCw size={14} /></button>
           <div style={{ flex: 1 }} />
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}><Printer size={14} /></button>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}><Settings size={14} /></button>
-          <div style={{ position: "relative" }}><Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} /><input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={(e) => setSearch(e.target.value)} style={{ padding: "6px 10px 6px 30px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6, width: 180, outline: "none" }} /></div>
+          <div style={{ position: "relative" }}>
+            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+            <input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={e => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+          </div>
           <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
         </div>
       </div>
 
       {showForm && (
         <div style={{ background: "#f3f3f3", padding: "16px 20px", borderBottom: "1px solid #d8d8d8" }}>
-          <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "relative" }}>
+          <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Data Baru</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Payment to *</label><div style={{ position: "relative", flex: 1 }}><Search size={12} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} /><input type="text" value={formData.paymentTo} onChange={(e) => setFormData({...formData, paymentTo: e.target.value})} placeholder="Cari/Pilih Pemasok..." style={{ ...inputStyle, paddingLeft: 26 }} /></div></div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Bank *</label><div style={{ position: "relative", flex: 1 }}><Search size={12} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} /><input type="text" placeholder="Cari/Pilih..." style={{ ...inputStyle, paddingLeft: 26 }} /></div></div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Payment Amount</label><input type="number" value={formData.paymentAmount} onChange={(e) => setFormData({...formData, paymentAmount: Number(e.target.value)})} style={{ ...inputStyle, maxWidth: 150 }} /></div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Voucher No *</label><div style={{ display: "flex", alignItems: "center", gap: 6 }}><div onClick={() => setFormData({...formData, voucherOtomatis: !formData.voucherOtomatis})} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: formData.voucherOtomatis ? "#0176d3" : "#ccc", position: "relative", transition: "background 0.2s", flexShrink: 0 }}><div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 2, left: formData.voucherOtomatis ? 18 : 2, transition: "left 0.2s" }} /></div><select value={formData.tipeVoucher} onChange={(e) => setFormData({...formData, tipeVoucher: e.target.value})} style={{ ...selectStyle }}><option>Bank</option><option>Cash</option></select></div></div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Payment Date *</label><input type="text" value={formData.paymentDate} onChange={(e) => setFormData({...formData, paymentDate: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} /></div>
-              </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Bank *</label><input style={{ ...inputStyle, flex: 1 }} placeholder="Cari/Pilih..." /></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Voucher No *</label><input style={{ ...inputStyle, flex: 1 }} placeholder="Otomatis" /></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Amount *</label><input style={{ ...inputStyle, width: 150 }} type="number" defaultValue={0} /></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}><label style={labelStyle}>Tanggal *</label><input style={{ ...inputStyle, width: 130 }} defaultValue="07/07/2026" /></div>
             </div>
-            <div style={{ borderTop: "1px solid #eee", paddingTop: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <div style={{ position: "relative", flex: 1, maxWidth: 250 }}><Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} /><input type="text" placeholder="Cari/Pilih..." style={{ padding: "6px 8px 6px 28px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 4, width: "100%", outline: "none", boxSizing: "border-box" }} /></div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#001526", marginLeft: 8 }}>Faktur *</span>
-              </div>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, marginBottom: 12 }}>
-                <thead><tr style={{ background: "#4a5568" }}>{["Invoice No","Invoice Date","Total Invoice","Owing","Pay","Discount","Payment"].map(h => <th key={h} style={{ padding: "6px 10px", textAlign: h==="Total Invoice"||h==="Owing"||h==="Pay"||h==="Discount"||h==="Payment"?"right":"left", fontWeight: 600, color: "#fff", borderBottom: "1px solid #3a4150" }}>{h}</th>)}</tr></thead>
-                <tbody><tr><td colSpan={7} style={{ padding: 30, textAlign: "center", color: "#888" }}>Belum ada data</td></tr></tbody>
-              </table>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 24, fontSize: 12, borderTop: "1px solid #eee", paddingTop: 8 }}><span>Payment Amount: <b>0</b></span><span>Invoice Paid: <b>0</b></span></div>
+            <div style={{ marginTop: 16 }}>
+              <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "7px 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }} onClick={handleSave}>Simpan</button>
             </div>
-            <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", background: "#0176d3", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg></button>
           </div>
         </div>
       )}
 
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-          <thead><tr style={{ background: "#4a5568" }}>
-            {[{l:"",w:"30px"},{l:"Nomor #",w:"9%"},{l:"Tanggal",w:"8%"},{l:"No. Cek",w:"8%"},{l:"Tanggal Cek",w:"8%"},{l:"Pemasok",w:"16%"},{l:"Bank",w:"10%"},{l:"Keterangan",w:"18%"},{l:"Nilai Pembayaran",w:"10%",a:"right"}].map((c:any) => <th key={c.l||"x"} style={{ padding: "6px 8px", textAlign: c.a||"left", fontWeight: 600, color: "#fff", borderBottom: "1px solid #3a4150", width: c.w, fontSize: 10 }}>{c.l}</th>)}
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead><tr style={{ background: "#fff" }}>
+            <th style={{ ...thStyle, width: 30 }}>#</th>
+            <th style={thStyle}>Nomor #</th>
+            <th style={thStyle}>Tanggal</th>
+            <th style={thStyle}>No. Cek</th>
+            <th style={thStyle}>Kas/Bank</th>
+            <th style={thStyle}>Keterangan</th>
+            <th style={thRight}>Nilai</th>
           </tr></thead>
-          <tbody><tr><td colSpan={9} style={{ padding: 60, textAlign: "center", color: "#888" }}>Belum ada data</td></tr></tbody>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+            ) : filtered.map((item, idx) => (
+              <tr key={item.id} style={rowStyle}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+              >
+                <td style={{ ...tdStyle, color: "#444746" }}>{idx + 1}</td>
+                <td style={tdMono}>{item.nomor}</td>
+                <td style={tdStyle}>{item.tanggal}</td>
+                <td style={tdStyle}>{item.noCek}</td>
+                <td style={tdStyle}>{item.kasBank}</td>
+                <td style={tdStyle}>{item.keterangan}</td>
+                <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(item.nilai)}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

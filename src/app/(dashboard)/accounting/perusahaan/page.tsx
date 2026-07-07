@@ -2,17 +2,8 @@
 
 import Link from "next/link"
 import {
-  CreditCard,
-  Truck,
-  MapPin,
-  DollarSign,
-  UserCheck,
-  Repeat,
-  CalendarClock,
-  Users,
-  Star,
-  Calendar,
-  ClipboardList,
+  CreditCard, Truck, MapPin, DollarSign, UserCheck, Repeat,
+  CalendarClock, Users, Star, Calendar, ClipboardList,
 } from "lucide-react"
 
 const subMenus = [
@@ -33,32 +24,20 @@ export default function PerusahaanPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>
-          Perusahaan
-        </h1>
-        <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>
-          Pengaturan data perusahaan dan master data
-        </p>
+        <h1 className="text-xl font-bold tracking-tight text-slds-text-primary">Perusahaan</h1>
+        <p className="text-sm text-slds-text-secondary mt-0.5">Pengaturan data perusahaan dan master data</p>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {subMenus.map((item) => (
           <Link key={item.href} href={item.href}>
-            <div
-              style={{
-                display: "flex", alignItems: "center", gap: 14,
-                padding: "14px 16px", border: "1px solid #ecebea", borderRadius: 8,
-                cursor: "pointer", transition: "all 100ms",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#f0f7ff"; e.currentTarget.style.borderColor = "#0176d3" }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#ecebea" }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 8, background: "#f0f0ff" }}>
-                <item.icon size={20} style={{ color: "#6b21a8" }} />
+            <div className="flex items-center gap-3.5 px-4 py-3.5 border border-slds-text-secondary/10 rounded-lg cursor-pointer transition-colors hover:bg-brand-light hover:border-brand">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-light">
+                <item.icon className="h-5 w-5 text-brand" />
               </div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#001526" }}>{item.label}</div>
-                <div style={{ fontSize: 11, color: "#444746", marginTop: 1 }}>{item.desc}</div>
+                <div className="text-sm font-semibold text-slds-text-primary">{item.label}</div>
+                <div className="text-xs text-slds-text-secondary mt-0.5">{item.desc}</div>
               </div>
             </div>
           </Link>

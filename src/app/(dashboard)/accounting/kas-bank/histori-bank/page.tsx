@@ -2,37 +2,82 @@
 
 import { useState } from "react"
 import { RefreshCw, Download, Settings, Search, SlidersHorizontal } from "lucide-react"
+import { dummyBankRecords } from "@/lib/accounting-dummy-data"
+
+// ── SLDS Shared Styles ──
+const TH: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", padding: "8px 10px", textAlign: "left", borderBottom: "1px solid #e0e0e0", whiteSpace: "nowrap" }
+const TD: React.CSSProperties = { fontSize: 13, color: "#001526", padding: "8px 10px", borderBottom: "1px solid #f0f0f0" }
+const BTN_ICON: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
+const BTN_ICON_OUTLINE: React.CSSProperties = { ...BTN_ICON, background: "#fff", color: "#0176d3", borderColor: "#d8d8d8" }
+const INPUT: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", boxSizing: "border-box" }
+
+function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
 export default function HistoriBankPage() {
   const [search, setSearch] = useState("")
   const [akunDipilih, setAkunDipilih] = useState("")
   const [tanggalAwal, setTanggalAwal] = useState("01/07/2026")
   const [tanggalAkhir, setTanggalAkhir] = useState("06/07/2026")
-  const dateInputStyle = { padding: "5px 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 4, outline: "none", width: 110, background: "#fff" }
+
+  const filtered = dummyBankRecords.filter(item => {
+    if (search && !item.keterangan.toLowerCase().includes(search.toLowerCase()) && !item.noSumber.toLowerCase().includes(search.toLowerCase())) return false
+    return true
+  })
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* ── Header ── */}
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
-        <div><h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Histori Bank</h1><p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Riwayat transaksi rekening bank</p></div>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Histori Bank</h1>
+        <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Riwayat transaksi rekening bank</p>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <div style={{ position: "relative", width: 200 }}><Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} /><input type="text" placeholder="Cari/Pilih..." value={akunDipilih} onChange={(e) => setAkunDipilih(e.target.value)} style={{ padding: "6px 8px 6px 28px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 4, width: "100%", outline: "none", boxSizing: "border-box" }} /></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input type="text" value={tanggalAwal} onChange={(e) => setTanggalAwal(e.target.value)} style={dateInputStyle} />
-            <span style={{ fontSize: 11, color: "#666" }}>s/d</span>
-            <input type="text" value={tanggalAkhir} onChange={(e) => setTanggalAkhir(e.target.value)} style={dateInputStyle} />
+          <div style={{ position: "relative", width: 200 }}>
+            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+            <input style={{ ...INPUT, paddingLeft: 30, width: "100%" }} placeholder="Cari/Pilih..." value={akunDipilih} onChange={e => setAkunDipilih(e.target.value)} />
           </div>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 4, cursor: "pointer" }}><RefreshCw size={13} /></button>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 4, cursor: "pointer" }}><Download size={13} /></button>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 4, cursor: "pointer" }}><SlidersHorizontal size={13} /></button>
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#ffc107", color: "#fff", border: "1px solid #ffc107", borderRadius: 4, cursor: "pointer" }}><Settings size={13} /></button>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input style={{ ...INPUT, width: 110 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
+            <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
+            <input style={{ ...INPUT, width: 110 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
+          </div>
+          <button style={BTN_ICON}><RefreshCw size={14} /></button>
+          <button style={BTN_ICON_OUTLINE}><Download size={14} /></button>
+          <button style={BTN_ICON_OUTLINE}><SlidersHorizontal size={14} /></button>
+          <button style={{ ...BTN_ICON, background: "#ffc107", borderColor: "#ffc107" }}><Settings size={14} /></button>
         </div>
       </div>
+
+      {/* ── Table ── */}
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-          <thead><tr style={{ background: "#4a5568" }}>
-            {[{l:"Tanggal",w:"11%"},{l:"No. Sumber #",w:"11%"},{l:"No Cek #",w:"10%"},{l:"Tipe Transaksi",w:"13%"},{l:"Keterangan",w:"22%"},{l:"Mutasi",w:"12%",a:"right"},{l:"Tipe",w:"8%"},{l:"Saldo",w:"10%",a:"right"},{l:"#",w:"3%"}].map((c:any) => <th key={c.l} style={{ padding: "8px 10px", textAlign: c.a||"left", fontWeight: 600, color: "#fff", borderBottom: "1px solid #3a4150", width: c.w, fontSize: 11 }}>{c.l}</th>)}
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead><tr>
+            <th style={{ ...TH, width: "11%" }}>TANGGAL</th>
+            <th style={{ ...TH, width: "11%" }}>NO. SUMBER #</th>
+            <th style={{ ...TH, width: "10%" }}>NO CEK #</th>
+            <th style={{ ...TH, width: "13%" }}>TIPE TRANSAKSI</th>
+            <th style={{ ...TH, width: "22%" }}>KETERANGAN</th>
+            <th style={{ ...TH, width: "12%", textAlign: "right" }}>MUTASI</th>
+            <th style={{ ...TH, width: "8%" }}>TIPE</th>
+            <th style={{ ...TH, width: "10%", textAlign: "right" }}>SALDO</th>
           </tr></thead>
-          <tbody><tr><td colSpan={9} style={{ padding: 60, textAlign: "center", color: "#888" }}>Belum ada data</td></tr></tbody>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+            ) : filtered.map(item => (
+              <tr key={item.id} style={{ cursor: "pointer" }} onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"} onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
+                <td style={{ ...TD, color: "#444746" }}>{item.tanggal}</td>
+                <td style={{ ...TD, fontFamily: "monospace", color: "#0176d3" }}>{item.noSumber}</td>
+                <td style={{ ...TD, color: "#444746" }}>{item.noCek}</td>
+                <td style={{ ...TD, color: "#444746" }}>{item.tipeTransaksi}</td>
+                <td style={{ ...TD, color: "#444746" }}>{item.keterangan}</td>
+                <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", color: item.mutasi > 0 ? "#2e844a" : "#ea001e" }}>
+                  {item.mutasi > 0 ? formatIDR(item.mutasi) : item.mutasi < 0 ? `(Rp ${Math.abs(item.mutasi).toLocaleString("id-ID")})` : "-"}
+                </td>
+                <td style={{ ...TD, color: "#444746" }}>{item.tipe}</td>
+                <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>{formatIDR(item.saldo)}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

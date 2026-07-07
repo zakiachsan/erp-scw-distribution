@@ -1,30 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import {
-  RefreshCw,
-  Search,
-  Plus,
-} from "lucide-react"
+import { RefreshCw, Search, Plus } from "lucide-react"
 
 interface TransaksiFavorit {
-  id: string
-  namaFavorit: string
-  tipeTransaksi: string
-  daftarPengguna: string
+  id: string; namaFavorit: string; tipeTransaksi: string; daftarPengguna: string
 }
 
-const dummyData: TransaksiFavorit[] = []
+const dummyData: TransaksiFavorit[] = [
+  { id: "1", namaFavorit: "Invoice Penjualan Reguler", tipeTransaksi: "Invoice Penjualan", daftarPengguna: "Semua" },
+  { id: "2", namaFavorit: "Pembayaran Sewa Bulanan", tipeTransaksi: "Payment", daftarPengguna: "Admin" },
+  { id: "3", namaFavorit: "Quotation Proyek", tipeTransaksi: "Quotation Penjualan", daftarPengguna: "Sales" },
+  { id: "4", namaFavorit: "Jurnal Penyesuaian", tipeTransaksi: "Journal", daftarPengguna: "Accounting" },
+]
 
 export default function TransaksiFavoritPage() {
   const [search, setSearch] = useState("")
   const [filterTipe, setFilterTipe] = useState("semua")
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
-    namaFavorit: "",
-    tipeTransaksi: "",
-    daftarPengguna: "",
-    keterangan: "",
+    namaFavorit: "", tipeTransaksi: "", daftarPengguna: "", keterangan: "",
   })
 
   const filtered = dummyData.filter((item) => {
@@ -39,36 +34,22 @@ export default function TransaksiFavoritPage() {
     setFormData({ namaFavorit: "", tipeTransaksi: "", daftarPengguna: "", keterangan: "" })
   }
 
-  const selectStyle = {
-    padding: "5px 24px 5px 8px", fontSize: 11, fontWeight: 500 as const,
-    border: "1px solid #d8d8d8", borderRadius: 4,
-    background: "#fff", color: "#001526", cursor: "pointer",
-    appearance: "none" as const,
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`,
-    backgroundRepeat: "no-repeat" as const,
-    backgroundPosition: "right 6px center",
-  }
-
-  const inputStyle = {
-    padding: "6px 8px", fontSize: 12,
-    border: "1px solid #d8d8d8", borderRadius: 4,
-    outline: "none", width: "100%", boxSizing: "border-box" as const,
-  }
-
-  const labelStyle = { fontSize: 12, color: "#444746", minWidth: 120 }
+  const thStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", padding: "8px 12px", textAlign: "left", background: "#fff" }
+  const tdStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, color: "#001526" }
+  const btnStyle: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }
+  const inputStyle: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none" }
+  const iconBtnStyle: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "transparent", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer", color: "#0176d3" }
+  const selectStyle: React.CSSProperties = { height: 32, padding: "0 28px 0 10px", fontSize: 13, fontWeight: 500, border: "1px solid #d8d8d8", borderRadius: 6, background: "#fff", color: "#001526", cursor: "pointer", outline: "none", appearance: "none", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Header */}
-      <div style={{ padding: "12px 20px 0", background: "#fff" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", lineHeight: 1.2 }}>Transaksi Favorit</h1>
-            <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola transaksi favorit dan template</p>
-          </div>
+      <div style={{ padding: "16px 20px 0", background: "#fff" }}>
+        <div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526", margin: 0 }}>Transaksi Favorit</h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2, margin: 0 }}>Kelola transaksi favorit dan template</p>
         </div>
 
-        {/* Filter + Toolbar */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
           <select value={filterTipe} onChange={(e) => setFilterTipe(e.target.value)} style={selectStyle}>
             <option value="semua">Tipe Transaksi: Semua</option>
@@ -80,60 +61,53 @@ export default function TransaksiFavoritPage() {
             <option value="Journal">Journal</option>
           </select>
 
-          <button onClick={() => setShowForm(!showForm)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>
-            <Plus size={14} />
-          </button>
-
-          <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}>
-            <RefreshCw size={13} />
-          </button>
+          <button style={btnStyle} onClick={() => setShowForm(!showForm)}><Plus size={14} /></button>
+          <button style={iconBtnStyle}><RefreshCw size={14} /></button>
 
           <div style={{ flex: 1 }} />
-
           <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input type="text" placeholder="Ketik dan [Enter" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && setSearch(search)} style={{ padding: "6px 10px 6px 30px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 6, width: 180, outline: "none" }} />
+            <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
+            <input placeholder="Ketik dan [Enter" value={search} onChange={(e) => setSearch(e.target.value)}
+              style={{ ...inputStyle, paddingLeft: 30, paddingRight: 10, width: 180 }} />
           </div>
-
-          <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
+          <span style={{ fontSize: 12, color: "#444746", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
         </div>
       </div>
 
-      {/* Form (collapsible) */}
+      {/* Form */}
       {showForm && (
-        <div style={{ background: "#f3f3f3", padding: "16px 20px", borderBottom: "1px solid #d8d8d8" }}>
-          <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "relative", maxWidth: 500 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Transaksi Favorit Baru</h3>
-
+        <div style={{ background: "#f8f9fa", padding: "16px 20px", borderBottom: "1px solid #ecebea" }}>
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, background: "#fff", position: "relative", padding: 20, maxWidth: 500 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: "#001526", margin: "0 0 16px" }}>Transaksi Favorit Baru</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Nama Favorit</label>
-                <input type="text" value={formData.namaFavorit} onChange={(e) => setFormData({ ...formData, namaFavorit: e.target.value })} style={inputStyle} />
+                <label style={{ fontSize: 13, color: "#444746", minWidth: 120 }}>Nama Favorit</label>
+                <input value={formData.namaFavorit} onChange={(e) => setFormData({ ...formData, namaFavorit: e.target.value })}
+                  style={{ ...inputStyle, flex: 1 }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Tipe Transaksi</label>
-                <select value={formData.tipeTransaksi} onChange={(e) => setFormData({ ...formData, tipeTransaksi: e.target.value })} style={{ ...selectStyle, flex: 1 }}>
+                <label style={{ fontSize: 13, color: "#444746", minWidth: 120 }}>Tipe Transaksi</label>
+                <select value={formData.tipeTransaksi} onChange={(e) => setFormData({ ...formData, tipeTransaksi: e.target.value })}
+                  style={{ ...selectStyle, flex: 1 }}>
                   <option value="">Pilih Tipe</option>
-                  <option>Invoice Penjualan</option>
-                  <option>Quotation Penjualan</option>
-                  <option>Invoice Pembelian</option>
-                  <option>Receipt</option>
-                  <option>Payment</option>
-                  <option>Journal</option>
+                  <option>Invoice Penjualan</option><option>Quotation Penjualan</option>
+                  <option>Invoice Pembelian</option><option>Receipt</option>
+                  <option>Payment</option><option>Journal</option>
                 </select>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Daftar Pengguna</label>
-                <input type="text" value={formData.daftarPengguna} onChange={(e) => setFormData({ ...formData, daftarPengguna: e.target.value })} placeholder="Pisahkan dengan koma" style={inputStyle} />
+                <label style={{ fontSize: 13, color: "#444746", minWidth: 120 }}>Daftar Pengguna</label>
+                <input value={formData.daftarPengguna} onChange={(e) => setFormData({ ...formData, daftarPengguna: e.target.value })}
+                  placeholder="Pisahkan dengan koma" style={{ ...inputStyle, flex: 1 }} />
               </div>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                <label style={{ ...labelStyle, marginTop: 6 }}>Keterangan</label>
-                <textarea value={formData.keterangan} onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })} rows={2} style={{ ...inputStyle, resize: "vertical" }} />
+                <label style={{ fontSize: 13, color: "#444746", minWidth: 120, marginTop: 6 }}>Keterangan</label>
+                <textarea value={formData.keterangan} onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
+                  rows={2} style={{ flex: 1, padding: "6px 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", resize: "vertical" }} />
               </div>
             </div>
-
-            {/* Save */}
-            <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f0f0", border: "1px solid #d8d8d8", borderRadius: 4, cursor: "pointer", color: "#444746" }} title="Simpan">
+            <button onClick={handleSave}
+              style={{ position: "absolute", right: 20, top: 20, width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#f3f3f3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer", color: "#444746" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
             </button>
           </div>
@@ -142,31 +116,28 @@ export default function TransaksiFavoritPage() {
 
       {/* Table */}
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ background: "#4a5568" }}>
-              {[
-                { label: "", width: "40px" },
-                { label: "Nama Favorit", width: "30%" },
-                { label: "Tipe Transaksi", width: "30%" },
-                { label: "Daftar Pengguna", width: "25%" },
-              ].map((col) => (
-                <th key={col.label || "no"} style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600, color: "#fff", borderBottom: "1px solid #3a4150", whiteSpace: "nowrap", width: col.width }}>
-                  {col.label}
-                </th>
-              ))}
+            <tr style={{ borderBottom: "2px solid #ecebea" }}>
+              <th style={{ ...thStyle, width: 40 }}></th>
+              <th style={{ ...thStyle, width: "30%" }}>Nama Favorit</th>
+              <th style={{ ...thStyle, width: "30%" }}>Tipe Transaksi</th>
+              <th style={{ ...thStyle, width: "calc(70% - 40px)" }}>Daftar Pengguna</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={4} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              <tr><td colSpan={4} style={{ ...tdStyle, textAlign: "center", padding: "64px 12px", color: "#444746" }}>Belum ada data</td></tr>
             ) : (
               filtered.map((item) => (
-                <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.background = "#f8f9ff"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                  <td style={{ padding: "8px 12px" }}></td>
-                  <td style={{ padding: "8px 12px", fontWeight: 500, color: "#001526" }}>{item.namaFavorit}</td>
-                  <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tipeTransaksi}</td>
-                  <td style={{ padding: "8px 12px", color: "#444746" }}>{item.daftarPengguna}</td>
+                <tr key={item.id}
+                  style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", transition: "background 100ms" }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#f0f7ff"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                  <td style={tdStyle}></td>
+                  <td style={{ ...tdStyle, fontWeight: 500, color: "#001526" }}>{item.namaFavorit}</td>
+                  <td style={{ ...tdStyle, color: "#444746" }}>{item.tipeTransaksi}</td>
+                  <td style={{ ...tdStyle, color: "#444746" }}>{item.daftarPengguna}</td>
                 </tr>
               ))
             )}

@@ -191,6 +191,15 @@ export const MODULES: ModuleInfo[] = [
         ],
       },
       {
+        label: "Aset Tetap",
+        icon: "Building",
+        children: [
+          { label: "Aset Tetap", href: "/accounting/aset-tetap/aset-tetap" },
+          { label: "Kategori Aset", href: "/accounting/aset-tetap/kategori-aset" },
+          { label: "Disposisi Aset Tetap", href: "/accounting/aset-tetap/disposisi-aset-tetap" },
+        ],
+      },
+      {
         label: "Perusahaan",
         icon: "Building",
         children: [

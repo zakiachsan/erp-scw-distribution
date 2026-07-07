@@ -1,26 +1,41 @@
 "use client"
 
 import { useState } from "react"
-import {
-  RefreshCw,
-  Download,
-  ArrowLeftRight,
-  Settings,
-  Search,
-} from "lucide-react"
+import { dummyBankRecords, BankRecord } from "@/lib/accounting-dummy-data"
 
-interface HistoriAkun {
-  id: string
-  tanggal: string
-  noSumber: string
-  tipeTransaksi: string
-  keterangan: string
-  mutasi: number
-  tipe: string
-  saldo: number
+/* ── Inline SVG icons ── */
+const Icon = ({ children, size = 14 }: { children: React.ReactNode; size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>{children}</svg>
+)
+const RefreshIcon   = () => <Icon><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></Icon>
+const DownloadIcon  = () => <Icon><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Icon>
+const ArrowIcon     = () => <Icon><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></Icon>
+const SettingsIcon  = () => <Icon><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>
+const SearchIcon    = () => <Icon size={13}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>
+
+/* ── Shared styles ── */
+const inputStyle: React.CSSProperties = {
+  height: 32, padding: "0 10px", fontSize: 13,
+  border: "1px solid #d8d8d8", borderRadius: 6,
+  outline: "none", boxSizing: "border-box",
 }
-
-const dummyData: HistoriAkun[] = []
+const thStyle: React.CSSProperties = {
+  padding: "8px 12px", textAlign: "left",
+  fontSize: 11, fontWeight: 600, color: "#444746",
+  textTransform: "uppercase", letterSpacing: "0.04em",
+  background: "#fff", borderBottom: "1px solid #f0f0f0",
+  whiteSpace: "nowrap", cursor: "pointer", userSelect: "none",
+}
+const btnIconBlue: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", justifyContent: "center",
+  width: 32, height: 32, background: "#0176d3", color: "#fff",
+  border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer", flexShrink: 0,
+}
+const btnIconWhite: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", justifyContent: "center",
+  width: 32, height: 32, background: "#fff", color: "#0176d3",
+  border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer", flexShrink: 0,
+}
 
 export default function HistoriAkunPage() {
   const [search, setSearch] = useState("")
@@ -28,20 +43,10 @@ export default function HistoriAkunPage() {
   const [tanggalAkhir, setTanggalAkhir] = useState("06/07/2026")
   const [akunDipilih, setAkunDipilih] = useState("")
 
-  const filtered = dummyData.filter((item) => {
+  const filtered = dummyBankRecords.filter((item) => {
     if (search && !item.keterangan.toLowerCase().includes(search.toLowerCase()) && !item.noSumber.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
-
-  const selectStyle = {
-    padding: "5px 24px 5px 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 4,
-    background: "#fff", color: "#001526", cursor: "pointer", appearance: "none" as const,
-  }
-
-  const dateInputStyle = {
-    padding: "5px 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 4,
-    outline: "none", width: 110, background: "#fff",
-  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -54,41 +59,29 @@ export default function HistoriAkunPage() {
           </div>
         </div>
 
-        {/* Search + Date Range + Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          {/* Search akun */}
           <div style={{ position: "relative", width: 200 }}>
-            <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+            <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", display: "flex" }}><SearchIcon /></span>
             <input
               type="text"
               placeholder="Cari/Pilih..."
               value={akunDipilih}
               onChange={(e) => setAkunDipilih(e.target.value)}
-              style={{ padding: "6px 8px 6px 28px", fontSize: 12, border: "1px solid #d8d8d8", borderRadius: 4, width: "100%", outline: "none", boxSizing: "border-box" }}
+              style={{ ...inputStyle, paddingLeft: 30, width: "100%" }}
             />
           </div>
 
-          {/* Date range */}
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input type="text" value={tanggalAwal} onChange={(e) => setTanggalAwal(e.target.value)} style={dateInputStyle} />
-            <span style={{ fontSize: 11, color: "#666" }}>s/d</span>
-            <input type="text" value={tanggalAkhir} onChange={(e) => setTanggalAkhir(e.target.value)} style={dateInputStyle} />
+            <input type="text" value={tanggalAwal} onChange={(e) => setTanggalAwal(e.target.value)} style={{ ...inputStyle, width: 110 }} />
+            <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
+            <input type="text" value={tanggalAkhir} onChange={(e) => setTanggalAkhir(e.target.value)} style={{ ...inputStyle, width: 110 }} />
           </div>
 
-          {/* Action buttons */}
           <div style={{ display: "flex", gap: 4 }}>
-            <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 4, cursor: "pointer" }}>
-              <RefreshCw size={13} />
-            </button>
-            <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 4, cursor: "pointer" }}>
-              <Download size={13} />
-            </button>
-            <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 4, cursor: "pointer" }}>
-              <ArrowLeftRight size={13} />
-            </button>
-            <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 30, height: 30, background: "#ffc107", color: "#fff", border: "1px solid #ffc107", borderRadius: 4, cursor: "pointer" }}>
-              <Settings size={13} />
-            </button>
+            <button style={btnIconBlue}><RefreshIcon /></button>
+            <button style={btnIconWhite}><DownloadIcon /></button>
+            <button style={btnIconWhite}><ArrowIcon /></button>
+            <button style={{ ...btnIconWhite, background: "#ffc107", color: "#fff", borderColor: "#ffc107" }}><SettingsIcon /></button>
           </div>
 
           <div style={{ flex: 1 }} />
@@ -98,9 +91,9 @@ export default function HistoriAkunPage() {
 
       {/* Table */}
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ background: "#4a5568" }}>
+            <tr>
               {[
                 { label: "Tanggal", width: "12%" },
                 { label: "No. Sumber #", width: "13%" },
@@ -110,7 +103,7 @@ export default function HistoriAkunPage() {
                 { label: "Tipe", width: "10%" },
                 { label: "Saldo", width: "12%", align: "right" as const },
               ].map((col) => (
-                <th key={col.label} style={{ padding: "8px 12px", textAlign: col.align || "left", fontWeight: 600, color: "#fff", borderBottom: "1px solid #3a4150", whiteSpace: "nowrap", width: col.width, cursor: "pointer", userSelect: "none" }}>
+                <th key={col.label} style={{ ...thStyle, textAlign: col.align || "left", width: col.width }}>
                   {col.label}
                 </th>
               ))}
@@ -125,16 +118,16 @@ export default function HistoriAkunPage() {
               </tr>
             ) : (
               filtered.map((item) => (
-                <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer" }} onMouseEnter={(e) => e.currentTarget.style.background = "#f8f9ff"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", fontSize: 13, color: "#001526" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f7ff")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tanggal}</td>
-                  <td style={{ padding: "8px 12px", fontFamily: "monospace", fontSize: 11, color: "#0176d3" }}>{item.noSumber}</td>
+                  <td style={{ padding: "8px 12px", fontFamily: "monospace", color: "#0176d3" }}>{item.noSumber}</td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tipeTransaksi}</td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.keterangan}</td>
                   <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace" }}>
-                    {item.mutasi > 0 ? <span style={{ color: "#2e7d32" }}>Rp {item.mutasi.toLocaleString("id-ID")}</span> : item.mutasi < 0 ? <span style={{ color: "#c62828" }}>(Rp {Math.abs(item.mutasi).toLocaleString("id-ID")})</span> : <span>-</span>}
+                    {item.mutasi > 0 ? <span style={{ color: "#2e844a" }}>Rp {item.mutasi.toLocaleString("id-ID")}</span> : item.mutasi < 0 ? <span style={{ color: "#ea001e" }}>(Rp {Math.abs(item.mutasi).toLocaleString("id-ID")})</span> : <span>-</span>}
                   </td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tipe}</td>
-                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", fontWeight: 600, color: "#001526" }}>Rp {item.saldo.toLocaleString("id-ID")}</td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>Rp {item.saldo.toLocaleString("id-ID")}</td>
                 </tr>
               ))
             )}

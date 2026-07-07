@@ -16,7 +16,7 @@ const inputStyle: React.CSSProperties = {
   border: "1px solid #d8d8d8", borderRadius: 6,
   outline: "none", width: "100%", boxSizing: "border-box",
 }
-const labelStyle: React.CSSProperties = { fontSize: 13, color: "#444746", minWidth: 130 }
+const labelStyle: React.CSSProperties = { fontSize: 13, color: "#444746", minWidth: 60 }
 const thStyle: React.CSSProperties = { padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", borderBottom: "1px solid #e0e0e0" }
 const tdStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, color: "#001526" }
 const rowStyle: React.CSSProperties = { borderBottom: "1px solid #f0f0f0" }
@@ -27,13 +27,13 @@ const SaveIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
 )
 
-interface Kategori { id: string; nama: string; default: boolean }
-const dummyData: Kategori[] = [{ id: "1", nama: "General", default: true }]
+interface Kategori { id: string; nama: string }
+const dummyData: Kategori[] = []
 
-export default function KategoriPemasokPage() {
+export default function KategoriAsetPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({ nama: "", kategoriDefault: false, subKategori: false })
+  const [formData, setFormData] = useState({ nama: "" })
   const filtered = dummyData.filter(i => !search || i.nama.toLowerCase().includes(search.toLowerCase()))
   const handleSave = () => { console.log("Save:", formData); setShowForm(false) }
 
@@ -41,8 +41,8 @@ export default function KategoriPemasokPage() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Kategori Pemasok</h1>
-          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola kategori pemasok</p>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Kategori Aset</h1>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola kategori aset</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
           <button onClick={() => setShowForm(!showForm)} style={btnIcon}><Plus size={16} /></button>
@@ -60,21 +60,13 @@ export default function KategoriPemasokPage() {
       {showForm && (
         <div style={{ background: "#f3f3f3", padding: "16px 20px", borderBottom: "1px solid #d8d8d8" }}>
           <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "relative", maxWidth: 450 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Kategori Pemasok</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Nama Kategori *</label>
-                <input type="text" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} style={{ ...inputStyle, border: "1px solid #90caf9" }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input type="checkbox" checked={formData.kategoriDefault} onChange={(e) => setFormData({...formData, kategoriDefault: e.target.checked})} style={{ width: 16, height: 16 }} />
-                <label style={{ fontSize: 13, color: "#444746" }}>Kategori Default</label>
-                <span style={{ fontSize: 13, color: "#444746" }}>Ya</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input type="checkbox" checked={formData.subKategori} onChange={(e) => setFormData({...formData, subKategori: e.target.checked})} style={{ width: 16, height: 16 }} />
-                <label style={{ fontSize: 13, color: "#444746" }}>Sub Kategori</label>
-              </div>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Kategori Aset</h3>
+            <div style={{ borderBottom: "1px solid #e91e63", paddingBottom: 4, marginBottom: 12 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#001526" }}>Informasi Umum</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <label style={labelStyle}>Nama *</label>
+              <input type="text" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} style={{ ...inputStyle, border: "1px solid #90caf9" }} />
             </div>
             <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, ...btnIconOutline }} title="Simpan"><SaveIcon /></button>
           </div>
@@ -84,20 +76,9 @@ export default function KategoriPemasokPage() {
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead><tr style={{ background: "#fff" }}>
-            <th style={thStyle}>Nama Kategori</th>
-            <th style={thStyle}>Kategori Default</th>
+            <th style={thStyle}>Nama</th>
           </tr></thead>
-          <tbody>
-            {filtered.map(item => (
-              <tr key={item.id} style={rowStyle}
-                onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
-                onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.background = "transparent"}
-              >
-                <td style={{ ...tdStyle, fontWeight: 500 }}>{item.nama}</td>
-                <td style={{ ...tdStyle, color: "#444746" }}>{item.default ? "Ya" : "Tidak"}</td>
-              </tr>
-            ))}
-          </tbody>
+          <tbody><tr><td style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr></tbody>
         </table>
       </div>
     </div>
