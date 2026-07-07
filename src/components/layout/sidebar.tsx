@@ -96,13 +96,8 @@ export function Sidebar() {
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
-    // Open all sub-menus by default
-    if (moduleInfo) {
-      const allSections = moduleInfo.menuItems
-        .filter((item) => item.children && item.children.length > 0)
-        .map((item) => item.label)
-      setOpenSections(allSections)
-    }
+    // Sub-menus default to collapsed
+    setOpenSections([])
   }, [moduleInfo])
 
   // Build menu items from module
