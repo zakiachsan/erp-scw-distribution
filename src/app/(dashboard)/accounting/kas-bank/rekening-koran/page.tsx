@@ -68,7 +68,7 @@ export default function RekeningKoranPage() {
                   {item.mutasi > 0 ? formatIDR(item.mutasi) : item.mutasi < 0 ? `(Rp ${Math.abs(item.mutasi).toLocaleString("id-ID")})` : "-"}
                 </td>
                 <td style={{ ...TD, color: "#444746" }}>{item.tipe}</td>
-                <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>{formatIDR(item.saldo)}</td>
+                <td style={{ ...TD, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(item.saldo)}</td>
               </tr>
             ))}
           </tbody>

@@ -209,16 +209,15 @@ export default function PencatatanBebanPage() {
           <thead>
             <tr>
               {[
-                { label: "", width: "30px" },
-                { label: "Nomor #", width: "12%" },
-                { label: "Tanggal", width: "10%" },
-                { label: "Jatuh Tempo", width: "10%" },
+                { label: "Nomor #", width: "18%" },
+                { label: "Tanggal", width: "11%" },
+                { label: "Jatuh Tempo", width: "12%" },
                 { label: "Total", width: "13%", align: "right" as const },
                 { label: "Dibayar", width: "13%", align: "right" as const },
-                { label: "Status", width: "10%" },
-                { label: "Keterangan", width: "18%" },
+                { label: "Status", width: "11%" },
+                { label: "Keterangan", width: "22%" },
               ].map((col) => (
-                <th key={col.label || "no"} style={{ ...thStyle, textAlign: col.align || "left", width: col.width }}>
+                <th key={col.label} style={{ ...thStyle, textAlign: col.align || "left", width: col.width }}>
                   {col.label}
                 </th>
               ))}
@@ -226,11 +225,10 @@ export default function PencatatanBebanPage() {
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
             ) : (
               filtered.map((item) => (
                 <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", fontSize: 13, color: "#001526" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f7ff")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                  <td style={{ padding: "8px 12px" }}></td>
                   <td style={{ padding: "8px 12px", fontWeight: 500, fontFamily: "monospace" }}>{item.nomor}</td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tanggal}</td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.jatuhTempo}</td>

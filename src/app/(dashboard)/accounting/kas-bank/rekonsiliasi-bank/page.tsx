@@ -82,7 +82,7 @@ export default function RekonsiliasiBankPage() {
                         <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", color: item.mutasi > 0 ? "#2e844a" : "#ea001e" }}>
                           {item.mutasi > 0 ? formatIDR(item.mutasi) : `(Rp ${Math.abs(item.mutasi).toLocaleString("id-ID")})`}
                         </td>
-                        <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>{formatIDR(item.saldo)}</td>
+                        <td style={{ ...TD, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(item.saldo)}</td>
                       </tr>
                     ))}
                   </tbody>

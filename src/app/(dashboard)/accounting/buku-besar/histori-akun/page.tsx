@@ -127,7 +127,7 @@ export default function HistoriAkunPage() {
                     {item.mutasi > 0 ? <span style={{ color: "#2e844a" }}>Rp {item.mutasi.toLocaleString("id-ID")}</span> : item.mutasi < 0 ? <span style={{ color: "#ea001e" }}>(Rp {Math.abs(item.mutasi).toLocaleString("id-ID")})</span> : <span>-</span>}
                   </td>
                   <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tipe}</td>
-                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>Rp {item.saldo.toLocaleString("id-ID")}</td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace" }}>Rp {item.saldo.toLocaleString("id-ID")}</td>
                 </tr>
               ))
             )}

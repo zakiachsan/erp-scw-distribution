@@ -322,7 +322,7 @@ export default function AkunPerkiraanPage() {
                   onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f7ff")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
-                  <td style={{ padding: "8px 12px", fontFamily: "monospace", fontSize: 13, fontWeight: 600, color: "#001526" }}>
+                  <td style={{ padding: "8px 12px", fontFamily: "monospace", fontSize: 13, color: "#001526" }}>
                     {item.kode}
                   </td>
                   <td style={{ padding: "8px 12px", fontWeight: 500, color: "#001526" }}>
