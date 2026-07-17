@@ -67,9 +67,12 @@ export const MODULES: ModuleInfo[] = [
         label: "Purchasing",
         icon: "ShoppingCart",
         children: [
+          { label: "Purchase Requests", href: "/purchasing/requests" },
+          { label: "Price Quotations", href: "/purchasing/quotations" },
           { label: "Purchase Orders", href: "/purchasing" },
+          { label: "Logistic", href: "/purchasing/logistic" },
           { label: "Suppliers", href: "/purchasing/suppliers" },
-          { label: "USD Rate", href: "/purchasing/usd-rate" },
+          { label: "Currency Rate", href: "/purchasing/usd-rate" },
         ],
       },
       {
@@ -77,8 +80,9 @@ export const MODULES: ModuleInfo[] = [
         icon: "Package",
         children: [
           { label: "Products", href: "/inventory" },
-          { label: "Inbound", href: "/inventory/inbound" },
           { label: "Put Away", href: "/inventory/put-away" },
+          { label: "Damaged Items", href: "/inventory/damaged" },
+          { label: "Reports", href: "/inventory/reports" },
           { label: "Warehouse / Rak", href: "/inventory/warehouse" },
           { label: "Outbond", href: "/inventory/outbond" },
           { label: "Stock Opname", href: "/inventory/stock-opname" },

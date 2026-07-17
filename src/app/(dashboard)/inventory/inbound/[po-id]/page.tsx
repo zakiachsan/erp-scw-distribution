@@ -1,440 +1,336 @@
 ﻿"use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table"
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-import {
+  ArrowLeft,
   Package,
   Truck,
-  Plus,
-  Minus,
-  ArrowRight,
+  MapPin,
+  Building2,
+  Calendar,
+  Hash,
 } from "lucide-react"
-import {
-  useWarehouseStore,
-  inboundPOSources,
-} from "@/lib/warehouse-store"
+import WarehouseAssignmentSection from "@/components/warehouse-assignment"
+import { inboundPOSources, useWarehouseStore } from "@/lib/warehouse-store"
 
-function formatScanTime(ts: number): string {
-  const d = new Date(ts)
-  return d.toLocaleString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })
+/* ── Types ── */
+interface LogisticItem {
+  id: string
+  poNumber: string
+  poId: string
+  courier: string
+  trackingNumber: string
+  status: "Booked" | "Picked Up" | "In Transit" | "Delivered"
+  destination: string
 }
 
-export default function ReceivePOPage() {
+/* ── Status config ── */
+const putawayStatusConfig: Record<
+  string,
+  { label: string; className: string }
+> = {
+  "Pending Putaway": {
+    label: "Pending Putaway",
+    className: "bg-red-50 text-red-700 border-red-200",
+  },
+  "Partial Putaway": {
+    label: "Partial Putaway",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  "Putaway Complete": {
+    label: "Putaway Complete",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+}
+
+const logisticStatusConfig: Record<
+  string,
+  { label: string; className: string }
+> = {
+  Booked: {
+    label: "Booked",
+    className: "bg-blue-50 text-blue-700 border-blue-200",
+  },
+  "Picked Up": {
+    label: "Picked Up",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  "In Transit": {
+    label: "In Transit",
+    className: "bg-cyan-50 text-cyan-700 border-cyan-200",
+  },
+  Delivered: {
+    label: "Delivered",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+}
+
+function getLogisticData(): Record<string, LogisticItem> {
+  if (typeof window === "undefined") return {}
+  const stored = localStorage.getItem("scw-logistic-data")
+  if (stored) {
+    try {
+      return JSON.parse(stored)
+    } catch {}
+  }
+  return {
+    lg1: {
+      id: "lg1",
+      poNumber: "PO-2025-0042",
+      poId: "1",
+      courier: "JNE",
+      trackingNumber: "JNE287654123",
+      status: "Delivered",
+      destination: "Tangerang, Banten",
+    },
+    lg3: {
+      id: "lg3",
+      poNumber: "PO-2025-0043",
+      poId: "2",
+      courier: "J&T Express",
+      trackingNumber: "JT583726194",
+      status: "Delivered",
+      destination: "Tangerang, Banten",
+    },
+  }
+}
+
+export default function InboundDetailPage() {
   const params = useParams()
-  const router = useRouter()
-  const poId = params["po-id"] as string
+  const poId = String(params?.["po-id"] ?? "")
 
-  const {
-    inboundReceipts,
-    startReceipt,
-    scanProductBarcode,
-    adjustReceivedQty,
-  } = useWarehouseStore()
+  const [mounted, setMounted] = useState(false)
+  const [logisticMap, setLogisticMap] = useState<
+    Record<string, LogisticItem>
+  >({})
 
-  const [barcode, setBarcode] = useState("")
-  const [scanMessage, setScanMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
-
-  const [scanLogProduct, setScanLogProduct] = useState<string>("all")
-
-  const source = useMemo(
-    () => inboundPOSources.find((p) => p.id === poId),
-    [poId]
-  )
-
-  const poData = useMemo(
-    () => inboundReceipts.find((r) => r.poId === poId) ?? null,
-    [inboundReceipts, poId]
-  )
+  const { inboundReceipts } = useWarehouseStore()
 
   useEffect(() => {
-    if (!source) {
-      router.push("/inventory/inbound")
+    setMounted(true)
+    setLogisticMap(getLogisticData())
+  }, [])
+
+  /* ── Find PO source ── */
+  const poSource = inboundPOSources.find((p) => p.id === poId)
+
+  if (!mounted) {
+    return (
+      <div className="space-y-6">
+        <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+          <ArrowLeft className="w-4 h-4" /> Kembali
+        </div>
+        <Card>
+          <CardContent className="p-8 text-center text-sm text-muted-foreground">
+            Memuat...
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!poSource) {
+    return (
+      <div className="space-y-6">
+        <Link
+          href="/inventory/inbound"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="w-4 h-4" /> Kembali
+        </Link>
+        <Card>
+          <CardContent className="p-8 text-center text-sm text-muted-foreground">
+            Purchase order tidak ditemukan.
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  /* ── Determine putaway status ── */
+  const receipt = inboundReceipts.find((r) => r.poId === poId)
+  const totalItems = poSource.items.length
+  let putawayStatus = "Pending Putaway"
+
+  if (receipt) {
+    const assignedCount = receipt.items.filter((i) => i.rackId).length
+    if (assignedCount === totalItems) {
+      putawayStatus = "Putaway Complete"
+    } else if (assignedCount > 0) {
+      putawayStatus = "Partial Putaway"
     }
-  }, [source, router])
-
-  const handleStartReceipt = () => {
-    if (!source) return
-    startReceipt(source)
   }
 
-  // Data for scan log filters
-  const allScanLogs = useMemo(() => {
-    if (!poData) return []
-    return poData.items.flatMap((item) =>
-      (item.scanLogs ?? []).map((log) => ({
-        ...log,
-        productName: item.productName,
-        orderedQty: item.orderedQty,
-      }))
+  const putawayCfg = putawayStatusConfig[putawayStatus]
+
+  /* ── Find matching logistic ── */
+  let logistic: LogisticItem | undefined
+  if (mounted) {
+    // Try numeric poId formats: extract number from po-0XX
+    const numericId = poId.replace("po-00", "").replace("po-0", "")
+    logistic = Object.values(logisticMap).find(
+      (l) => l.poId === numericId || l.poId === poId
     )
-  }, [poData])
-
-  const filteredScanLogs = useMemo(() => {
-    if (scanLogProduct === "all") return allScanLogs
-    return allScanLogs.filter((log) => log.productName === scanLogProduct)
-  }, [allScanLogs, scanLogProduct])
-
-  const productsWithLogs = useMemo(() => {
-    if (!poData) return []
-    return poData.items.filter((item) => (item.scanLogs ?? []).length > 0)
-  }, [poData])
-
-  const allCompleted = useMemo(() => {
-    if (!poData) return false
-    return poData.items.every((i) => i.receivedQty >= i.orderedQty)
-  }, [poData])
-
-  if (!source) {
-    return (
-      <div className="flex h-96 items-center justify-center text-muted-foreground">
-        Memuat data PO...
-      </div>
-    )
-  }
-
-  if (!poData) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center gap-4 text-muted-foreground">
-        <p>Belum ada sesi receiving untuk PO ini.</p>
-        <Button onClick={handleStartReceipt}>Mulai Receive</Button>
-      </div>
-    )
-  }
-
-  const handleScan = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!barcode.trim()) return
-    const result = scanProductBarcode(poId, barcode.trim())
-    setScanMessage({
-      text: result.message,
-      type: result.ok ? "success" : "error",
-    })
-    setBarcode("")
-  }
-
-  const handleAdjust = (productName: string, delta: number) => {
-    const result = adjustReceivedQty(poId, productName, delta)
-    setScanMessage({
-      text: result.message,
-      type: result.ok ? "success" : "error",
-    })
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
+      {/* Back link */}
+      <Link
+        href="/inventory/inbound"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar Inbound
+      </Link>
+
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-            <Truck className="h-6 w-6 text-primary" />
-          </div>
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold">
-              Receive{" "}
-              <Link
-                href={`/purchasing/${source.id}`}
-                className="text-primary hover:underline"
-              >
-                {poData.poNumber}
-              </Link>
-            </h1>
-            <p className="text-muted-foreground">{poData.supplier}</p>
+            <div className="flex items-center gap-2 mb-1">
+              <Hash className="h-4 w-4 text-muted-foreground" />
+              <span className="font-sans font-medium text-xs text-muted-foreground">
+                {poSource.poNumber}
+              </span>
+              <Badge variant="outline" className={putawayCfg.className}>
+                {putawayCfg.label}
+              </Badge>
+            </div>
+            <CardTitle className="text-lg">{poSource.supplier}</CardTitle>
           </div>
-        </div>
-        <Badge variant="outline" className="w-fit text-sm">
-          <Package className="mr-1 h-4 w-4" />
-          {poData.status === "assigned" ? "Assigned" : "Receiving"}
-        </Badge>
-      </div>
-
-      {/* PO Info Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Informasi PO</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Supplier</p>
-              <p className="font-medium">{poData.supplier}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Ship Date</p>
-              <p className="font-medium">{source?.shipDate ?? "-"}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Expected Arrival</p>
-              <p className="font-medium">{source?.expectedArrival ?? "-"}</p>
-            </div>
-          </div>
-        </CardContent>
       </Card>
 
-      {/* Scan Input */}
-      {poData.status === "receiving" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Scan Barcode</CardTitle>
-            <CardDescription>
-              Scan barcode produk untuk menambah received qty.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleScan} className="flex gap-2">
-              <Input
-                value={barcode}
-                onChange={(e) => setBarcode(e.target.value)}
-                placeholder="Masukkan atau scan barcode"
-                className="flex-1"
-                autoFocus
-              />
-              <Button type="submit">Scan</Button>
-            </form>
-            {scanMessage && (
-              <p
-                className={`mt-2 text-sm ${
-                  scanMessage.type === "success"
-                    ? "text-green-600"
-                    : "text-destructive"
-                }`}
-              >
-                {scanMessage.text}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      {/* Two-column layout */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* PO Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Package className="h-4 w-4 text-indigo-600" />
+                Informasi PO
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">PO Number</p>
+                  <p className="font-medium">{poSource.poNumber}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Supplier</p>
+                  <p className="font-medium">{poSource.supplier}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Ship Date</p>
+                  <p className="text-sm">
+                    {poSource.shipDate
+                      ? new Date(poSource.shipDate).toLocaleDateString("id-ID")
+                      : "—"}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    Expected Arrival
+                  </p>
+                  <p className="text-sm">
+                    {poSource.expectedArrival
+                      ? new Date(poSource.expectedArrival).toLocaleDateString(
+                          "id-ID"
+                        )
+                      : "—"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Item PO */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Item PO</CardTitle>
-          <CardDescription>
-            Daftar barang yang dipesan dalam PO ini. Tambah atau kurangi received qty secara manual atau via scan barcode.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Produk</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead className="text-center">Ordered</TableHead>
-                  <TableHead className="text-center">Received</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {poData.items.map((item) => {
-                  const productCartons = poData.cartons.filter(
-                    (c) => c.productName === item.productName
-                  )
-                  const isBoxed = productCartons.length > 0
-                  return (
-                    <TableRow key={item.productName}>
-                      <TableCell className="font-medium">
-                        {item.productName}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{item.sku}</Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item.orderedQty}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {isBoxed ? (
-                          <div className="flex flex-col items-center gap-1">
-                            <Badge variant="outline" className="text-xs">
-                              <Package className="mr-1 h-3 w-3" />
-                              Masih di Box
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {productCartons[0]?.barcode ?? "-"}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-7 w-7"
-                              disabled={poData.status === "assigned"}
-                              onClick={() =>
-                                handleAdjust(item.productName, -1)
-                              }
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-10 text-center font-sans font-medium">
-                              {item.receivedQty}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-7 w-7"
-                              disabled={poData.status === "assigned"}
-                              onClick={() => handleAdjust(item.productName, 1)}
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {isBoxed ? (
-                          <Badge variant="outline" className="text-xs text-muted-foreground">
-                            Di Box
-                          </Badge>
-                        ) : item.receivedQty === 0 ? (
-                          <Badge variant="outline" className="text-xs text-muted-foreground">
-                            Belum
-                          </Badge>
-                        ) : item.receivedQty < item.orderedQty ? (
-                          <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
-                            Kurang
-                          </Badge>
-                        ) : item.receivedQty === item.orderedQty ? (
-                          <Badge variant="default" className="text-xs bg-green-600 text-white">
-                            Lengkap
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-xs text-red-600 border-red-300">
-                            Lebih
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+          {/* Logistics Information */}
+          {logistic && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Truck className="h-4 w-4 text-indigo-600" />
+                  Informasi Logistik
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Courier</p>
+                    <p className="font-medium">{logistic.courier}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      Tracking Number
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {logistic.trackingNumber}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Status</p>
+                    <Badge
+                      variant="outline"
+                      className={
+                        logisticStatusConfig[logistic.status]?.className || ""
+                      }
+                    >
+                      {logistic.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Destination</p>
+                    <p className="text-sm">{logistic.destination}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-      {allCompleted && poData.status === "receiving" && (
-        <div className="flex justify-end">
-          <Link href={`/inventory/put-away/${poId}`}>
-            <Button size="lg" className="gap-2">
-              Proses Put Away
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
-      )}
-
-      {/* Scan Log */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Scan Log</CardTitle>
-          <CardDescription>
-            Riwayat scan dan perubahan received qty untuk PO ini.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {productsWithLogs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Belum ada scan log.</p>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={scanLogProduct === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setScanLogProduct("all")}
-                >
-                  Semua
-                </Button>
-                {productsWithLogs.map((item) => (
-                  <Button
-                    key={item.productName}
-                    variant={
-                      scanLogProduct === item.productName ? "default" : "outline"
-                    }
-                    size="sm"
-                    onClick={() => setScanLogProduct(item.productName)}
+          {/* Order Items */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Package className="h-4 w-4 text-indigo-600" />
+                Order Items
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {poSource.items.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-1.5 border-b last:border-0"
                   >
-                    {item.productName}
-                  </Button>
+                    <div>
+                      <p className="text-sm font-medium">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.sku}
+                      </p>
+                    </div>
+                    <span className="text-sm font-medium">
+                      ×{item.orderedQty}
+                    </span>
+                  </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </div>
 
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Waktu</TableHead>
-                      {scanLogProduct === "all" && <TableHead>Produk</TableHead>}
-                      <TableHead className="text-center">Qty</TableHead>
-                      <TableHead className="text-center">Total / Ordered</TableHead>
-                      <TableHead>Catatan</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[...filteredScanLogs]
-                      .sort((a, b) => b.timestamp - a.timestamp)
-                      .slice(0, 20)
-                      .map((log) => {
-                        return (
-                          <TableRow key={log.id}>
-                            <TableCell className="text-muted-foreground whitespace-nowrap">
-                              {formatScanTime(log.timestamp)}
-                            </TableCell>
-                            {scanLogProduct === "all" && (
-                              <TableCell>{log.productName}</TableCell>
-                            )}
-                            <TableCell className="text-center font-sans font-medium">
-                              {log.qty > 0 ? `+${log.qty}` : log.qty} pcs
-                            </TableCell>
-                            <TableCell className="text-center text-xs text-muted-foreground">
-                              {log.orderedQty}
-                            </TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {log.note ?? "-"}
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {/* Right Column */}
+        <div className="space-y-6">
+          <WarehouseAssignmentSection poId={poId} poNumber={poSource.poNumber} />
+        </div>
+      </div>
     </div>
   )
 }

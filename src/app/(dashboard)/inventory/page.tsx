@@ -367,7 +367,7 @@ export default function InventoryPage() {
                   <TableCell className="font-sans text-xs">
                     <Link
                       href={`/inventory/${product.id}`}
-                      className="text-primary hover:underline"
+                      className="text-blue-600 hover:underline"
                     >
                       {product.sku}
                     </Link>
@@ -375,7 +375,7 @@ export default function InventoryPage() {
                   <TableCell className="font-medium">
                     <Link
                       href={`/inventory/${product.id}`}
-                      className="text-primary hover:underline"
+                      className="text-blue-600 hover:underline"
                     >
                       {product.name}
                     </Link>

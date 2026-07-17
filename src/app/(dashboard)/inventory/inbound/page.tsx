@@ -18,79 +18,77 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  Truck,
   Package,
-  CheckCircle,
   Clock,
-  Boxes,
+  CheckCircle,
+  Truck,
 } from "lucide-react"
 import {
   useWarehouseStore,
   inboundPOSources,
   type InboundReceipt,
 } from "@/lib/warehouse-store"
-type DisplayStatus = "shipped" | "partially_received" | "completed" | "received"
 
-function getDisplayStatus(receipt?: InboundReceipt): DisplayStatus {
-  if (!receipt) return "shipped"
-  if (receipt.status === "assigned") return "received"
-  if (receipt.items.every((i) => i.receivedQty >= i.orderedQty)) return "completed"
-  return "partially_received"
+type PutawayStatus = "pending" | "partial" | "complete"
+
+function getPutawayStatus(
+  receipt?: InboundReceipt
+): PutawayStatus {
+  if (!receipt) return "pending"
+
+  const receivedItems = receipt.items.filter(
+    (i) => i.receivedQty > 0 || i.storageType === "carton"
+  )
+  if (receivedItems.length === 0) return "pending"
+
+  const allocatedItems = receivedItems.filter((i) => i.rackId)
+
+  if (allocatedItems.length === 0) return "pending"
+  if (allocatedItems.length < receivedItems.length) return "partial"
+  return "complete"
 }
 
-const statusConfig: Record<
-  DisplayStatus,
+const putawayConfig: Record<
+  PutawayStatus,
   { label: string; className: string; icon: typeof Truck }
 > = {
-  shipped: {
-    label: "Shipped",
+  pending: {
+    label: "Pending Putaway",
     className:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-    icon: Truck,
+      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    icon: Clock,
   },
-  partially_received: {
-    label: "Receiving",
+  partial: {
+    label: "Partial Putaway",
     className:
       "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
     icon: Package,
   },
-  completed: {
-    label: "Completed",
+  complete: {
+    label: "Putaway Complete",
     className:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-    icon: CheckCircle,
-  },
-  received: {
-    label: "Received",
-    className:
-      "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
+      "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
     icon: CheckCircle,
   },
 }
 
 export default function InboundPage() {
   const router = useRouter()
-  const { inboundReceipts, startReceipt } = useWarehouseStore()
+  const { inboundReceipts } = useWarehouseStore()
 
-  const totalPending = inboundPOSources.filter((po) => {
+  const inboundData = inboundPOSources.map((po) => {
     const receipt = inboundReceipts.find((r) => r.poId === po.id)
-    const status = getDisplayStatus(receipt)
-    return status === "shipped" || status === "partially_received"
-  }).length
+    const putawayStatus = getPutawayStatus(receipt)
+    return { ...po, receipt, putawayStatus }
+  })
 
-  const shippedToday = inboundPOSources.filter(
-    (po) => po.shipDate === "2026-06-09"
+  const totalInbound = inboundData.length
+  const pendingCount = inboundData.filter(
+    (d) => d.putawayStatus === "pending"
   ).length
-
-  const receivedThisWeek = inboundReceipts.filter(
-    (r) => r.status === "assigned"
+  const completeCount = inboundData.filter(
+    (d) => d.putawayStatus === "complete"
   ).length
-
-  const handleReceive = (poId: string) => {
-    const po = inboundPOSources.find((p) => p.id === poId)
-    if (po) startReceipt(po)
-    router.push(`/inventory/inbound/${poId}`)
-  }
 
   return (
     <div className="space-y-6 p-6">
@@ -109,25 +107,14 @@ export default function InboundPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                <Clock className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Pending</p>
-                <p className="text-2xl font-bold">{totalPending}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
                 <Truck className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Shipped Today</p>
-                <p className="text-2xl font-bold">{shippedToday}</p>
+                <p className="text-sm text-muted-foreground">
+                  Total Inbound
+                </p>
+                <p className="text-2xl font-bold">{totalInbound}</p>
               </div>
             </div>
           </CardContent>
@@ -135,14 +122,29 @@ export default function InboundPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
+                <Clock className="h-5 w-5 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Received This Week
+                  Pending Putaway
                 </p>
-                <p className="text-2xl font-bold">{receivedThisWeek}</p>
+                <p className="text-2xl font-bold">{pendingCount}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                <CheckCircle className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Putaway Complete
+                </p>
+                <p className="text-2xl font-bold">{completeCount}</p>
               </div>
             </div>
           </CardContent>
@@ -170,19 +172,21 @@ export default function InboundPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {inboundPOSources.map((po) => {
-                const receipt = inboundReceipts.find((r) => r.poId === po.id)
-                const status = getDisplayStatus(receipt)
-                const cfg = statusConfig[status]
+              {inboundData.map((po) => {
+                const cfg = putawayConfig[po.putawayStatus]
                 const Icon = cfg.icon
                 return (
                   <TableRow
                     key={po.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleReceive(po.id)}
+                    onClick={() =>
+                      router.push(`/inventory/inbound/${po.id}`)
+                    }
                   >
-                    <TableCell className="font-sans font-medium">
-                      {po.poNumber}
+                    <TableCell>
+                      <span className="text-blue-600 hover:underline font-sans font-medium text-sm">
+                        {po.poNumber}
+                      </span>
                     </TableCell>
                     <TableCell>{po.supplier}</TableCell>
                     <TableCell>
@@ -195,12 +199,6 @@ export default function InboundPage() {
                             </span>
                           </span>
                         ))}
-                        {receipt && receipt.cartons.length > 0 && (
-                          <span className="inline-flex items-center gap-1 text-xs text-blue-600">
-                            <Boxes className="h-3 w-3" />
-                            {receipt.cartons.length} box
-                          </span>
-                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -210,7 +208,10 @@ export default function InboundPage() {
                       {po.expectedArrival}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cfg.className}>
+                      <Badge
+                        variant="outline"
+                        className={cfg.className}
+                      >
                         <Icon className="mr-1 h-3 w-3" />
                         {cfg.label}
                       </Badge>

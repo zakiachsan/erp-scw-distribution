@@ -42,7 +42,7 @@ interface PurchaseOrder {
   poNumber: string
   supplier: string
   date: string
-  status: "Draft" | "Sent" | "Received" | "Paid"
+  status: "Ready to Pay" | "Sent" | "Received" | "Partial" | "Paid"
   totalAmount: number
   itemCount: number
   currency: string
@@ -57,6 +57,16 @@ const purchaseOrders: PurchaseOrder[] = [
     status: "Paid",
     totalAmount: 28500000,
     itemCount: 6,
+    currency: "IDR",
+  },
+  {
+    id: "4",
+    poNumber: "PO-2025-0045",
+    supplier: "DetailPro Supply",
+    date: "2025-12-14",
+    status: "Partial",
+    totalAmount: 7654000,
+    itemCount: 4,
     currency: "IDR",
   },
   {
@@ -80,34 +90,44 @@ const purchaseOrders: PurchaseOrder[] = [
     currency: "USD",
   },
   {
-    id: "4",
-    poNumber: "PO-2025-0045",
-    supplier: "DetailPro Supply",
-    date: "2025-12-14",
-    status: "Draft",
-    totalAmount: 8750000,
-    itemCount: 4,
+    id: "9",
+    poNumber: "PO-2026-0050",
+    supplier: "PT Sinar Abadi",
+    date: "2026-07-16",
+    status: "Ready to Pay",
+    totalAmount: 12500000,
+    itemCount: 3,
+    currency: "IDR",
+  },
+  {
+    id: "10",
+    poNumber: "PO-2026-0051",
+    supplier: "CV Baja Utama",
+    date: "2026-07-17",
+    status: "Ready to Pay",
+    totalAmount: 45000000,
+    itemCount: 8,
     currency: "IDR",
   },
   {
     id: "5",
     poNumber: "PO-2025-0046",
-    supplier: "PT Autocare Indonesia",
+    supplier: "Samsung C&T",
     date: "2025-12-15",
-    status: "Draft",
-    totalAmount: 15200000,
+    status: "Ready to Pay",
+    totalAmount: 850000000,
     itemCount: 5,
-    currency: "IDR",
+    currency: "KRW",
   },
   {
     id: "6",
     poNumber: "PO-2025-0047",
-    supplier: "CleanTech Global",
+    supplier: "Toyota Tsusho",
     date: "2025-12-08",
     status: "Paid",
-    totalAmount: 3200,
+    totalAmount: 480000,
     itemCount: 3,
-    currency: "USD",
+    currency: "JPY",
   },
   {
     id: "7",
@@ -122,20 +142,20 @@ const purchaseOrders: PurchaseOrder[] = [
   {
     id: "8",
     poNumber: "PO-2025-0049",
-    supplier: "NanoTech Coatings",
+    supplier: "DHL Supply Chain",
     date: "2025-12-01",
     status: "Paid",
-    totalAmount: 6800,
+    totalAmount: 5800,
     itemCount: 4,
-    currency: "USD",
+    currency: "EUR",
   },
 ]
 
 const statusConfig = {
-  Draft: {
-    label: "Draft",
-    className: "bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400",
-    icon: FileText,
+  "Ready to Pay": {
+    label: "Ready to Pay",
+    className: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    icon: Clock,
   },
   Sent: {
     label: "Sent",
@@ -147,6 +167,11 @@ const statusConfig = {
     className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
     icon: CheckCircle2,
   },
+  Partial: {
+    label: "Partial",
+    className: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
+    icon: Clock,
+  },
   Paid: {
     label: "Paid",
     className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -154,11 +179,19 @@ const statusConfig = {
   },
 }
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  IDR: "Rp", USD: "$", SGD: "S$", MYR: "RM", JPY: "¥", CNY: "¥", KRW: "₩", EUR: "€",
+}
+
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 function formatCurrency(amount: number, currency: string) {
   if (currency === "USD") {
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
   }
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(amount)
+  const sym = CURRENCY_SYMBOLS[currency] || currency
+  const locale = currency === "IDR" ? "id-ID" : "en-US"
+  return `${sym} ${amount.toLocaleString(locale)}`
 }
 
 export default function PurchasingPage() {
@@ -176,9 +209,9 @@ export default function PurchasingPage() {
   }, [search, statusFilter])
 
   const totalPOs = purchaseOrders.length
-  const draftCount = purchaseOrders.filter((po) => po.status === "Draft").length
+  const readyCount = purchaseOrders.filter((po) => po.status === "Ready to Pay").length
   const pendingCount = purchaseOrders.filter(
-    (po) => po.status === "Sent" || po.status === "Received"
+    (po) => po.status === "Sent" || po.status === "Received" || po.status === "Partial"
   ).length
 
   const totalValue = purchaseOrders.reduce((sum, po) => {
@@ -221,11 +254,11 @@ export default function PurchasingPage() {
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Draft</p>
-                <p className="mt-1 text-lg font-semibold font-sans truncate">{draftCount}</p>
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Ready to Pay</p>
+                <p className="mt-1 text-lg font-semibold font-sans truncate">{readyCount}</p>
               </div>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-50 dark:bg-gray-800/20">
-                <FileText className="h-4 w-4 text-gray-600" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-50 dark:bg-indigo-900/20">
+                <Clock className="h-4 w-4 text-indigo-600" />
               </div>
             </div>
           </CardContent>
@@ -284,9 +317,10 @@ export default function PurchasingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Status</SelectItem>
-                  <SelectItem value="Draft">Draft</SelectItem>
+                  <SelectItem value="Ready to Pay">Ready to Pay</SelectItem>
                   <SelectItem value="Sent">Sent</SelectItem>
                   <SelectItem value="Received">Received</SelectItem>
+                  <SelectItem value="Partial">Partial</SelectItem>
                   <SelectItem value="Paid">Paid</SelectItem>
                 </SelectContent>
               </Select>
@@ -314,7 +348,7 @@ export default function PurchasingPage() {
                     <TableCell className="font-sans font-medium text-sm">
                       <Link
                         href={`/purchasing/${po.id}?status=${po.status}`}
-                        className="text-primary hover:underline"
+                        className="text-blue-600 hover:underline"
                       >
                         {po.poNumber}
                       </Link>

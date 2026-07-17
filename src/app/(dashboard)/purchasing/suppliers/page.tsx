@@ -33,7 +33,6 @@ import {
 import {
   Search,
   Plus,
-  Building2,
   Phone,
   Mail,
   MapPin,
@@ -204,8 +203,6 @@ export default function SuppliersPage() {
     })
   }, [search])
 
-  const totalSuppliers = suppliers.length
-
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -250,22 +247,6 @@ export default function SuppliersPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between">
-              <div className="min-w-0">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total Suppliers</p>
-                <p className="mt-1 text-lg font-semibold font-sans truncate">{totalSuppliers}</p>
-              </div>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-50 dark:bg-indigo-900/20">
-                <Building2 className="h-4 w-4 text-indigo-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -308,14 +289,12 @@ export default function SuppliersPage() {
               {filtered.map((supplier) => (
                 <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50">
                   <TableCell>
-                    <Link href={`/purchasing/suppliers/${supplier.id}`} className="block">
-                      <div>
-                        <p className="font-medium hover:text-indigo-600 transition-colors">{supplier.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {supplier.contactPerson}
-                        </p>
-                      </div>
+                    <Link href={`/purchasing/suppliers/${supplier.id}`} className="text-blue-600 hover:underline font-sans font-medium text-sm">
+                      {supplier.name}
                     </Link>
+                    <p className="text-xs text-muted-foreground">
+                      {supplier.contactPerson}
+                    </p>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-0.5">

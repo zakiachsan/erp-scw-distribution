@@ -180,11 +180,13 @@ const statusConfig = {
   },
 }
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 function formatCurrency(amount: number, currency: string) {
   if (currency === "USD") {
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
   }
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(amount)
+  return formatIDR(amount)
 }
 
 export default function SupplierDetailPage() {

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -39,22 +40,45 @@ import {
   Send,
 } from "lucide-react"
 
+const CURRENCIES = ["IDR", "USD", "SGD", "MYR", "JPY", "CNY", "KRW", "EUR"] as const
+type Currency = (typeof CURRENCIES)[number]
+
+const CURRENCY_LABELS: Record<Currency, string> = {
+  IDR: "IDR (Rupiah)", USD: "USD (Dollar)", SGD: "SGD (Dollar Singapore)",
+  MYR: "MYR (Ringgit)", JPY: "JPY (Yen)", CNY: "CNY (Yuan)", KRW: "KRW (Won)", EUR: "EUR (Euro)",
+}
+
+const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  IDR: "Rp", USD: "$", SGD: "S$", MYR: "RM", JPY: "¥", CNY: "¥", KRW: "₩", EUR: "€",
+}
+
+function formatCurrency(amount: number, currency: Currency): string {
+  const sym = CURRENCY_SYMBOLS[currency]
+  const locale = currency === "IDR" ? "id-ID" : "en-US"
+  return `${sym} ${amount.toLocaleString(locale)}`
+}
+
 interface POItem {
   productId: string
   productName: string
   sku: string
   qty: number
   unitPrice: number
-  currency: "IDR" | "USD"
+  currency: Currency
   total: number
 }
 
 const suppliers = [
   { id: "1", name: "PT Autocare Indonesia", currency: "IDR" },
-  { id: "2", name: "ChemPro Asia", currency: "IDR" },
+  { id: "2", name: "ChemPro Asia", currency: "MYR" },
   { id: "3", name: "NanoTech Coatings", currency: "USD" },
   { id: "4", name: "DetailPro Supply", currency: "IDR" },
   { id: "5", name: "CleanTech Global", currency: "USD" },
+  { id: "6", name: "Samsung C&T", currency: "KRW" },
+  { id: "7", name: "Toyota Tsusho", currency: "JPY" },
+  { id: "8", name: "Alibaba Logistic", currency: "CNY" },
+  { id: "9", name: "DHL Supply Chain", currency: "EUR" },
+  { id: "10", name: "YCH Group", currency: "SGD" },
 ]
 
 const products = [
@@ -70,13 +94,23 @@ const products = [
   { id: "10", name: "SCW Leather Conditioner", sku: "SCW-LC-010", cogs: 65000 },
 ]
 
-export default function CreatePOPage() {
-  const [selectedSupplier, setSelectedSupplier] = useState("")
+function CreatePOPageContent() {
+  const searchParams = useSearchParams()
+  const vendorParam = searchParams.get("vendor") || ""
+  const prParam = searchParams.get("pr") || ""
+
+  const [selectedSupplier, setSelectedSupplier] = useState(() => {
+    if (vendorParam) {
+      const match = suppliers.find((s) => s.name.toLowerCase() === vendorParam.toLowerCase())
+      return match ? match.id : ""
+    }
+    return ""
+  })
   const [items, setItems] = useState<POItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState("")
   const [itemQty, setItemQty] = useState("")
   const [itemPrice, setItemPrice] = useState("")
-  const [itemCurrency, setItemCurrency] = useState<"IDR" | "USD">("IDR")
+  const [itemCurrency, setItemCurrency] = useState<Currency>("IDR")
   const [notes, setNotes] = useState("")
 
   const selectedSupplierData = suppliers.find((s) => s.id === selectedSupplier)
@@ -150,7 +184,7 @@ export default function CreatePOPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Create Purchase Order</h1>
             <p className="text-muted-foreground">
-              Create a new purchase order for supplier
+              {prParam ? `From Purchase Requisition ${prParam}` : "Create a new purchase order for supplier"}
             </p>
           </div>
         </div>
@@ -194,23 +228,22 @@ export default function CreatePOPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                {selectedSupplierData && (
-                  <div className="space-y-2">
-                    <Label>Currency</Label>
-                    <Select
-                      value={itemCurrency}
-                      onValueChange={(v) => setItemCurrency((v as "IDR" | "USD") ?? "IDR")}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="IDR">IDR (Rupiah)</SelectItem>
-                        <SelectItem value="USD">USD (Dollar)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <Label>Currency</Label>
+                  <Select
+                    value={itemCurrency}
+                    onValueChange={(v) => setItemCurrency((v as Currency) ?? "IDR")}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c} value={c}>{CURRENCY_LABELS[c]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -291,14 +324,10 @@ export default function CreatePOPage() {
                         <TableCell className="font-sans text-xs">{item.sku}</TableCell>
                         <TableCell className="text-right">{item.qty}</TableCell>
                         <TableCell className="text-right font-sans">
-                          {item.currency === "USD"
-                            ? `$${item.unitPrice.toLocaleString()}`
-                            : `Rp ${item.unitPrice.toLocaleString()}`}
+                          {formatCurrency(item.unitPrice, item.currency)}
                         </TableCell>
-                        <TableCell className="text-right font-sans">
-                          {item.currency === "USD"
-                            ? `$${item.total.toLocaleString()}`
-                            : `Rp ${item.total.toLocaleString()}`}
+                        <TableCell className="text-right font-sans font-bold">
+                          {formatCurrency(item.total, item.currency)}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -346,11 +375,11 @@ export default function CreatePOPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-sans">Rp {subtotal.toLocaleString()}</span>
+                <span className="font-sans">{formatCurrency(subtotal, itemCurrency)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Tax (PPN 10%)</span>
-                <span className="font-sans">Rp {tax.toLocaleString()}</span>
+                <span className="font-sans">{formatCurrency(tax, itemCurrency)}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex-1">
@@ -363,13 +392,13 @@ export default function CreatePOPage() {
                     className="mt-1 h-8 text-sm"
                   />
                 </div>
-                <span className="font-sans text-sm pt-5">Rp {shippingValue.toLocaleString()}</span>
+                <span className="font-sans text-sm pt-5">{formatCurrency(shippingValue, itemCurrency)}</span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Grand Total</span>
                   <span className="text-lg font-semibold font-sans">
-                    Rp {grandTotal.toLocaleString()}
+                    {formatCurrency(grandTotal, itemCurrency)}
                   </span>
                 </div>
               </div>
@@ -418,5 +447,13 @@ export default function CreatePOPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CreatePOPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <CreatePOPageContent />
+    </Suspense>
   )
 }
