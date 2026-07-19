@@ -48,7 +48,7 @@ interface Product {
   name: string
   category: string
   stockQty: number
-  location: string
+  jenis: "Barang Jadi" | "Barang Setengah Jadi" | "Bahan Baku"
   status: "in-stock" | "low-stock" | "out-of-stock"
   unit: string
   barcode?: string
@@ -56,27 +56,27 @@ interface Product {
 }
 
 const products: Product[] = [
-  { id: "1", sku: "SCW-SF-001", name: "SCW Snow Foam", category: "Exterior", stockQty: 245, location: "Rak A-01", status: "in-stock", unit: "pcs", weight: "0.5 kg" },
-  { id: "2", sku: "SCW-CC-002", name: "SCW Ceramic Coating", category: "Coating", stockQty: 12, location: "Rak A-02", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
-  { id: "3", sku: "SCW-ID-003", name: "SCW Interior Detailer", category: "Interior", stockQty: 180, location: "Rak B-01", status: "in-stock", unit: "pcs", weight: "0.4 kg" },
-  { id: "4", sku: "SCW-TG-004", name: "SCW Tire Gel", category: "Exterior", stockQty: 95, location: "Rak B-02", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "5", sku: "SCW-CB-005", name: "SCW Clay Bar", category: "Prep", stockQty: 0, location: "Rak C-01", status: "out-of-stock", unit: "pcs", weight: "0.1 kg" },
-  { id: "6", sku: "SCW-MW-006", name: "SCW Microfiber Wash", category: "Wash", stockQty: 312, location: "Rak A-03", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "7", sku: "SCW-PC-007", name: "SCW Polish Compound", category: "Correction", stockQty: 8, location: "Rak C-02", status: "low-stock", unit: "pcs", weight: "0.8 kg" },
-  { id: "8", sku: "SCW-SW-008", name: "SCW Spray Wax", category: "Protection", stockQty: 156, location: "Rak B-03", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "9", sku: "SCW-GC-009", name: "SCW Glass Cleaner", category: "Interior", stockQty: 200, location: "Rak D-01", status: "in-stock", unit: "pcs", weight: "0.4 kg" },
-  { id: "10", sku: "SCW-LC-010", name: "SCW Leather Conditioner", category: "Interior", stockQty: 45, location: "Rak D-02", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "11", sku: "SCW-AW-011", name: "SCW All Purpose Cleaner", category: "Wash", stockQty: 5, location: "Rak A-04", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
-  { id: "12", sku: "SCW-TR-012", name: "SCW Trim Restorer", category: "Exterior", stockQty: 67, location: "Rak E-01", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "13", sku: "SCW-BR-013", name: "SCW Brake Dust Remover", category: "Wheel", stockQty: 0, location: "Rak E-02", status: "out-of-stock", unit: "pcs", weight: "0.6 kg" },
-  { id: "14", sku: "SCW-FP-014", name: "SCW Foam Pad", category: "Tools", stockQty: 88, location: "Rak F-01", status: "in-stock", unit: "pcs", weight: "0.05 kg" },
-  { id: "15", sku: "SCW-MF-015", name: "SCW Microfiber Towel", category: "Tools", stockQty: 520, location: "Rak F-02", status: "in-stock", unit: "pcs", weight: "0.05 kg" },
-  { id: "16", sku: "SCW-DC-016", name: "SCW Dashboard Coating", category: "Interior", stockQty: 33, location: "Rak D-03", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
-  { id: "17", sku: "SCW-IL-017", name: "SCW Iron Decontamination", category: "Decon", stockQty: 14, location: "Rak C-03", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
-  { id: "18", sku: "SCW-SP-018", name: "SCW Shampoo Plus", category: "Wash", stockQty: 275, location: "Rak A-05", status: "in-stock", unit: "pcs", weight: "0.5 kg" },
+  { id: "1", sku: "SCW-SF-001", name: "SCW Snow Foam", category: "Liquid", stockQty: 245, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.5 kg" },
+  { id: "2", sku: "SCW-CC-002", name: "SCW Ceramic Coating", category: "Coatings", stockQty: 12, jenis: "Barang Jadi", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
+  { id: "3", sku: "SCW-ID-003", name: "SCW Interior Detailer", category: "Liquid", stockQty: 180, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.4 kg" },
+  { id: "4", sku: "SCW-TG-004", name: "SCW Tire Gel", category: "Liquid", stockQty: 95, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "5", sku: "SCW-CB-005", name: "SCW Clay Bar", category: "Accesories", stockQty: 0, jenis: "Barang Jadi", status: "out-of-stock", unit: "pcs", weight: "0.1 kg" },
+  { id: "6", sku: "SCW-MW-006", name: "SCW Microfiber Wash", category: "Liquid", stockQty: 312, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "7", sku: "SCW-PC-007", name: "SCW Polish Compound", category: "Liquid", stockQty: 8, jenis: "Barang Jadi", status: "low-stock", unit: "pcs", weight: "0.8 kg" },
+  { id: "8", sku: "SCW-SW-008", name: "SCW Spray Wax", category: "Wax", stockQty: 156, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "9", sku: "SCW-GC-009", name: "SCW Glass Cleaner", category: "Liquid", stockQty: 200, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.4 kg" },
+  { id: "10", sku: "SCW-LC-010", name: "SCW Leather Conditioner", category: "Liquid", stockQty: 45, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "11", sku: "SCW-AW-011", name: "SCW All Purpose Cleaner", category: "Liquid", stockQty: 5, jenis: "Barang Setengah Jadi", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
+  { id: "12", sku: "SCW-TR-012", name: "SCW Trim Restorer", category: "Liquid", stockQty: 67, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "13", sku: "SCW-BR-013", name: "SCW Brake Dust Remover", category: "Liquid", stockQty: 0, jenis: "Barang Jadi", status: "out-of-stock", unit: "pcs", weight: "0.6 kg" },
+  { id: "14", sku: "SCW-FP-014", name: "SCW Foam Pad", category: "Accesories", stockQty: 88, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.05 kg" },
+  { id: "15", sku: "SCW-MF-015", name: "SCW Microfiber Towel", category: "Accesories", stockQty: 520, jenis: "Barang Jadi", status: "in-stock", unit: "pcs", weight: "0.05 kg" },
+  { id: "16", sku: "SCW-DC-016", name: "SCW Dashboard Coating", category: "Coatings", stockQty: 33, jenis: "Barang Setengah Jadi", status: "in-stock", unit: "pcs", weight: "0.3 kg" },
+  { id: "17", sku: "SCW-IL-017", name: "SCW Iron Decontamination", category: "Liquid", stockQty: 14, jenis: "Barang Jadi", status: "low-stock", unit: "pcs", weight: "0.5 kg" },
+  { id: "18", sku: "SCW-SP-018", name: "SCW Shampoo Plus", category: "Liquid", stockQty: 275, jenis: "Barang Setengah Jadi", status: "in-stock", unit: "pcs", weight: "0.5 kg" },
 ]
 
-const categories = ["Exterior", "Interior", "Wash", "Coating", "Prep", "Correction", "Protection", "Wheel", "Tools", "Decon"]
+const categories = ["Liquid", "Coatings", "Accesories", "PPF", "SPPF", "Machine", "Wax", "Training"]
 const categoryFilterOptions = ["All", ...categories]
 
 const statusConfig = {
@@ -94,7 +94,7 @@ export default function InventoryPage() {
   const [prodSku, setProdSku] = useState("")
   const [prodCategory, setProdCategory] = useState("")
   const [prodStock, setProdStock] = useState("")
-  const [prodLocation, setProdLocation] = useState("")
+  const [prodJenis, setProdJenis] = useState<"Barang Jadi" | "Barang Setengah Jadi" | "Bahan Baku" | "">("")
   const [prodWeight, setProdWeight] = useState("")
   const [prodBarcode, setProdBarcode] = useState("")
   const [productList, setProductList] = useState(products)
@@ -119,7 +119,7 @@ export default function InventoryPage() {
       name: prodName,
       category: prodCategory || "General",
       stockQty: parseInt(prodStock) || 0,
-      location: prodLocation || "Gudang Utama",
+      jenis: (prodJenis || "Barang Jadi") as "Barang Jadi",
       status: parseInt(prodStock) > 10 ? "in-stock" : parseInt(prodStock) > 0 ? "low-stock" : "out-of-stock",
       unit: "pcs",
       weight: prodWeight || "0 kg",
@@ -130,7 +130,7 @@ export default function InventoryPage() {
     setProdSku("")
     setProdCategory("")
     setProdStock("")
-    setProdLocation("")
+    setProdJenis("")
     setProdWeight("")
     setProdBarcode("")
     setAddOpen(false)
@@ -223,8 +223,17 @@ export default function InventoryPage() {
                 <Input type="number" placeholder="Stock Qty" value={prodStock} onChange={(e) => setProdStock(e.target.value)} />
               </div>
               <div className="space-y-1">
-                <Label>Location</Label>
-                <Input placeholder="Location (e.g. Rak A-01)" value={prodLocation} onChange={(e) => setProdLocation(e.target.value)} />
+                <Label>Jenis Produk *</Label>
+                <Select value={prodJenis} onValueChange={(v) => setProdJenis(v as any)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih jenis produk" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Barang Jadi">Barang Jadi</SelectItem>
+                    <SelectItem value="Barang Setengah Jadi">Barang Setengah Jadi</SelectItem>
+                    <SelectItem value="Bahan Baku">Bahan Baku</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1">
                 <Label>Barcode</Label>
@@ -357,31 +366,35 @@ export default function InventoryPage() {
                 <TableHead>SKU</TableHead>
                 <TableHead>Product Name</TableHead>
                 <TableHead>Category</TableHead>
+                <TableHead>Jenis</TableHead>
                 <TableHead className="text-right">Stock Qty</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow
+                  key={product.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => window.location.href = `/inventory/${product.id}`}
+                >
                   <TableCell className="font-sans text-xs">
                     <Link
                       href={`/inventory/${product.id}`}
                       className="text-blue-600 hover:underline"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {product.sku}
                     </Link>
                   </TableCell>
                   <TableCell className="font-medium">
-                    <Link
-                      href={`/inventory/${product.id}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {product.name}
-                    </Link>
+                    {product.name}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{product.category}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{product.jenis}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     {product.stockQty} {product.unit}

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Plus, RefreshCw, Download, Upload, Printer, Settings, Search, Filter } from "lucide-react"
 import { dummyFixedAssets, type FixedAsset } from "@/lib/accounting-dummy-data"
 
@@ -28,9 +29,13 @@ export default function AsetTetapPage() {
   const [formData, setFormData] = useState({
     nama: "", kodeOtomatis: true, tanggalBeli: "07/07/2026", tanggalPakai: "07/07/2026",
     asetTidakBerwujud: false, metodePenyusutan: "Metode Garis Lurus",
-    akunAset: "", akunAkumulasi: "", akunBeban: "",
-    kuantitas: 1, umurTahun: "", umurBulan: "", rasio: 0, nilaiSisa: 0,
+    akunAset: "1501 - Peralatan Kantor", akunAkumulasi: "1502 - Akum. Penyusutan Peralatan", akunBeban: "6101 - Beban Penyusutan",
+    kuantitas: 1, umurTahun: "5", umurBulan: "0", rasio: 20, nilaiSisa: 0,
   })
+
+  // Auto-calculate rasio from umur
+  const totalBulan = (parseInt(formData.umurTahun) || 0) * 12 + (parseInt(formData.umurBulan) || 0)
+  const rasioOtomatis = totalBulan > 0 ? Math.round((1 / totalBulan) * 12 * 100) : 0
 
   const filtered = dummyFixedAssets.filter(i => !search || i.nama.toLowerCase().includes(search.toLowerCase()))
   const handleSave = () => { setShowForm(false) }
@@ -42,26 +47,17 @@ export default function AsetTetapPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Aset Tetap</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola data aset tetap</p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
             <option value="semua">Kategori Aset: Semua</option>
-          </select>
-          <button style={btnIcon}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={btnIcon}><Plus size={16} /></button>
-          <button style={btnIconOutline}><RefreshCw size={14} /></button>
-          <div style={{ flex: 1 }} />
-          <button style={btnIconOutline}><Download size={14} /></button>
-          <button style={btnIconOutline}><Upload size={14} /></button>
-          <button style={btnIconOutline}><Printer size={14} /></button>
-          <button style={btnIconOutline}><Settings size={14} /></button>
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </select>
+            <div style={{ flex: 1 }} />
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+              <input type="text" placeholder="Cari aset tetap..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
-        </div>
       </div>
 
       {showForm && (
@@ -95,10 +91,10 @@ export default function AsetTetapPage() {
                 <input type="text" value={formData.tanggalBeli} onChange={(e) => setFormData({...formData, tanggalBeli: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Rasio *</label>
+                <label style={labelStyle}>Rasio Penyusutan *</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <input type="number" value={formData.rasio} onChange={(e) => setFormData({...formData, rasio: Number(e.target.value)})} style={{ ...inputStyle, maxWidth: 80 }} />
-                  <span style={{ fontSize: 11, color: "#999" }}>%</span>
+                  <input type="number" value={rasioOtomatis} disabled style={{ ...inputStyle, maxWidth: 80, background: "#f5f5f5", color: "#666" }} />
+                  <span style={{ fontSize: 11, color: "#999" }}>% / tahun</span>
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -135,24 +131,34 @@ export default function AsetTetapPage() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <label style={{ ...labelStyle, minWidth: 160 }}>Akun Aset *</label>
-                    <div style={{ position: "relative", flex: 1 }}>
-                      <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                      <input type="text" value={formData.akunAset} onChange={(e) => setFormData({...formData, akunAset: e.target.value})} placeholder="Cari/Pilih Akun Perkiraan..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                    </div>
+                    <select value={formData.akunAset} onChange={(e) => setFormData({...formData, akunAset: e.target.value})} style={{ ...selectStyle, flex: 1 }}>
+                      <option value="">Pilih Akun Aset...</option>
+                      <option value="1501 - Peralatan Kantor">1501 - Peralatan Kantor</option>
+                      <option value="1502 - Kendaraan">1502 - Kendaraan</option>
+                      <option value="1503 - Inventaris">1503 - Inventaris</option>
+                      <option value="1504 - Gedung">1504 - Gedung</option>
+                      <option value="1505 - Tanah">1505 - Tanah</option>
+                    </select>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <label style={{ ...labelStyle, minWidth: 160 }}>Akun Akumulasi Penyusutan *</label>
-                    <div style={{ position: "relative", flex: 1 }}>
-                      <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                      <input type="text" value={formData.akunAkumulasi} onChange={(e) => setFormData({...formData, akunAkumulasi: e.target.value})} placeholder="Cari/Pilih Akun Perkiraan..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                    </div>
+                    <select value={formData.akunAkumulasi} onChange={(e) => setFormData({...formData, akunAkumulasi: e.target.value})} style={{ ...selectStyle, flex: 1 }}>
+                      <option value="">Pilih Akun Akumulasi...</option>
+                      <option value="1601 - Akum. Penyusutan Peralatan">1601 - Akum. Penyusutan Peralatan</option>
+                      <option value="1602 - Akum. Penyusutan Kendaraan">1602 - Akum. Penyusutan Kendaraan</option>
+                      <option value="1603 - Akum. Penyusutan Inventaris">1603 - Akum. Penyusutan Inventaris</option>
+                      <option value="1604 - Akum. Penyusutan Gedung">1604 - Akum. Penyusutan Gedung</option>
+                    </select>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <label style={{ ...labelStyle, minWidth: 160 }}>Akun Beban Penyusutan *</label>
-                    <div style={{ position: "relative", flex: 1 }}>
-                      <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                      <input type="text" value={formData.akunBeban} onChange={(e) => setFormData({...formData, akunBeban: e.target.value})} placeholder="Cari/Pilih Akun Perkiraan..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                    </div>
+                    <select value={formData.akunBeban} onChange={(e) => setFormData({...formData, akunBeban: e.target.value})} style={{ ...selectStyle, flex: 1 }}>
+                      <option value="">Pilih Akun Beban...</option>
+                      <option value="6101 - Beban Penyusutan Peralatan">6101 - Beban Penyusutan Peralatan</option>
+                      <option value="6102 - Beban Penyusutan Kendaraan">6102 - Beban Penyusutan Kendaraan</option>
+                      <option value="6103 - Beban Penyusutan Inventaris">6103 - Beban Penyusutan Inventaris</option>
+                      <option value="6104 - Beban Penyusutan Gedung">6104 - Beban Penyusutan Gedung</option>
+                    </select>
                   </div>
                 </div>
                 <div />
@@ -199,7 +205,7 @@ export default function AsetTetapPage() {
                 onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.background = "transparent"}
               >
                 <td style={{ ...tdStyle, color: "#444746" }}>{idx + 1}</td>
-                <td style={tdMono}>{item.nomor}</td>
+                <td style={{ ...tdMono, color: "#0176d3", cursor: "pointer" }}><Link href={`/accounting/aset-tetap/aset-tetap/${item.id}`} style={{ color: "#0176d3", textDecoration: "none" }}>{item.nomor}</Link></td>
                 <td style={{ ...tdStyle, fontWeight: 500 }}>{item.nama}</td>
                 <td style={{ ...tdStyle, color: "#444746" }}>{item.kategori}</td>
                 <td style={tdStyle}>{item.tanggalBeli}</td>

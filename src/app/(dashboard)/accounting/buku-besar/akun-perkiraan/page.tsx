@@ -65,13 +65,32 @@ export default function AkunPerkiraanPage() {
   const [formData, setFormData] = useState({
     tipeAkun: "Kas & Bank",
     subAkun: false,
-    kodePerkiraan: "",
+    kodePerkiraan: "1101",
     nama: "",
     saldoAwal: 0,
     perTanggal: "01/07/2026",
     catatan: "",
     semuaPengguna: true,
   })
+
+  // Auto-generate kode perkiraan based on tipe akun
+  const kodePrefix: Record<string, string> = {
+    "Kas & Bank": "1101",
+    "Piutang": "1200",
+    "Persediaan": "1300",
+    "Aset Lancar Lainnya": "1400",
+    "Aset Tetap": "1500",
+    "Kewajiban": "2100",
+    "Modal": "3100",
+    "Pendapatan": "4100",
+    "Beban": "5100",
+    "Beban Lain-lain": "5900",
+  }
+
+  const handleTipeAkunChange = (newTipe: string) => {
+    const prefix = kodePrefix[newTipe] || "1100"
+    setFormData({ ...formData, tipeAkun: newTipe, kodePerkiraan: prefix })
+  }
 
   const filtered = dummyAccounts.filter((item) => {
     if (filterNonAktif === "aktif" && item.nonAktif) return false
@@ -138,7 +157,7 @@ export default function AkunPerkiraanPage() {
           <button style={btnIconWhite}><SettingsIcon /></button>
           <div style={{ position: "relative" }}>
             <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", display: "flex" }}><SearchIcon /></span>
-            <input type="text" placeholder="Ketik dan [Enter" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && setSearch(search)} style={{ ...inputStyle, paddingLeft: 30, width: 180, height: 32 }} />
+            <input type="text" placeholder="Cari..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ ...inputStyle, paddingLeft: 30, width: 180, height: 32 }} />
           </div>
           <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
         </div>
@@ -176,7 +195,7 @@ export default function AkunPerkiraanPage() {
                       <label style={labelStyle}>Tipe Akun</label>
                       <select
                         value={formData.tipeAkun}
-                        onChange={(e) => setFormData({ ...formData, tipeAkun: e.target.value })}
+                        onChange={(e) => handleTipeAkunChange(e.target.value)}
                         style={{ ...selectStyle, flex: 1 }}
                       >
                         <option>Kas & Bank</option>

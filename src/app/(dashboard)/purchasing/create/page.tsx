@@ -37,7 +37,6 @@ import {
   Calculator,
   ShoppingCart,
   Save,
-  Send,
 } from "lucide-react"
 
 const CURRENCIES = ["IDR", "USD", "SGD", "MYR", "JPY", "CNY", "KRW", "EUR"] as const
@@ -189,13 +188,9 @@ function CreatePOPageContent() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
-            <Save className="mr-2 h-4 w-4" />
-            Save Draft
-          </Button>
           <Button disabled={items.length === 0}>
-            <Send className="mr-2 h-4 w-4" />
-            Submit PO
+            <Save className="mr-2 h-4 w-4" />
+            Simpan
           </Button>
         </div>
       </div>

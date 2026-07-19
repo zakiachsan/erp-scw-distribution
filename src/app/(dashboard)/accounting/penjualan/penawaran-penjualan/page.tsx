@@ -44,36 +44,28 @@ export default function PenawaranPenjualanPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Penawaran Penjualan</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Buat dan kelola penawaran harga ke pelanggan</p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-          <select value={filterTanggal} onChange={(e) => setFilterTanggal(e.target.value)} style={selectStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <select value={filterTanggal} onChange={(e) => setFilterTanggal(e.target.value)} style={selectStyle}>
             <option value="semua">Tanggal: Semua</option>
-          </select>
-          <select value={filterDipesan} onChange={(e) => setFilterDipesan(e.target.value)} style={selectStyle}>
+            </select>
+            <select value={filterDipesan} onChange={(e) => setFilterDipesan(e.target.value)} style={selectStyle}>
             <option value="semua">Dipesan oleh: Semua</option>
-          </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={selectStyle}>
+            </select>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={selectStyle}>
             <option value="semua">Status: Semua</option>
             <option value="Draft">Draft</option>
             <option value="Approved">Approved</option>
-          </select>
-          <select value={filterCetak} onChange={(e) => setFilterCetak(e.target.value)} style={selectStyle}>
+            </select>
+            <select value={filterCetak} onChange={(e) => setFilterCetak(e.target.value)} style={selectStyle}>
             <option value="semua">Sudah dicetak: Semua</option>
-          </select>
-          <button style={btnIcon}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={btnIcon}><Plus size={16} /></button>
-          <button style={btnIconOutline}><RefreshCw size={14} /></button>
-          <div style={{ flex: 1 }} />
-          <button style={btnIconOutline}><Download size={14} /></button>
-          <button style={btnIconOutline}><Printer size={14} /></button>
-          <button style={btnIconOutline}><Settings size={14} /></button>
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </select>
+            <div style={{ flex: 1 }} />
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+              <input type="text" placeholder="Cari penawaran penjualan..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
-        </div>
       </div>
 
       {showForm && (

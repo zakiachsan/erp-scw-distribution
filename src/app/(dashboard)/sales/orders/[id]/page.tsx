@@ -18,23 +18,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ArrowLeft, FileText, Plus, DollarSign, CheckCircle2 } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+  ArrowLeft,
+  FileText,
+  DollarSign,
+  CheckCircle2,
+  Clock,
+  Package,
+  Truck,
+  Printer,
+  Download,
+} from "lucide-react"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
 interface OrderItem {
   productName: string
   sku: string
+  category: string
   qty: number
   unitPrice: number
   discount: number
@@ -42,461 +43,350 @@ interface OrderItem {
 
 interface SalesOrderDetail {
   id: string
+  quotationRef: string
   customer: string
+  customerType: "Reseller" | "Dealer" | "Workshop"
+  customerAddress: string
+  customerPhone: string
   date: string
-  status: "Draft" | "Confirmed" | "Processing" | "Shipped" | "Completed"
-  tier: "Bronze" | "Silver" | "Gold" | "Platinum"
+  status: "Draft" | "Confirmed" | "Processing" | "Approved" | "Packing" | "Shipped" | "Completed"
+  paymentStatus: "Unpaid" | "Partial" | "Paid"
+  paymentVerifiedBy: string | null
+  paymentVerifiedDate: string | null
+  packingSlipNo: string | null
   notes: string
   items: OrderItem[]
-  pipelineId: string | null
 }
 
-const tierDiscounts: Record<string, number> = {
-  Bronze: 0.02,
-  Silver: 0.05,
-  Gold: 0.08,
-  Platinum: 0.12,
+const statusConfig: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+  Draft:     { label: "Draft", className: "bg-gray-100 text-gray-800", icon: <Clock className="h-3 w-3" /> },
+  Confirmed: { label: "Confirmed", className: "bg-blue-100 text-blue-800", icon: <CheckCircle2 className="h-3 w-3" /> },
+  Processing:{ label: "Processing", className: "bg-amber-100 text-amber-800", icon: <Clock className="h-3 w-3" /> },
+  Approved:  { label: "Approved", className: "bg-emerald-100 text-emerald-800", icon: <CheckCircle2 className="h-3 w-3" /> },
+  Packing:   { label: "Packing", className: "bg-violet-100 text-violet-800", icon: <Package className="h-3 w-3" /> },
+  Shipped:   { label: "Shipped", className: "bg-cyan-100 text-cyan-800", icon: <Truck className="h-3 w-3" /> },
+  Completed: { label: "Completed", className: "bg-emerald-100 text-emerald-800", icon: <CheckCircle2 className="h-3 w-3" /> },
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  Draft: { label: "Draft", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
-  Confirmed: { label: "Confirmed", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  Processing: { label: "Processing", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  Shipped: { label: "Shipped", className: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400" },
-  Completed: { label: "Completed", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
+const paymentConfig: Record<string, { className: string; label: string }> = {
+  Unpaid:  { className: "bg-red-100 text-red-800", label: "Unpaid" },
+  Partial: { className: "bg-amber-100 text-amber-800", label: "Partial" },
+  Paid:    { className: "bg-emerald-100 text-emerald-800", label: "Paid" },
 }
 
-const pipelineDeals: Record<string, string> = {
-  "PL-001": "PT Autogloss Indonesia",
-  "PL-002": "CV Ceramic Pro JKT",
-  "PL-004": "PT DetailWorks BDG",
-}
-
-const orders: SalesOrderDetail[] = [
-  {
-    id: "SO-2026-045",
-    customer: "PT Autogloss Indonesia",
-    date: "2026-06-01",
-    status: "Confirmed",
-    tier: "Gold",
-    notes: "Kirim ke gudang utama",
-    items: [
-      { productName: "SCW Snow Foam", sku: "SCW-SF-001", qty: 10, unitPrice: 150000, discount: 0 },
-      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 5, unitPrice: 250000, discount: 0 },
-    ],
-    pipelineId: "PL-001",
-  },
-  {
-    id: "SO-2026-044",
-    customer: "CV Ceramic Pro JKT",
-    date: "2026-05-30",
-    status: "Processing",
-    tier: "Silver",
-    notes: "",
-    items: [
-      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 10, unitPrice: 250000, discount: 0 },
-    ],
-    pipelineId: "PL-002",
-  },
-  {
-    id: "SO-2026-043",
-    customer: "UD Shinemax",
-    date: "2026-05-28",
-    status: "Shipped",
-    tier: "Bronze",
-    notes: "Pengiriman via JNE",
-    items: [
-      { productName: "SCW Snow Foam", sku: "SCW-SF-001", qty: 5, unitPrice: 150000, discount: 0 },
-      { productName: "SCW Interior Detailer", sku: "SCW-ID-003", qty: 8, unitPrice: 120000, discount: 0 },
-      { productName: "SCW Tire Gel", sku: "SCW-TG-004", qty: 10, unitPrice: 95000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-042",
-    customer: "PT DetailWorks BDG",
-    date: "2026-05-25",
-    status: "Completed",
-    tier: "Platinum",
-    notes: "",
-    items: [
-      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 15, unitPrice: 250000, discount: 0 },
-    ],
-    pipelineId: "PL-004",
-  },
-  {
-    id: "SO-2026-041",
-    customer: "PT Autogloss Indonesia",
-    date: "2026-05-20",
-    status: "Completed",
-    tier: "Gold",
-    notes: "Repeat order",
-    items: [
-      { productName: "SCW Snow Foam", sku: "SCW-SF-001", qty: 20, unitPrice: 150000, discount: 0 },
-      { productName: "SCW Spray Wax", sku: "SCW-SW-005", qty: 10, unitPrice: 110000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-040",
-    customer: "CV ProShine SBY",
-    date: "2026-05-18",
-    status: "Shipped",
-    tier: "Silver",
-    notes: "",
-    items: [
-      { productName: "SCW Glass Cleaner", sku: "SCW-GC-006", qty: 15, unitPrice: 85000, discount: 0 },
-      { productName: "SCW Polish Compound", sku: "SCW-PC-007", qty: 8, unitPrice: 180000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-039",
-    customer: "AutoCare Makassar",
-    date: "2026-05-15",
-    status: "Draft",
-    tier: "Bronze",
-    notes: "Menunggu konfirmasi",
-    items: [
-      { productName: "SCW Shampoo Plus", sku: "SCW-SP-008", qty: 20, unitPrice: 90000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-038",
-    customer: "GlossUp Bali",
-    date: "2026-05-12",
-    status: "Completed",
-    tier: "Silver",
-    notes: "",
-    items: [
-      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 8, unitPrice: 250000, discount: 0 },
-      { productName: "SCW Tire Gel", sku: "SCW-TG-004", qty: 12, unitPrice: 95000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-037",
-    customer: "DetailPro Semarang",
-    date: "2026-05-10",
-    status: "Completed",
-    tier: "Bronze",
-    notes: "",
-    items: [
-      { productName: "SCW Snow Foam", sku: "SCW-SF-001", qty: 10, unitPrice: 150000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
-  {
-    id: "SO-2026-036",
-    customer: "CV Ceramic Pro JKT",
-    date: "2026-05-08",
-    status: "Completed",
-    tier: "Silver",
-    notes: "",
-    items: [
-      { productName: "SCW Interior Detailer", sku: "SCW-ID-003", qty: 10, unitPrice: 120000, discount: 0 },
-      { productName: "SCW All Purpose Cleaner", sku: "SCW-APC-009", qty: 8, unitPrice: 105000, discount: 0 },
-    ],
-    pipelineId: null,
-  },
+const flowSteps = [
+  { key: "Draft",      label: "Draft", desc: "SO dibuat" },
+  { key: "Confirmed",  label: "Confirmed", desc: "SO dikonfirmasi" },
+  { key: "Processing", label: "Payment Verified", desc: "Finance & Accounting verifikasi bayar" },
+  { key: "Approved",   label: "Finance Approved", desc: "Pembayaran diterima" },
+  { key: "Packing",    label: "Warehouse Packing", desc: "Gudang siapkan barang + Packing Slip" },
+  { key: "Shipped",    label: "Shipped", desc: "Barang dikirim" },
+  { key: "Completed",  label: "Completed", desc: "Selesai" },
 ]
 
-export default function SalesOrderDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+const orders: Record<string, SalesOrderDetail> = {
+  "SO-2026-045": {
+    id: "SO-2026-045", quotationRef: "QUO-2026-012", customer: "PT Autogloss Indonesia",
+    customerType: "Dealer", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", customerPhone: "021-87654321",
+    date: "2026-06-15", status: "Confirmed", paymentStatus: "Unpaid", paymentVerifiedBy: null, paymentVerifiedDate: null, packingSlipNo: null,
+    notes: "Kirim ke gudang utama",
+    items: [
+      { productName: "SCW Snow Foam", sku: "SCW-SF-001", category: "Exterior Care", qty: 20, unitPrice: 150000, discount: 20 },
+      { productName: "SCW Interior Detailer", sku: "SCW-ID-003", category: "Interior Care", qty: 50, unitPrice: 120000, discount: 18 },
+    ],
+  },
+  "SO-2026-044": {
+    id: "SO-2026-044", quotationRef: "QUO-2026-011", customer: "CV Ceramic Pro JKT",
+    customerType: "Workshop", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", customerPhone: "021-54321098",
+    date: "2026-06-12", status: "Processing", paymentStatus: "Partial", paymentVerifiedBy: null, paymentVerifiedDate: null, packingSlipNo: null,
+    notes: "DP 50% sudah dibayar, sisa tunggu pelunasan",
+    items: [
+      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", category: "Coating & Protection", qty: 10, unitPrice: 250000, discount: 15 },
+    ],
+  },
+  "SO-2026-043": {
+    id: "SO-2026-043", quotationRef: "QUO-2026-010", customer: "UD Shinemax",
+    customerType: "Reseller", customerAddress: "Jl. Raya Bandung No. 456, Bandung", customerPhone: "022-76543210",
+    date: "2026-06-10", status: "Packing", paymentStatus: "Paid", paymentVerifiedBy: "Rina Finance", paymentVerifiedDate: "2026-06-13", packingSlipNo: "PS-2026-0089",
+    notes: "Pengiriman via Cargo",
+    items: [
+      { productName: "SCW Snow Foam", sku: "SCW-SF-001", category: "Exterior Care", qty: 5, unitPrice: 150000, discount: 15 },
+      { productName: "SCW Interior Detailer", sku: "SCW-ID-003", category: "Interior Care", qty: 8, unitPrice: 120000, discount: 12 },
+      { productName: "SCW Tire Gel", sku: "SCW-TG-004", category: "Wheel & Tire", qty: 10, unitPrice: 95000, discount: 12 },
+    ],
+  },
+  "SO-2026-042": {
+    id: "SO-2026-042", quotationRef: "QUO-2026-009", customer: "PT DetailWorks BDG",
+    customerType: "Workshop", customerAddress: "Jl. Soekarno-Hatta No. 789, Bandung", customerPhone: "022-65432109",
+    date: "2026-06-08", status: "Approved", paymentStatus: "Paid", paymentVerifiedBy: "Rina Finance", paymentVerifiedDate: "2026-06-11", packingSlipNo: null,
+    notes: "",
+    items: [
+      { productName: "SCW Ceramic Coating", sku: "SCW-CC-002", category: "Coating & Protection", qty: 15, unitPrice: 250000, discount: 8 },
+    ],
+  },
+}
+
+export default function SalesOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params)
-  const [order] = useState<SalesOrderDetail | undefined>(() => orders.find((o) => o.id === id))
-
-  if (!order) {
-    return (
-      <div className="space-y-6 p-6">
-        <Link href="/sales/orders">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Orders
-          </Button>
-        </Link>
-        <Card>
-          <CardContent className="p-6 text-center text-sm text-muted-foreground">
-            Order not found.
-          </CardContent>
-        </Card>
-      </div>
-    )
+  const data = orders[id] || {
+    id, quotationRef: "QUO-2026-012", customer: "PT Autogloss Indonesia",
+    customerType: "Dealer" as const, customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", customerPhone: "021-87654321",
+    date: "2026-06-15", status: "Confirmed" as const, paymentStatus: "Unpaid" as const, paymentVerifiedBy: null, paymentVerifiedDate: null, packingSlipNo: null,
+    notes: "",
+    items: [
+      { productName: "SCW Snow Foam", sku: "SCW-SF-001", category: "Exterior Care", qty: 20, unitPrice: 150000, discount: 20 },
+      { productName: "SCW Interior Detailer", sku: "SCW-ID-003", category: "Interior Care", qty: 50, unitPrice: 120000, discount: 18 },
+    ],
   }
 
-  const subtotal = order.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
-  const discountRate = tierDiscounts[order.tier]
-  const tierDiscount = Math.round(subtotal * discountRate)
-  const total = subtotal - tierDiscount
+  const [status, setStatus] = useState(data.status)
 
-  // Order status (changeable)
-  const [orderStatus, setOrderStatus] = useState(order.status)
+  const subtotal = data.items.reduce((sum, item) => {
+    const lineTotal = item.unitPrice * item.qty
+    const discountAmount = lineTotal * (item.discount / 100)
+    return sum + (lineTotal - discountAmount)
+  }, 0)
 
-  // Invoice state
-  const [invoices, setInvoices] = useState<{ id: string; date: string; amount: number; status: string }[]>(() => {
-    // Seed some invoices for certain POs
-    if (order.id === "SO-2026-042") return [{ id: "INV-2026-035", date: "2026-05-25", amount: 7200000, status: "Paid" }]
-    if (order.id === "SO-2026-041") return [{ id: "INV-2026-034", date: "2026-05-20", amount: 8500000, status: "Paid" }]
-    if (order.id === "SO-2026-038") return [{ id: "INV-2026-032", date: "2026-05-12", amount: 6200000, status: "Paid" }]
-    if (order.id === "SO-2026-037") return [{ id: "INV-2026-031", date: "2026-05-10", amount: 2800000, status: "Paid" }]
-    return []
-  })
-  const [showCreateInv, setShowCreateInv] = useState(false)
-  const [invDate, setInvDate] = useState(new Date().toISOString().split("T")[0])
-  const [invTerms, setInvTerms] = useState("")
-  const [invCreated, setInvCreated] = useState(false)
+  const taxAmount = subtotal * 0.11
+  const total = subtotal + taxAmount
 
-  const hasInvoice = invoices.length > 0
-  const canCreateInvoice = !hasInvoice && orderStatus !== "Draft"
-
-  const handleCreateInvoice = () => {
-    const newInv = {
-      id: `INV-2026-${String(39 + invoices.length).padStart(3, "0")}`,
-      date: invDate,
-      amount: total,
-      status: "Draft",
-    }
-    setInvoices([...invoices, newInv])
-    setShowCreateInv(false)
-    setInvCreated(true)
-    setTimeout(() => setInvCreated(false), 3000)
-  }
+  const currentStepIndex = flowSteps.findIndex((s) => s.key === status)
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4 p-6 max-w-5xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/sales/orders">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+          <Link href="/sales/orders" className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100">
+            <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-gray-900">{order.id}</h1>
-              <select
-                value={orderStatus}
-                onChange={(e) => setOrderStatus(e.target.value as typeof orderStatus)}
-                className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[10px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[orderStatus].className}`}
-              >
-                <option value="Draft">Draft</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Completed">Completed</option>
-              </select>
+              <h1 className="text-lg font-bold text-gray-900">{data.id}</h1>
+              <Badge className={`${statusConfig[status].className} flex items-center gap-1`}>
+                {statusConfig[status].icon}
+                {statusConfig[status].label}
+              </Badge>
+              <Badge className={`${paymentConfig[data.paymentStatus].className}`}>
+                {paymentConfig[data.paymentStatus].label}
+              </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">{order.customer} · {order.date}</p>
+            <p className="text-xs text-gray-500">
+              dari <Link href={`/sales/quotations/${data.quotationRef}`} className="text-blue-600 hover:underline">{data.quotationRef}</Link>
+            </p>
           </div>
         </div>
-        {order.pipelineId && (
-          <Link href={`/sales/pipeline/${order.pipelineId}`} className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors">
-            Deal: {order.pipelineId} →
-          </Link>
-        )}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.print()}>
+            <Printer className="mr-1.5 h-3.5 w-3.5" />
+            Print
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => alert("PDF berhasil didownload!")}>
+            <Download className="mr-1.5 h-3.5 w-3.5" />
+            Download PDF
+          </Button>
+        </div>
       </div>
 
-      {/* Items Table */}
+      {/* Flow Steps */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Order Items</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Unit Price</TableHead>
-                <TableHead className="text-right">Subtotal</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {order.items.map((item) => (
-                <TableRow key={item.sku}>
-                  <TableCell className="text-sm">{item.productName}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{item.sku}</TableCell>
-                  <TableCell className="text-right text-sm">{item.qty}</TableCell>
-                  <TableCell className="text-right text-sm">{formatIDR(item.unitPrice)}</TableCell>
-                  <TableCell className="text-right text-sm">{formatIDR(item.qty * item.unitPrice)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-1">
+            {flowSteps.map((step, idx) => {
+              const isCompleted = idx < currentStepIndex
+              const isCurrent = idx === currentStepIndex
+              return (
+                <React.Fragment key={step.key}>
+                  <div className={`flex flex-col items-center gap-1 flex-1 ${isCompleted ? "text-emerald-600" : isCurrent ? "text-blue-600" : "text-gray-400"}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isCompleted ? "bg-emerald-100 text-emerald-600" : isCurrent ? "bg-blue-100 text-blue-600 ring-2 ring-blue-300" : "bg-gray-100 text-gray-400"}`}>
+                      {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : idx + 1}
+                    </div>
+                    <span className="text-[10px] font-medium text-center leading-tight">{step.label}</span>
+                    <span className="text-[9px] text-muted-foreground text-center leading-tight hidden md:block">{step.desc}</span>
+                  </div>
+                  {idx < flowSteps.length - 1 && (
+                    <div className={`h-0.5 flex-1 max-w-8 ${idx < currentStepIndex ? "bg-emerald-300" : "bg-gray-200"}`} />
+                  )}
+                </React.Fragment>
+              )
+            })}
+          </div>
         </CardContent>
       </Card>
 
-      {/* Notes + Summary Side by Side */}
+      {/* Info Cards */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Notes */}
+        {/* Customer */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <FileText className="h-4 w-4" />
-              Notes
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">Detail Customer</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1.5 text-sm">
+            <div className="font-medium">{data.customer}</div>
+            <div className="text-muted-foreground text-xs">{data.customerAddress}</div>
+            <div className="text-xs">Telp: {data.customerPhone}</div>
+            <div className="pt-1"><Badge variant="outline">{data.customerType}</Badge></div>
+          </CardContent>
+        </Card>
+
+        {/* Order Info */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">Info Sales Order</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tanggal</span>
+              <span>{data.date}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Quotation Ref</span>
+              <Link href={`/sales/quotations/${data.quotationRef}`} className="text-blue-600 hover:underline font-medium text-sm">
+                {data.quotationRef}
+              </Link>
+            </div>
+            {data.notes && (
+              <div className="mt-2 rounded-lg bg-slate-50 p-3 text-xs">
+                <span className="text-muted-foreground">Catatan: </span>{data.notes}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Payment & Warehouse Info */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Payment Status */}
+        <Card className={data.paymentStatus === "Paid" ? "border-emerald-200" : data.paymentStatus === "Partial" ? "border-amber-200" : "border-red-200"}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Status Pembayaran
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            {order.notes ? (
-              <p className="text-sm text-muted-foreground">{order.notes}</p>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No notes</p>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Payment Status</span>
+              <Badge className={paymentConfig[data.paymentStatus].className}>{paymentConfig[data.paymentStatus].label}</Badge>
+            </div>
+            {data.paymentVerifiedBy && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Diverifikasi oleh</span>
+                  <span className="font-medium">{data.paymentVerifiedBy}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Tanggal Verifikasi</span>
+                  <span>{data.paymentVerifiedDate}</span>
+                </div>
+              </>
+            )}
+            {data.paymentStatus !== "Paid" && (
+              <div className="mt-2 rounded-lg bg-amber-50 p-2 text-[10px] text-amber-700">
+                ⚠️ Pembayaran harus lunasi & diverifikasi Finance sebelum masuk ke Warehouse.
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Order Summary</CardTitle>
+        {/* Warehouse / Packing */}
+        <Card className={data.packingSlipNo ? "border-violet-200" : "border-gray-200"}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Warehouse & Packing
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 text-sm">
+            {data.packingSlipNo ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Packing Slip #</span>
+                  <span className="font-medium text-violet-600">{data.packingSlipNo}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Status</span>
+                  <Badge className="bg-violet-100 text-violet-800">Siap Kirim</Badge>
+                </div>
+                <Button size="sm" variant="outline" className="mt-2 w-full" onClick={() => alert("Print Packing Slip")}>
+                  <Printer className="mr-1.5 h-3.5 w-3.5" />
+                  Print Packing Slip
+                </Button>
+              </>
+            ) : (
+              <div className="text-muted-foreground text-xs py-4 text-center">
+                {status === "Approved" || status === "Packing" || status === "Shipped" || status === "Completed"
+                  ? "Menunggu gudang menerbitkan Packing Slip"
+                  : "Packing Slip akan terbit setelah pembayaran diverifikasi Finance & Accounting"}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Items Table */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold">Rincian Produk</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">#</TableHead>
+                  <TableHead>Produk</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead className="text-center">Qty</TableHead>
+                  <TableHead className="text-right">Harga</TableHead>
+                  <TableHead className="text-center">Disc</TableHead>
+                  <TableHead className="text-right">Subtotal</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((item, idx) => {
+                  const lineTotal = item.unitPrice * item.qty
+                  const discountAmount = lineTotal * (item.discount / 100)
+                  const lineSubtotal = lineTotal - discountAmount
+                  return (
+                    <TableRow key={idx}>
+                      <TableCell className="text-xs text-muted-foreground">{idx + 1}</TableCell>
+                      <TableCell className="text-sm">{item.productName}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{item.sku}</TableCell>
+                      <TableCell><Badge variant="outline" className="text-[10px]">{item.category}</Badge></TableCell>
+                      <TableCell className="text-sm text-center">{item.qty}</TableCell>
+                      <TableCell className="text-sm text-right">{formatIDR(item.unitPrice)}</TableCell>
+                      <TableCell className="text-sm text-center">{item.discount > 0 ? `${item.discount}%` : "-"}</TableCell>
+                      <TableCell className="text-sm text-right font-medium">{formatIDR(lineSubtotal)}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Summary */}
+      <div className="flex justify-end">
+        <Card className="w-80">
+          <CardContent className="p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
               <span>{formatIDR(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
-                Tier Discount ({order.tier} — {(discountRate * 100).toFixed(0)}%)
-              </span>
-              <span className="text-emerald-600">-{formatIDR(tierDiscount)}</span>
+              <span className="text-muted-foreground">PPN (11%)</span>
+              <span>{formatIDR(taxAmount)}</span>
             </div>
-            <div className="border-t pt-2">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Total</span>
-                <span className="font-medium">{formatIDR(total)}</span>
-              </div>
+            <div className="border-t pt-2 flex justify-between font-semibold text-base">
+              <span>Total</span>
+              <span className="text-blue-600">{formatIDR(total)}</span>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Invoice Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-indigo-500" />
-              <CardTitle className="text-sm">Invoice</CardTitle>
-              {hasInvoice && (
-                <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700">
-                  {invoices.length} invoice
-                </Badge>
-              )}
-            </div>
-            {canCreateInvoice && (
-              <Button size="sm" onClick={() => setShowCreateInv(true)}>
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                Buat Invoice
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {invCreated && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
-              <CheckCircle2 className="h-4 w-4" />
-              Invoice berhasil dibuat!
-            </div>
-          )}
-          {invoices.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-slate-50 text-left text-xs font-medium text-slate-500">
-                  <th className="px-3 py-2">No. Invoice</th>
-                  <th className="px-3 py-2">Tanggal</th>
-                  <th className="px-3 py-2 text-right">Jumlah</th>
-                  <th className="px-3 py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-b last:border-0">
-                    <td className="px-3 py-2 text-xs">{inv.id}</td>
-                    <td className="px-3 py-2 text-xs text-muted-foreground">{inv.date}</td>
-                    <td className="px-3 py-2 text-xs text-right font-medium">{formatIDR(inv.amount)}</td>
-                    <td className="px-3 py-2">
-                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${
-                        inv.status === "Paid" ? "bg-emerald-50 text-emerald-700" :
-                        inv.status === "Sent" ? "bg-blue-50 text-blue-700" :
-                        inv.status === "Overdue" ? "bg-red-50 text-red-700" :
-                        "bg-gray-100 text-gray-700"
-                      }`}>
-                        {inv.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="py-6 text-center">
-              <DollarSign className="mx-auto mb-2 h-8 w-8 text-muted-foreground/30" />
-              <p className="text-xs text-muted-foreground">
-                {orderStatus === "Draft"
-                  ? "Konfirmasi PO terlebih dahulu untuk membuat invoice"
-                  : "Belum ada invoice. Klik \"Buat Invoice\" untuk membuat invoice dari PO ini."
-                }
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Create Invoice Dialog */}
-      <Dialog open={showCreateInv} onOpenChange={setShowCreateInv}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Buat Invoice</DialogTitle>
-            <DialogDescription>
-              Buat invoice untuk PO {order.id} — {order.customer}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="rounded-lg border bg-slate-50 p-3 space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">PO Number</span>
-                <span className="font-medium">{order.id}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Customer</span>
-                <span>{order.customer}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Items</span>
-                <span>{order.items.length} produk</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold border-t pt-2">
-                <span>Total</span>
-                <span>{formatIDR(total)}</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">Tanggal Invoice</Label>
-                <Input type="date" value={invDate} onChange={(e) => setInvDate(e.target.value)} className="h-8 text-sm" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Payment Terms</Label>
-                <Input placeholder="e.g. Net 30" value={invTerms} onChange={(e) => setInvTerms(e.target.value)} className="h-8 text-sm" />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setShowCreateInv(false)}>Batal</Button>
-            <Button size="sm" onClick={handleCreateInvoice}>
-              <DollarSign className="h-3.5 w-3.5 mr-1" />
-              Buat Invoice
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

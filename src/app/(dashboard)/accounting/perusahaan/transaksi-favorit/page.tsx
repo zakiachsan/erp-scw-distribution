@@ -67,7 +67,7 @@ export default function TransaksiFavoritPage() {
           <div style={{ flex: 1 }} />
           <div style={{ position: "relative" }}>
             <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#444746" }} />
-            <input placeholder="Ketik dan [Enter" value={search} onChange={(e) => setSearch(e.target.value)}
+            <input placeholder="Cari transaksi favorit..." value={search} onChange={(e) => setSearch(e.target.value)}
               style={{ ...inputStyle, paddingLeft: 30, paddingRight: 10, width: 180 }} />
           </div>
           <span style={{ fontSize: 12, color: "#444746", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>

@@ -1,7 +1,7 @@
 "use client"
-
 import { useState, useMemo } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -59,6 +59,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 }
 
 export default function PackingPage() {
+  const router = useRouter()
   const [channelFilter, setChannelFilter] = useState("All")
 
   const filtered = useMemo(() => {
@@ -75,9 +76,9 @@ export default function PackingPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Packing Queue</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Packing Slips</h1>
           <p className="text-muted-foreground">
-            Manage packing operations for outgoing orders
+            Kelola packing slip dari Sales Order yang sudah diverifikasi pembayarannya
           </p>
         </div>
       </div>
@@ -144,8 +145,8 @@ export default function PackingPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Packing Queue</CardTitle>
-              <CardDescription>{filtered.length} order{filtered.length !== 1 ? "s" : ""} in queue</CardDescription>
+              <CardTitle>Packing Slips</CardTitle>
+                <CardDescription>{filtered.length} order{filtered.length !== 1 ? "s" : ""} menunggu diproses</CardDescription>
             </div>
             <Select value={channelFilter} onValueChange={(v) => setChannelFilter(v ?? "All")}>
               <SelectTrigger className="w-44">
@@ -176,8 +177,8 @@ export default function PackingPage() {
             <TableBody>
               {filtered.map((order) => {
                 return (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-sans text-xs font-medium">{order.id}</TableCell>
+                  <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/packing/${order.id}`)}>
+                    <TableCell className="font-sans text-xs font-medium text-blue-600 hover:underline">{order.id}</TableCell>
                     <TableCell className="font-sans text-xs">{order.soRef}</TableCell>
                     <TableCell className="font-medium">{order.customer}</TableCell>
                     <TableCell className="text-muted-foreground text-xs max-w-48 truncate">{order.items}</TableCell>
@@ -189,11 +190,11 @@ export default function PackingPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       {order.status === "Queued" ? (
-                        <Link href={`/packing/${order.id}`} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                        <Link href={`/packing/${order.id}`} onClick={(e) => e.stopPropagation()} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
                           Start Packing
                         </Link>
                       ) : (
-                        <Link href={`/packing/${order.id}`} className="text-muted-foreground hover:text-foreground text-sm">
+                        <Link href={`/packing/${order.id}`} onClick={(e) => e.stopPropagation()} className="text-muted-foreground hover:text-foreground text-sm">
                           View
                         </Link>
                       )}

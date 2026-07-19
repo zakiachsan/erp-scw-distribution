@@ -61,10 +61,10 @@ export default function LogAktifitasJurnalPage() {
             <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", display: "flex" }}><SearchIcon /></span>
             <input
               type="text"
-              placeholder="Ketik dan [Enter"
+              placeholder="Cari..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && setSearch(search)}
+             
               style={{ ...inputStyle, paddingLeft: 30, width: 180 }}
             />
           </div>

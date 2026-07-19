@@ -36,7 +36,6 @@ import {
   Printer,
   CheckCircle2,
   Clock,
-  Send,
   Package,
   CreditCard,
   Circle,
@@ -326,10 +325,6 @@ function PurchaseOrderDetailContent() {
           <Button variant="outline">
             <Printer className="mr-2 h-4 w-4" />
             Print
-          </Button>
-          <Button variant="outline">
-            <Send className="mr-2 h-4 w-4" />
-            Send
           </Button>
         </div>
       </div>

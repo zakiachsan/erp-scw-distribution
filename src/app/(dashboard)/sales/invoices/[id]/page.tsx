@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   Printer,
   Download,
-  Send,
   CheckCircle2,
   Clock,
 } from "lucide-react"
@@ -65,20 +64,14 @@ export default function InvoiceDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => window.print()}>
             <Printer className="mr-2 h-4 w-4" />
             Print
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => alert("PDF berhasil didownload!")}>
             <Download className="mr-2 h-4 w-4" />
-            PDF
+            Download PDF
           </Button>
-          {invoiceData.status !== "Paid" && (
-            <Button onClick={() => alert("Invoice berhasil dikirim!")}>
-              <Send className="mr-2 h-4 w-4" />
-              Send Invoice
-            </Button>
-          )}
         </div>
       </div>
 

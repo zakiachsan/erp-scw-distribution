@@ -36,7 +36,12 @@ export const MODULES: ModuleInfo[] = [
         href: "/sales/customers",
       },
       {
-        label: "Purchase Orders",
+        label: "Quotation",
+        icon: "FileText",
+        href: "/sales/quotations",
+      },
+      {
+        label: "Sales Orders",
         icon: "FileText",
         href: "/sales/orders",
       },
@@ -79,10 +84,10 @@ export const MODULES: ModuleInfo[] = [
         label: "Inventory",
         icon: "Package",
         children: [
-          { label: "Products", href: "/inventory" },
           { label: "Put Away", href: "/inventory/put-away" },
           { label: "Damaged Items", href: "/inventory/damaged" },
           { label: "Reports", href: "/inventory/reports" },
+          { label: "Products", href: "/inventory" },
           { label: "Warehouse / Rak", href: "/inventory/warehouse" },
           { label: "Outbond", href: "/inventory/outbond" },
           { label: "Stock Opname", href: "/inventory/stock-opname" },
@@ -94,7 +99,7 @@ export const MODULES: ModuleInfo[] = [
         label: "Packing",
         icon: "Box",
         children: [
-          { label: "Packing Queue", href: "/packing" },
+          { label: "Packing Slips", href: "/packing" },
           { label: "Video Gallery", href: "/packing/videos" },
           { label: "Materials Stock", href: "/packing/materials" },
         ],
@@ -103,9 +108,15 @@ export const MODULES: ModuleInfo[] = [
         label: "Shipping",
         icon: "Truck",
         children: [
-          { label: "Shipments", href: "/shipping" },
+          { label: "Delivery Orders", href: "/shipping" },
+          { label: "Proof of Delivery", href: "/shipping/pod" },
           { label: "Couriers", href: "/shipping/couriers" },
         ],
+      },
+      {
+        label: "Customer Returns",
+        icon: "RotateCcw",
+        href: "/customer-returns",
       },
     ],
   },
@@ -138,8 +149,8 @@ export const MODULES: ModuleInfo[] = [
           { label: "Transfer Bank", href: "/accounting/kas-bank/transfer-bank" },
           { label: "Smartlink E-Banking", href: "/accounting/kas-bank/smartlink-ebanking" },
           { label: "Rekening Koran", href: "/accounting/kas-bank/rekening-koran" },
-          { label: "Histori Bank", href: "/accounting/kas-bank/histori-bank" },
           { label: "Rekonsiliasi Bank", href: "/accounting/kas-bank/rekonsiliasi-bank" },
+          { label: "Histori Bank", href: "/accounting/kas-bank/histori-bank" },
         ],
       },
       {
@@ -220,6 +231,18 @@ export const MODULES: ModuleInfo[] = [
           { label: "Log Aktifitas", href: "/accounting/perusahaan/log-aktifitas" },
         ],
       },
+      {
+        label: "Laporan Keuangan",
+        icon: "BarChart3",
+        children: [
+          { label: "Laba Rugi", href: "/accounting/laporan/laba-rugi" },
+          { label: "Neraca", href: "/accounting/laporan/neraca" },
+          { label: "Arus Kas", href: "/accounting/laporan/arus-kas" },
+          { label: "Laporan Penjualan", href: "/accounting/laporan/penjualan" },
+          { label: "Laporan Pembelian", href: "/accounting/laporan/pembelian" },
+          { label: "Laporan Hutang Piutang", href: "/accounting/laporan/hutang-piutang" },
+        ],
+      },
     ],
   },
   {
@@ -232,8 +255,9 @@ export const MODULES: ModuleInfo[] = [
       { label: "Dashboard", icon: "LayoutDashboard", href: "/ecommerce" },
       { label: "Products", icon: "ShoppingBag", href: "/ecommerce/products" },
       { label: "Orders", icon: "ClipboardList", href: "/ecommerce/orders" },
-      { label: "Customers", icon: "Users", href: "/ecommerce/customers" },
-      { label: "Categories", icon: "Tag", href: "/ecommerce/categories" },
+      { label: "Customers", icon: "UserCheck", href: "/sales/customers" },
+      { label: "Quotation", icon: "FileText", href: "/sales/quotations" },
+      { label: "Purchase Orders", icon: "FileText", href: "/sales/orders" },
       { label: "Banners", icon: "Image", href: "/ecommerce/banners" },
       { label: "Coupons", icon: "Ticket", href: "/ecommerce/coupons" },
       { label: "Reviews", icon: "Star", href: "/ecommerce/reviews" },
@@ -288,7 +312,8 @@ export function getModuleIdByPathname(pathname: string): ModuleId | null {
     pathname.startsWith("/inventory") ||
     pathname.startsWith("/purchasing") ||
     pathname.startsWith("/shipping") ||
-    pathname.startsWith("/packing")
+    pathname.startsWith("/packing") ||
+    pathname.startsWith("/customer-returns")
   ) {
     return "operasional"
   }

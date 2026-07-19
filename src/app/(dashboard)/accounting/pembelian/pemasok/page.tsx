@@ -55,31 +55,22 @@ export default function PemasokPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Pemasok</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola data pemasok</p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <select value={filterNonAktif} onChange={(e) => setFilterNonAktif(e.target.value)} style={selectStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <select value={filterNonAktif} onChange={(e) => setFilterNonAktif(e.target.value)} style={selectStyle}>
             <option value="semua">Non Aktif: Semua</option>
-          </select>
-          <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
+            </select>
+            <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
             <option value="semua">Kategori: Semua</option>
             <option value="General">General</option>
             <option value="VIP">VIP</option>
-          </select>
-          <button style={btnIcon}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => { setShowForm(!showForm); setFormTab("umum") }} style={btnIcon}><Plus size={16} /></button>
-          <button style={btnIconOutline}><RefreshCw size={14} /></button>
-          <div style={{ flex: 1 }} />
-          <button style={btnIconOutline}><Download size={14} /></button>
-          <button style={btnIconOutline}><Upload size={14} /></button>
-          <button style={btnIconOutline}><Printer size={14} /></button>
-          <button style={btnIconOutline}><Settings size={14} /></button>
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </select>
+            <div style={{ flex: 1 }} />
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+              <input type="text" placeholder="Cari pemasok..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
-        </div>
       </div>
 
       {showForm && (

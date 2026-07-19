@@ -57,24 +57,19 @@ export default function PesananPembelianPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Pesanan Pembelian</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola pesanan pembelian ke pemasok</p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <select style={selectStyle}><option>Tanggal: Semua</option></select>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={selectStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <select style={selectStyle}><option>Tanggal: Semua</option></select>
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={selectStyle}>
             <option value="semua">Status: Semua</option>
             <option>Draft</option><option>Approved</option><option>Received</option><option>Billed</option>
-          </select>
-          <button style={btnIcon}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={btnIcon}><Plus size={16} /></button>
-          <button style={btnIconOutline}><RefreshCw size={14} /></button>
-          <div style={{ flex: 1 }} />
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input type="text" placeholder="Ketik dan [Enter]" value={search} onChange={e => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </select>
+            <div style={{ flex: 1 }} />
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+              <input type="text" placeholder="Cari pesanan pembelian..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
-        </div>
       </div>
 
       {showForm && (

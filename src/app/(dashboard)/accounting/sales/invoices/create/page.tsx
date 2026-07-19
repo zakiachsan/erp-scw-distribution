@@ -297,7 +297,7 @@ export default function CreateInvoicePage() {
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#706e6b] z-10" />
                     <Input
-                      placeholder="Ketik nama atau kode pelanggan..."
+                      placeholder="Cari..."
                       value={selectedCustomer ? selectedCustomerData?.name || "" : customerSearch}
                       onChange={(e) => {
                         setCustomerSearch(e.target.value)

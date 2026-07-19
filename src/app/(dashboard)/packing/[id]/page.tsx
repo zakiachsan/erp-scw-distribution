@@ -33,6 +33,8 @@ import {
   Package,
   Ruler,
   Weight,
+  Truck,
+  Printer,
 } from "lucide-react"
 
 interface PackingVideo {
@@ -49,21 +51,33 @@ interface LineItem {
   qty: number
 }
 
+interface MaterialUsed {
+  name: string
+  qty: number
+  unit: string
+}
+
 interface PackingDetail {
   id: string
   soRef: string
   customer: string
+  customerAddress: string
+  courier: string
+  totalPrice: number
   items: LineItem[]
+  materials: MaterialUsed[]
   status: "Queued" | "In Progress" | "Completed"
 }
 
+const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
+
 const PACKING_DATA: Record<string, PackingDetail> = {
-  "PK-001": { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", items: [{ name: "SCW Snow Foam", qty: 20 }, { name: "SCW Ceramic Coating", qty: 10 }], status: "Queued" },
-  "PK-002": { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", items: [{ name: "SCW Interior Detailer", qty: 15 }, { name: "SCW Tire Gel", qty: 25 }], status: "In Progress" },
-  "PK-003": { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", items: [{ name: "SCW Spray Wax", qty: 30 }, { name: "SCW Glass Cleaner", qty: 20 }], status: "Completed" },
-  "PK-004": { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", items: [{ name: "SCW Polish Compound", qty: 10 }], status: "Queued" },
-  "PK-005": { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", items: [{ name: "SCW Snow Foam", qty: 25 }], status: "Queued" },
-  "PK-006": { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", items: [{ name: "SCW Ceramic Coating", qty: 8 }, { name: "SCW Spray Wax", qty: 12 }], status: "In Progress" },
+  "PK-001": { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", courier: "JNE", totalPrice: 8500000, items: [{ name: "SCW Snow Foam", qty: 20 }, { name: "SCW Ceramic Coating", qty: 10 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 5, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
+  "PK-002": { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", courier: "J&T Express", totalPrice: 6200000, items: [{ name: "SCW Interior Detailer", qty: 15 }, { name: "SCW Tire Gel", qty: 25 }], materials: [{ name: "Box Medium", qty: 3, unit: "pcs" }, { name: "Bubble Wrap", qty: 8, unit: "meter" }, { name: "Selotip", qty: 4, unit: "roll" }, { name: "Filler Paper", qty: 10, unit: "lembar" }], status: "In Progress" },
+  "PK-003": { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", customerAddress: "Jl. Raya Bandung No. 456, Bandung", courier: "Cargo", totalPrice: 4500000, items: [{ name: "SCW Spray Wax", qty: 30 }, { name: "SCW Glass Cleaner", qty: 20 }], materials: [{ name: "Box Large", qty: 4, unit: "pcs" }, { name: "Bubble Wrap", qty: 12, unit: "meter" }, { name: "Selotip", qty: 6, unit: "roll" }, { name: "Palet Kayu", qty: 1, unit: "pcs" }], status: "Completed" },
+  "PK-004": { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", customerAddress: "Jl. Rungkut Mapan Utara No. 10, Surabaya", courier: "TIKI", totalPrice: 5800000, items: [{ name: "SCW Polish Compound", qty: 10 }], materials: [{ name: "Box Small", qty: 1, unit: "pcs" }, { name: "Bubble Wrap", qty: 3, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "Queued" },
+  "PK-005": { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", customerAddress: "Jl. A.P. Pettarani No. 22, Makassar", courier: "JNE", totalPrice: 3200000, items: [{ name: "SCW Snow Foam", qty: 25 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 6, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
+  "PK-006": { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", customerAddress: "Jl. Sunset Road No. 88, Seminyak, Bali", courier: "Kurir Instant", totalPrice: 6200000, items: [{ name: "SCW Ceramic Coating", qty: 8 }, { name: "SCW Spray Wax", qty: 12 }], materials: [{ name: "Box Medium", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 4, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "In Progress" },
 }
 
 let videoIdCounter = 100
@@ -227,6 +241,37 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                 <span className="text-muted-foreground">Total Qty</span>
                 <span className="font-bold">{totalQty} pcs</span>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Materials Used */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Materials Used
+              </CardTitle>
+              <CardDescription>{detail.materials.length} jenis material digunakan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Material</TableHead>
+                    <TableHead className="text-center">Qty</TableHead>
+                    <TableHead className="text-right">Satuan</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {detail.materials.map((mat, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell className="font-medium">{mat.name}</TableCell>
+                      <TableCell className="text-center">{mat.qty}</TableCell>
+                      <TableCell className="text-right text-muted-foreground">{mat.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
 
@@ -399,6 +444,66 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
 
         {/* Right */}
         <div className="space-y-6">
+          {/* Delivery Tag */}
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                <Truck className="h-4 w-4" />
+                Delivery Tag
+              </CardTitle>
+              <CardDescription className="text-[10px]">Tempelan nama, alamat, kurir & nilai asuransi</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="rounded-lg border bg-white p-4 space-y-3">
+                {/* Pengirim */}
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Pengirim</div>
+                <div className="text-sm font-bold">SCW Distribution</div>
+                <div className="text-xs text-muted-foreground">Jl. Industri Raya No. 123, Jakarta Utara 14310</div>
+
+                <div className="border-t border-dashed" />
+
+                {/* Penerima */}
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Penerima</div>
+                <div className="text-sm font-bold">{detail.customer}</div>
+                <div className="text-xs text-muted-foreground leading-relaxed">{detail.customerAddress}</div>
+
+                <div className="border-t border-dashed" />
+
+                {/* Kurir & Asuransi */}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Kurir</div>
+                    <div className="text-sm font-bold text-blue-600">{detail.courier}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Nilai Asuransi</div>
+                    <div className="text-sm font-bold text-amber-600">{formatIDR(detail.totalPrice)}</div>
+                  </div>
+                </div>
+
+                <div className="border-t border-dashed" />
+
+                {/* Packing ID */}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-[10px] text-muted-foreground">Packing Slip</div>
+                    <div className="text-xs font-mono font-bold">{detail.id}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-muted-foreground">SO Reference</div>
+                    <div className="text-xs font-mono font-bold">{detail.soRef}</div>
+                  </div>
+                </div>
+              </div>
+
+              <Button variant="outline" size="sm" className="w-full" onClick={() => window.print()}>
+                <Printer className="mr-1.5 h-3.5 w-3.5" />
+                Cetak Delivery Tag
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Action */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Aksi</CardTitle>

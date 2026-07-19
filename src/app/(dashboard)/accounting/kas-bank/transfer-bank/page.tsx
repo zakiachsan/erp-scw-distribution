@@ -39,24 +39,17 @@ export default function TransferBankPage() {
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Transfer Bank</h1>
         <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola transfer antar rekening</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <select style={SELECT}><option>Tanggal: Semua</option></select>
-          <select value={filterKe} onChange={e => setFilterKe(e.target.value)} style={SELECT}><option value="semua">Ke Kas/Bank: Semua</option><option value="Bank BCA">Bank BCA</option><option value="Bank Mandiri">Bank Mandiri</option></select>
-          <select value={filterDari} onChange={e => setFilterDari(e.target.value)} style={SELECT}><option value="semua">Dari Kas/Bank: Semua</option><option value="Bank BCA">Bank BCA</option><option value="Bank Mandiri">Bank Mandiri</option></select>
-          <button style={BTN_ICON}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={BTN_ICON}><Plus size={16} /></button>
-          <button style={BTN_ICON_OUTLINE}><RefreshCw size={14} /></button>
-          <div style={{ flex: 1 }} />
-          <button style={BTN_ICON_OUTLINE}><Printer size={14} /></button>
-          <button style={BTN_ICON_OUTLINE}><Settings size={14} /></button>
-          <div style={{ position: "relative" }}>
-            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input style={{ ...INPUT, paddingLeft: 30, width: 180 }} placeholder="Ketik dan [Enter]" value={search} onChange={e => setSearch(e.target.value)} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <select style={SELECT}><option>Tanggal: Semua</option></select>
+            <select value={filterKe} onChange={e => setFilterKe(e.target.value)} style={SELECT}><option value="semua">Ke Kas/Bank: Semua</option><option value="Bank BCA">Bank BCA</option><option value="Bank Mandiri">Bank Mandiri</option></select>
+            <select value={filterDari} onChange={e => setFilterDari(e.target.value)} style={SELECT}><option value="semua">Dari Kas/Bank: Semua</option><option value="Bank BCA">Bank BCA</option><option value="Bank Mandiri">Bank Mandiri</option></select>
+            <div style={{ flex: 1 }} />
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+              <input type="text" placeholder="Cari transfer bank..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
+            </div>
+            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
-        </div>
       </div>
 
       {/* ── Form ── */}

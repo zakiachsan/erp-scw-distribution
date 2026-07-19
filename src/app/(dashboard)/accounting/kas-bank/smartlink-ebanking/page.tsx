@@ -42,7 +42,7 @@ export default function SmartlinkEBankingPage() {
           <div style={{ flex: 1 }} />
           <div style={{ position: "relative" }}>
             <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input style={{ ...INPUT, paddingLeft: 30, width: 180 }} placeholder="Ketik dan [Enter]" value={search} onChange={e => setSearch(e.target.value)} />
+            <input style={{ ...INPUT, paddingLeft: 30, width: 180 }} placeholder="Cari smartlink..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
         </div>

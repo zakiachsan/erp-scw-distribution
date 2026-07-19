@@ -2,6 +2,7 @@
 
 import { useState, use } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import {
   Card,
   CardContent,
@@ -26,357 +27,314 @@ import {
   CheckCircle2,
   MapPin,
   Printer,
-  Barcode,
-  Copy,
+  FileCheck,
+  Download,
+  Upload,
 } from "lucide-react"
 
-type ShipmentStatus = "Ready to Ship" | "Out for Delivery" | "Delivered"
+type DeliveryStatus = "Ready to Ship" | "Out for Delivery" | "Delivered" | "POD Received"
 
-interface ShipmentItem {
+interface DeliveryItem {
   name: string
   qty: number
   weightPerItem: string
 }
 
-interface ShipmentOrder {
+interface DeliveryOrderDetail {
   id: string
   soRef: string
   customer: string
   address: string
   courierType: string
-  itemsList: ShipmentItem[]
+  itemsList: DeliveryItem[]
   totalWeight: string
-  status: ShipmentStatus
+  status: DeliveryStatus
   createdAt: string
   resiNumber: string
+  podDate: string | null
+  podType: string | null
+  podNotes: string | null
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  "Ready to Ship": { label: "Ready to Ship", className: "bg-blue-100 text-blue-800" },
-  "Out for Delivery": { label: "Out for Delivery", className: "bg-amber-100 text-amber-800" },
-  Delivered: { label: "Delivered", className: "bg-emerald-100 text-emerald-800" },
+const statusConfig: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+  "Ready to Ship": { label: "Ready to Ship", className: "bg-blue-100 text-blue-800", icon: <Package className="h-3 w-3" /> },
+  "Out for Delivery": { label: "Out for Delivery", className: "bg-amber-100 text-amber-800", icon: <Truck className="h-3 w-3" /> },
+  "Delivered": { label: "Delivered", className: "bg-violet-100 text-violet-800", icon: <CheckCircle2 className="h-3 w-3" /> },
+  "POD Received": { label: "POD Received", className: "bg-emerald-100 text-emerald-800", icon: <FileCheck className="h-3 w-3" /> },
 }
 
-const ALL_SHIPMENTS: Record<string, ShipmentOrder> = {
-  "SHP-001": {
-    id: "SHP-001", soRef: "SO-2026-045",
-    customer: "PT Autogloss Indonesia", address: "Jl. Raya Bekasi No. 123, Jakarta Timur",
-    courierType: "JNE",
+const ALL_DELIVERIES: Record<string, DeliveryOrderDetail> = {
+  "DO-001": {
+    id: "DO-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia",
+    address: "Jl. Raya Bekasi No. 123, Jakarta Timur", courierType: "JNE",
     itemsList: [
       { name: "SCW Snow Foam", qty: 20, weightPerItem: "0.5 kg" },
       { name: "SCW Ceramic Coating", qty: 10, weightPerItem: "0.5 kg" },
     ],
-    totalWeight: "15 kg", status: "Ready to Ship", createdAt: "2026-06-01",
-    resiNumber: "JNE1234567890",
+    totalWeight: "15 kg", status: "POD Received", createdAt: "2026-06-01",
+    resiNumber: "JNE1234567890", podDate: "2026-06-05", podType: "Tanda Tangan Digital", podNotes: "Diterima oleh Budi (warehouse)",
   },
-  "SHP-002": {
-    id: "SHP-002", soRef: "SO-2026-044",
-    customer: "CV Ceramic Pro JKT", address: "Jl. Kemang Raya No. 45, Jakarta Selatan",
-    courierType: "SiCepat",
+  "DO-002": {
+    id: "DO-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT",
+    address: "Jl. Kemang Raya No. 45, Jakarta Selatan", courierType: "SiCepat",
     itemsList: [
       { name: "SCW Interior Detailer", qty: 15, weightPerItem: "0.4 kg" },
       { name: "SCW Tire Gel", qty: 25, weightPerItem: "0.3 kg" },
     ],
-    totalWeight: "12 kg", status: "Ready to Ship", createdAt: "2026-05-30",
-    resiNumber: "SCP0098765432",
+    totalWeight: "12 kg", status: "Delivered", createdAt: "2026-05-30",
+    resiNumber: "SCP0098765432", podDate: null, podType: null, podNotes: null,
   },
-  "SHP-003": {
-    id: "SHP-003", soRef: "SO-2026-043",
-    customer: "UD Shinemax", address: "Jl. Raya Bandung No. 456, Bandung",
-    courierType: "J&T",
+  "DO-003": {
+    id: "DO-003", soRef: "SO-2026-043", customer: "UD Shinemax",
+    address: "Jl. Raya Bandung No. 456, Bandung", courierType: "J&T",
     itemsList: [
       { name: "SCW Spray Wax", qty: 30, weightPerItem: "0.3 kg" },
       { name: "SCW Glass Cleaner", qty: 20, weightPerItem: "0.4 kg" },
     ],
     totalWeight: "18 kg", status: "Out for Delivery", createdAt: "2026-05-28",
-    resiNumber: "JT0005544332",
+    resiNumber: "JTX1122334455", podDate: null, podType: null, podNotes: null,
   },
-  "SHP-004": {
-    id: "SHP-004", soRef: "SO-2026-040",
-    customer: "CV ProShine SBY", address: "Jl. Pemuda No. 789, Surabaya",
-    courierType: "SiCepat",
+  "DO-004": {
+    id: "DO-004", soRef: "SO-2026-040", customer: "CV ProShine SBY",
+    address: "Jl. Pemuda No. 789, Surabaya", courierType: "SiCepat",
     itemsList: [
       { name: "SCW Polish Compound", qty: 10, weightPerItem: "0.8 kg" },
     ],
-    totalWeight: "8 kg", status: "Delivered", createdAt: "2026-05-18",
-    resiNumber: "SCP0055667788",
+    totalWeight: "8 kg", status: "POD Received", createdAt: "2026-05-18",
+    resiNumber: "SCP5566778899", podDate: "2026-05-22", podType: "Foto Barang", podNotes: "Foto paket di depan gudang customer",
   },
-  "SHP-005": {
-    id: "SHP-005", soRef: "SO-2026-039",
-    customer: "AutoCare Makassar", address: "Jl. A.P. Pettarani No. 12, Makassar",
-    courierType: "Internal",
+  "DO-005": {
+    id: "DO-005", soRef: "SO-2026-039", customer: "AutoCare Makassar",
+    address: "Jl. A.P. Pettarani No. 12, Makassar", courierType: "Internal",
     itemsList: [
-      { name: "SCW Snow Foam", qty: 25, weightPerItem: "0.4 kg" },
+      { name: "SCW Snow Foam", qty: 25, weightPerItem: "0.5 kg" },
     ],
-    totalWeight: "10 kg", status: "Out for Delivery", createdAt: "2026-05-15",
-    resiNumber: "",
+    totalWeight: "10 kg", status: "Delivered", createdAt: "2026-05-15",
+    resiNumber: "INT-2026-0088", podDate: null, podType: null, podNotes: null,
   },
-  "SHP-006": {
-    id: "SHP-006", soRef: "SO-2026-046",
-    customer: "GlossUp Bali", address: "Jl. Sunset Road No. 88, Seminyak",
-    courierType: "JNE",
+  "DO-006": {
+    id: "DO-006", soRef: "SO-2026-046", customer: "GlossUp Bali",
+    address: "Jl. Sunset Road No. 88, Seminyak", courierType: "JNE",
     itemsList: [
       { name: "SCW Ceramic Coating", qty: 8, weightPerItem: "0.5 kg" },
       { name: "SCW Spray Wax", qty: 12, weightPerItem: "0.3 kg" },
     ],
-    totalWeight: "11 kg", status: "Ready to Ship", createdAt: "2026-06-02",
-    resiNumber: "JNE9988776655",
+    totalWeight: "11 kg", status: "Delivered", createdAt: "2026-06-02",
+    resiNumber: "JNE9988776655", podDate: null, podType: null, podNotes: null,
   },
 }
 
-const courierColors: Record<string, string> = {
-  JNE: "bg-blue-100 text-blue-800",
-  SiCepat: "bg-red-100 text-red-800",
-  "J&T": "bg-red-100 text-red-800",
-  GrabExpress: "bg-emerald-100 text-emerald-800",
-  Internal: "bg-indigo-100 text-indigo-800",
-}
+const flowSteps = [
+  { key: "Ready to Ship", label: "Ready", desc: "Paket siap dikirim" },
+  { key: "Out for Delivery", label: "In Transit", desc: "Paket dalam perjalanan" },
+  { key: "Delivered", label: "Delivered", desc: "Paket sampai tujuan" },
+  { key: "POD Received", label: "POD Received", desc: "Bukti diterima & terekam" },
+]
 
-const getCourierColor = (name: string) => courierColors[name] ?? "bg-gray-100 text-gray-800"
-
-export default function ShippingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function DeliveryOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { id } = use(params)
-  const [shipment, setShipment] = useState(() => ALL_SHIPMENTS[id])
-  const [copied, setCopied] = useState(false)
+  const [status, setStatus] = useState<DeliveryStatus>(() => {
+    const data = ALL_DELIVERIES[id]
+    return data?.status || "Ready to Ship"
+  })
 
-  if (!shipment) {
-    return (
-      <div className="p-6">
-        <Button variant="ghost" size="icon-sm" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <p className="mt-4 text-muted-foreground">Shipment tidak ditemukan.</p>
-      </div>
-    )
+  const data = ALL_DELIVERIES[id] || {
+    id, soRef: "SO-2026-045", customer: "PT Autogloss Indonesia",
+    address: "Jl. Raya Bekasi No. 123, Jakarta Timur", courierType: "JNE",
+    itemsList: [
+      { name: "SCW Snow Foam", qty: 20, weightPerItem: "0.5 kg" },
+      { name: "SCW Ceramic Coating", qty: 10, weightPerItem: "0.5 kg" },
+    ],
+    totalWeight: "15 kg", status: "Ready to Ship" as DeliveryStatus, createdAt: "2026-06-01",
+    resiNumber: "JNE1234567890", podDate: null, podType: null, podNotes: null,
   }
 
-  const ekspedisiCouriers = ["JNE", "SiCepat", "J&T", "GrabExpress"]
-  const isEkspedisi = ekspedisiCouriers.includes(shipment.courierType)
-
-  const st = statusConfig[shipment.status]
-  const isReady = shipment.status === "Ready to Ship"
-  const isOut = shipment.status === "Out for Delivery"
-
-  const totalItems = shipment.itemsList.reduce((sum, i) => sum + i.qty, 0)
-
-  const handlePickup = () => {
-    setShipment((prev) => ({ ...prev, status: "Out for Delivery" as ShipmentStatus }))
-  }
-
-  const handleConfirmDelivered = () => {
-    setShipment((prev) => ({ ...prev, status: "Delivered" as ShipmentStatus }))
-  }
-
-  const handlePrint = () => {
-    const printWindow = window.open("", "_blank")
-    if (!printWindow) return
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Resi ${shipment.courierType} - ${shipment.resiNumber}</title>
-          <style>
-            body { font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
-            .label { width: 280px; border: 2px solid #000; padding: 16px; margin: 0 auto; }
-            .header { text-align: center; font-weight: bold; font-size: 18px; border-bottom: 2px dashed #000; padding-bottom: 12px; margin-bottom: 12px; }
-            .row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
-            .label-bold { font-weight: bold; }
-            .barcode { text-align: center; font-size: 32px; letter-spacing: 4px; margin: 16px 0; }
-            .resi-number { text-align: center; font-size: 16px; font-weight: bold; letter-spacing: 2px; margin: 8px 0; }
-            .footer { text-align: center; font-size: 10px; border-top: 1px solid #ccc; padding-top: 8px; margin-top: 12px; color: #666; }
-            hr.dashed { border: none; border-top: 1px dashed #999; margin: 8px 0; }
-            @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .label { border: 2px solid #000; } }
-          </style>
-        </head>
-        <body>
-          <div class="label">
-            <div class="header">${shipment.courierType.toUpperCase()}</div>
-            <div class="resi-number">${shipment.resiNumber}</div>
-            <div class="barcode">||||||||||</div>
-            <hr class="dashed" />
-            <div class="row"><span>Pengirim</span><span class="label-bold">SCW Distribution</span></div>
-            <div class="row"><span></span><span>Jl. Industri Raya No. 1, Jakarta</span></div>
-            <hr class="dashed" />
-            <div class="row"><span>Penerima</span><span class="label-bold">${shipment.customer}</span></div>
-            <div class="row"><span></span><span>${shipment.address}</span></div>
-            <hr class="dashed" />
-            <div class="row"><span>Berat</span><span class="label-bold">${shipment.totalWeight}</span></div>
-            <div class="row"><span>Total Item</span><span>${totalItems} pcs</span></div>
-            <div class="row"><span>Referensi</span><span>${shipment.soRef}</span></div>
-            <div class="footer">SCW Distribution — ${new Date().toLocaleDateString("id-ID")}</div>
-          </div>
-          <div style="text-align:center;margin-top:20px">
-            <button onclick="window.print()" style="padding:10px 30px;font-size:14px;cursor:pointer">Cetak Resi</button>
-          </div>
-        </body>
-      </html>
-    `)
-    printWindow.document.close()
-  }
-
-  const handleCopyResi = () => {
-    navigator.clipboard.writeText(shipment.resiNumber)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const currentStepIndex = flowSteps.findIndex((s) => s.key === status)
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-6 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon-sm" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{shipment.id}</h1>
-          <p className="text-muted-foreground">{shipment.soRef}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link href="/shipping" className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-gray-900">{data.id}</h1>
+              <Badge className={`${statusConfig[status].className} flex items-center gap-1`}>
+                {statusConfig[status].icon}
+                {statusConfig[status].label}
+              </Badge>
+            </div>
+            <p className="text-xs text-gray-500">
+              dari <Link href={`/sales/orders/${data.soRef}`} className="text-blue-600 hover:underline">{data.soRef}</Link>
+            </p>
+          </div>
         </div>
-        <Badge variant="outline" className={st.className}>{st.label}</Badge>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.print()}>
+            <Printer className="mr-1.5 h-3.5 w-3.5" />
+            Print
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => alert("PDF berhasil didownload!")}>
+            <Download className="mr-1.5 h-3.5 w-3.5" />
+            Download PDF
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left — Item List */}
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5" />
-                Item Shipment
-              </CardTitle>
-              <CardDescription>{totalItems} item dari {shipment.itemsList.length} produk</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nama Item</TableHead>
-                    <TableHead className="text-center">Qty</TableHead>
-                    <TableHead className="text-right">Weight/Item</TableHead>
-                    <TableHead className="text-right">Subtotal</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {shipment.itemsList.map((item, idx) => {
-                    const weightNum = parseFloat(item.weightPerItem)
-                    const subtotal = isNaN(weightNum) ? 0 : weightNum * item.qty
-                    return (
-                      <TableRow key={idx}>
-                        <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell className="text-center">{item.qty}</TableCell>
-                        <TableCell className="text-right text-muted-foreground">{item.weightPerItem}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{subtotal.toFixed(1)} kg</TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-
-              {/* Summary */}
-              <div className="mt-4 rounded-lg border bg-muted/30 p-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total Item</span>
-                  <span className="font-bold">{totalItems} pcs</span>
+      {/* Flow Steps */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-1">
+            {flowSteps.map((step, idx) => {
+              const isCompleted = idx < currentStepIndex
+              const isCurrent = idx === currentStepIndex
+              return (
+                <div key={step.key} className="flex items-center flex-1">
+                  <div className={`flex flex-col items-center gap-1 flex-1 ${isCompleted ? "text-emerald-600" : isCurrent ? "text-blue-600" : "text-gray-400"}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isCompleted ? "bg-emerald-100 text-emerald-600" : isCurrent ? "bg-blue-100 text-blue-600 ring-2 ring-blue-300" : "bg-gray-100 text-gray-400"}`}>
+                      {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : idx + 1}
+                    </div>
+                    <span className="text-[10px] font-medium text-center leading-tight">{step.label}</span>
+                  </div>
+                  {idx < flowSteps.length - 1 && (
+                    <div className={`h-0.5 w-8 ${idx < currentStepIndex ? "bg-emerald-300" : "bg-gray-200"}`} />
+                  )}
                 </div>
-                <div className="flex items-center justify-between text-sm mt-1">
-                  <span className="text-muted-foreground">Total Berat</span>
-                  <span className="font-bold">{shipment.totalWeight}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Right — Combined Info + Resi + Aksi */}
-        <div className="space-y-6">
-          {/* Informasi Pengiriman + Resi */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Truck className="h-5 w-5" />
-                Informasi Pengiriman
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Courier + Status */}
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Kurir</span>
-                <Badge variant="outline" className={getCourierColor(shipment.courierType)}>
-                  <Truck className="mr-1 h-3 w-3" />
-                  {shipment.courierType}
-                </Badge>
-              </div>
-              <div className="flex justify-between text-sm">
+      {/* Info Cards */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Delivery Info */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Truck className="h-4 w-4" />
+              Info Pengiriman
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Kurir</span>
+              <Badge variant="outline">{data.courierType}</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">No. Resi</span>
+              <span className="font-mono text-xs">{data.resiNumber}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tanggal Kirim</span>
+              <span>{data.createdAt}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total Berat</span>
+              <span>{data.totalWeight}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Customer / Address */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Alamat Tujuan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="font-medium">{data.customer}</div>
+            <div className="text-muted-foreground text-xs leading-relaxed">{data.address}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* POD Section */}
+      <Card className={data.podDate ? "border-emerald-200" : "border-amber-200"}>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <FileCheck className="h-4 w-4" />
+            Proof of Delivery (POD)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.podDate ? (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
                 <span className="text-muted-foreground">Status</span>
-                <Badge variant="outline" className={st.className}>{st.label}</Badge>
+                <Badge className="bg-emerald-100 text-emerald-800">POD Diterima</Badge>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tanggal</span>
-                <span>{shipment.createdAt}</span>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Tanggal PO Diterima</span>
+                <span className="font-medium">{data.podDate}</span>
               </div>
-
-              {/* Customer */}
-              <hr />
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Penerima</p>
-                <p className="text-sm font-medium">{shipment.customer}</p>
-                <div className="flex items-start gap-1.5 mt-1">
-                  <MapPin className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />
-                  <p className="text-xs text-muted-foreground">{shipment.address}</p>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Jenis Bukti</span>
+                <Badge variant="outline">{data.podType}</Badge>
               </div>
-
-              {/* Resi */}
-              {shipment.resiNumber && (
-                <>
-                  <hr />
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">No. Resi</p>
-                    <p className="text-lg font-bold font-mono tracking-wider">{shipment.resiNumber}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={handleCopyResi}>
-                      <Copy className="h-3.5 w-3.5" />
-                      {copied ? "Tersalin!" : "Salin"}
-                    </Button>
-                    {isEkspedisi && (
-                      <Button variant="default" size="sm" className="flex-1 gap-1.5" onClick={handlePrint}>
-                        <Printer className="h-3.5 w-3.5" />
-                        Cetak Resi
-                      </Button>
-                    )}
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Aksi */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Aksi</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {isReady && (
-                <Button className="w-full gap-2" onClick={handlePickup}>
-                  <Truck className="h-4 w-4" />
-                  Sudah Diambil Kurir
-                </Button>
-              )}
-              {isOut && (
-                <Button className="w-full gap-2" onClick={handleConfirmDelivered}>
-                  <CheckCircle2 className="h-4 w-4" />
-                  Konfirmasi Sampai
-                </Button>
-              )}
-              {shipment.status === "Delivered" && (
-                <div className="text-center text-sm text-emerald-600 py-2">
-                  ✅ Paket sudah sampai tujuan.
+              {data.podNotes && (
+                <div className="mt-2 rounded-lg bg-slate-50 p-3 text-xs">
+                  <span className="text-muted-foreground">Catatan: </span>{data.podNotes}
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <FileCheck className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">Belum ada POD</p>
+              <p className="text-xs text-muted-foreground mt-1">Input POD di halaman <Link href="/shipping/pod" className="text-blue-600 hover:underline">Proof of Delivery</Link></p>
+              {status === "Delivered" && (
+                <Button size="sm" className="mt-3" onClick={() => router.push("/shipping/pod")}>
+                  <Upload className="mr-1.5 h-3.5 w-3.5" />
+                  Input POD Sekarang
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Items Table */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold">Rincian Barang</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">#</TableHead>
+                  <TableHead>Nama Barang</TableHead>
+                  <TableHead className="text-center">Qty</TableHead>
+                  <TableHead className="text-right">Berat/Item</TableHead>
+                  <TableHead className="text-right">Total Berat</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.itemsList.map((item, idx) => {
+                  const totalWeightPerItem = parseFloat(item.weightPerItem) * item.qty
+                  return (
+                    <TableRow key={idx}>
+                      <TableCell className="text-xs text-muted-foreground">{idx + 1}</TableCell>
+                      <TableCell className="text-sm font-medium">{item.name}</TableCell>
+                      <TableCell className="text-sm text-center">{item.qty}</TableCell>
+                      <TableCell className="text-sm text-right text-muted-foreground">{item.weightPerItem}</TableCell>
+                      <TableCell className="text-sm text-right">{totalWeightPerItem.toFixed(1)} kg</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

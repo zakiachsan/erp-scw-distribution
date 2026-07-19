@@ -57,6 +57,7 @@ interface Product {
   sku: string
   name: string
   category: string
+  jenis: "Barang Jadi" | "Barang Setengah Jadi" | "Bahan Baku"
   description: string
   barcode: string
   status: "in-stock" | "low-stock" | "out-of-stock"
@@ -72,6 +73,7 @@ const productMap: Record<
     sku: string
     name: string
     category: string
+    jenis: "Barang Jadi" | "Barang Setengah Jadi" | "Bahan Baku"
     description: string
     barcode: string
     status: "in-stock" | "low-stock" | "out-of-stock"
@@ -93,7 +95,8 @@ const productMap: Record<
     id: "1",
     sku: "SCW-SF-001",
     name: "SCW Snow Foam",
-    category: "Exterior",
+    category: "Liquid",
+    jenis: "Barang Jadi",
     description:
       "High-foaming pre-wash snow foam for safe and effective removal of dirt and grime. pH-neutral formula safe for all surfaces.",
     barcode: "8991234567890",
@@ -121,7 +124,8 @@ const productMap: Record<
     id: "2",
     sku: "SCW-CC-002",
     name: "SCW Ceramic Coating",
-    category: "Coating",
+    category: "Coatings",
+    jenis: "Barang Jadi",
     description:
       "Professional-grade ceramic coating providing up to 2 years of protection with hydrophobic and UV-resistant properties.",
     barcode: "8991234567891",
@@ -149,7 +153,8 @@ const defaultProduct = {
   id: "0",
   sku: "SCW-ID-003",
   name: "SCW Interior Detailer",
-  category: "Interior",
+  category: "Liquid",
+  jenis: "Barang Jadi" as const,
   description:
     "Premium interior detailer with UV protection and anti-static properties. Leaves a matte finish on dashboards and trim.",
   barcode: "8991234567892",
@@ -171,7 +176,7 @@ const defaultProduct = {
     ],
 }
 
-const defaultCategories = ["Exterior", "Interior", "Wash", "Coating", "Prep", "Correction", "Protection", "Wheel", "Tools", "Decon"]
+const defaultCategories = ["Liquid", "Coatings", "Accesories", "PPF", "SPPF", "Machine", "Wax", "Training"]
 
 const statusConfig = {
   "in-stock": { label: "In Stock", className: "bg-emerald-100 text-emerald-800" },
@@ -245,6 +250,7 @@ export default function ProductDetailPage() {
   const [editCategory, setEditCategory] = useState(product.category)
   const [editDescription, setEditDescription] = useState(product.description)
   const [editBarcode, setEditBarcode] = useState(product.barcode)
+  const [editJenis, setEditJenis] = useState<"Barang Jadi" | "Barang Setengah Jadi" | "Bahan Baku">(product.jenis)
   const [categoryOptions, setCategoryOptions] = useState(defaultCategories)
   const [newCategory, setNewCategory] = useState("")
 
@@ -335,6 +341,19 @@ export default function ProductDetailPage() {
                 <Input value={editBarcode} onChange={(e) => setEditBarcode(e.target.value)} />
               </div>
               <div>
+                <label className="text-sm font-medium">Jenis Produk</label>
+                <Select value={editJenis} onValueChange={(v) => setEditJenis(v as any)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih jenis produk" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Barang Jadi">Barang Jadi — Langsung dijual kembali</SelectItem>
+                    <SelectItem value="Barang Setengah Jadi">Barang Setengah Jadi — Butuh proses tambahan (repack, dll)</SelectItem>
+                    <SelectItem value="Bahan Baku">Bahan Baku — Komponen untuk menjadikan satu barang</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <label className="text-sm font-medium">Description</label>
                 <Input value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
               </div>
@@ -363,6 +382,10 @@ export default function ProductDetailPage() {
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Category</p>
                   <Badge variant="outline">{product.category}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Jenis</p>
+                  <Badge variant="outline">{product.jenis}</Badge>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Status</p>
@@ -477,50 +500,6 @@ export default function ProductDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Boxes className="h-4 w-4" />
-                Box Belum Dibuka
-              </CardTitle>
-              <CardDescription>
-                Box yang berisi produk ini dan belum dibuka.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {productBoxes.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Tidak ada box yang belum dibuka.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {productBoxes.map((box) => (
-                    <div
-                      key={box.id}
-                      className="flex items-center justify-between rounded border bg-white p-2"
-                    >
-                      <div>
-                        <p className="font-sans text-xs font-medium">
-                          {box.barcode}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {box.rackName}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {box.contents.reduce(
-                          (sum, c) => sum + c.estimatedQty,
-                          0
-                        )}{" "}
-                        pcs
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
                 <Barcode className="h-4 w-4" />
                 Barcode
               </CardTitle>
@@ -547,26 +526,6 @@ export default function ProductDetailPage() {
                     <p className="font-sans text-sm font-medium">{product.barcode}</p>
                   </div>
                 </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
-                <Package className="mr-2 h-4 w-4" />
-                Print Barcode
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Tag className="mr-2 h-4 w-4" />
-                Print Price Tag
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <MapPin className="mr-2 h-4 w-4" />
-                Transfer Stock
-              </Button>
             </CardContent>
           </Card>
 
@@ -605,6 +564,50 @@ export default function ProductDetailPage() {
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Boxes className="h-4 w-4" />
+                Box Belum Dibuka
+              </CardTitle>
+              <CardDescription>
+                Box yang berisi produk ini dan belum dibuka.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {productBoxes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Tidak ada box yang belum dibuka.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {productBoxes.map((box) => (
+                    <div
+                      key={box.id}
+                      className="flex items-center justify-between rounded border bg-white p-2"
+                    >
+                      <div>
+                        <p className="font-sans text-xs font-medium">
+                          {box.barcode}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {box.rackName}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {box.contents.reduce(
+                          (sum, c) => sum + c.estimatedQty,
+                          0
+                        )}{" "}
+                        pcs
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
