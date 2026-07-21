@@ -47,7 +47,7 @@ const formatIDR = (val: number) =>
 export default function InvoiceListPage() {
   const [statusFilter, setStatusFilter] = useState("All")
   const [search, setSearch] = useState("")
-  const [invoiceList, setInvoiceList] = useState(invoices)
+  const [invoiceList] = useState(invoices)
 
   const filtered = useMemo(() => {
     return invoiceList.filter((i) => {
@@ -183,22 +183,11 @@ export default function InvoiceListPage() {
                     <td className="px-3 py-2 text-sm text-muted-foreground">{inv.issueDate}</td>
                     <td className="px-3 py-2 text-sm text-muted-foreground">{inv.dueDate}</td>
                     <td className="px-3 py-2">
-                      <select
-                        value={inv.status}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => {
-                          const newStatus = e.target.value as Invoice["status"]
-                          setInvoiceList((prev) =>
-                            prev.map((x) => (x.id === inv.id ? { ...x, status: newStatus } : x))
-                          )
-                        }}
-                        className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-xs font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[inv.status].className}`}
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${statusConfig[inv.status].className}`}
                       >
-                        <option value="Draft">Draft</option>
-                        <option value="Sent">Sent</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Overdue">Overdue</option>
-                      </select>
+                        {statusConfig[inv.status].label}
+                      </span>
                     </td>
                     <td className="px-3 py-2 text-sm text-right font-medium">{formatIDR(inv.amount)}</td>
                   </tr>

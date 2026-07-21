@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { useModuleStore, MODULES, type ModuleId } from "@/lib/modules"
+import { useT } from "@/lib/i18n"
+import { LanguageSwitcher } from "@/components/layout/language-switcher"
 import {
   Users,
   Package,
@@ -48,6 +50,7 @@ const colorMap: Record<string, { bg: string; icon: string; hover: string; ring: 
 export default function ModulesPage() {
   const router = useRouter()
   const setActiveModule = useModuleStore((s) => s.setActiveModule)
+  const { t, tModule, tModuleDesc } = useT()
 
   const handleSelect = (moduleId: ModuleId) => {
     setActiveModule(moduleId)
@@ -68,10 +71,11 @@ export default function ModulesPage() {
             </div>
             <div>
               <h1 className="text-sm font-semibold text-slate-900">SCW Distribution</h1>
-              <p className="text-xs text-slate-500">ERP Management System</p>
+              <p className="text-xs text-slate-500">{t("modules.erp")}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <button
               onClick={() => router.push("/settings/users")}
               className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
@@ -95,10 +99,10 @@ export default function ModulesPage() {
           {/* Title */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Pilih Modul
+              {t("modules.title")}
             </h1>
             <p className="mt-2 text-sm text-slate-500">
-              Pilih modul yang ingin kamu akses. Sidebar akan menyesuaikan dengan modul yang dipilih.
+              {t("modules.subtitle")}
             </p>
           </div>
 
@@ -125,19 +129,19 @@ export default function ModulesPage() {
 
                   {/* Text */}
                   <h3 className="text-base font-semibold text-slate-900">
-                    {mod.name}
+                    {tModule(mod.id)}
                   </h3>
                   <p className="mt-1 text-xs text-slate-500 line-clamp-2">
-                    {mod.description}
+                    {tModuleDesc(mod.id)}
                   </p>
 
                   {/* Footer */}
                   <div className="mt-3 flex items-center justify-between w-full">
                     <span className="text-xs text-slate-400">
-                      {menuCount} menu
+                      {menuCount} {t("modules.menu")}
                     </span>
                     <span className="flex items-center gap-1 text-sm font-medium text-indigo-600 opacity-0 transition-opacity group-hover:opacity-100">
-                      Buka
+                      {t("modules.open")}
                       <ArrowRight className="h-4 w-4" />
                     </span>
                   </div>

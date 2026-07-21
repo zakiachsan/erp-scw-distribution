@@ -167,6 +167,129 @@ export const dummyJournalEntries: JournalEntry[] = [
   { id: "jrn-4", nomor: "JU/2026/07/004", noTrans: "JV-004", tanggal: "04/07/2026", keterangan: "Penjualan ke CV Karya Mandiri", tipeTransaksi: "Jurnal Umum", total: 6100000 },
 ]
 
+// ──────────────── JOURNAL LINES (Rincian Jurnal) ────────────────
+export interface JournalLine {
+  id: string
+  /** Source transaction id — links to SalesOrder, Payment, JournalEntry, etc. */
+  sourceId: string
+  /** Source type label for display */
+  sourceType: string
+  /** Source document number */
+  sourceNo: string
+  tanggal: string
+  keterangan: string
+  lines: { akun: string; namaAkun: string; debit: number; kredit: number }[]
+}
+
+export const dummyJournalLines: JournalLine[] = [
+  {
+    id: "jl-1", sourceId: "so-1", sourceType: "Faktur Penjualan", sourceNo: "SO/2026/07/001", tanggal: "02/07/2026",
+    keterangan: "Penjualan ke PT Maju Bersama",
+    lines: [
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 8200000, kredit: 0 },
+      { akun: "400101", namaAkun: "Pendapatan Penjualan", debit: 0, kredit: 7350000 },
+      { akun: "400201", namaAkun: "Pendapatan Jasa", debit: 0, kredit: 850000 },
+    ],
+  },
+  {
+    id: "jl-2", sourceId: "so-2", sourceType: "Faktur Penjualan", sourceNo: "SO/2026/07/002", tanggal: "04/07/2026",
+    keterangan: "Penjualan ke CV Karya Mandiri",
+    lines: [
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 6100000, kredit: 0 },
+      { akun: "400101", namaAkun: "Pendapatan Penjualan", debit: 0, kredit: 4965000 },
+      { akun: "400201", namaAkun: "Pendapatan Jasa", debit: 0, kredit: 1135000 },
+    ],
+  },
+  {
+    id: "jl-3", sourceId: "so-3", sourceType: "Faktur Penjualan", sourceNo: "SO/2026/07/003", tanggal: "06/07/2026",
+    keterangan: "Penjualan ke PT Teknindo Solusi",
+    lines: [
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 4100000, kredit: 0 },
+      { akun: "400101", namaAkun: "Pendapatan Penjualan", debit: 0, kredit: 4050000 },
+      { akun: "400201", namaAkun: "Pendapatan Jasa", debit: 0, kredit: 50000 },
+    ],
+  },
+  {
+    id: "jl-4", sourceId: "pay-1", sourceType: "Pembayaran", sourceNo: "PMB/2026/07/001", tanggal: "01/07/2026",
+    keterangan: "Pembayaran sewa kantor bulan Juli",
+    lines: [
+      { akun: "500301", namaAkun: "Beban Sewa Kantor", debit: 15000000, kredit: 0 },
+      { akun: "110102", namaAkun: "Bank BCA - Rekening Giro", debit: 0, kredit: 15000000 },
+    ],
+  },
+  {
+    id: "jl-5", sourceId: "pay-2", sourceType: "Penerimaan", sourceNo: "PNR/2026/07/001", tanggal: "03/07/2026",
+    keterangan: "Penerimaan piutang dari PT Maju Bersama",
+    lines: [
+      { akun: "110103", namaAkun: "Bank Mandiri", debit: 25000000, kredit: 0 },
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 0, kredit: 25000000 },
+    ],
+  },
+  {
+    id: "jl-6", sourceId: "pay-3", sourceType: "Pembayaran", sourceNo: "PMB/2026/07/002", tanggal: "05/07/2026",
+    keterangan: "Pembelian ATK",
+    lines: [
+      { akun: "500501", namaAkun: "Beban ATK", debit: 5000000, kredit: 0 },
+      { akun: "110101", namaAkun: "Kas Kecil", debit: 0, kredit: 5000000 },
+    ],
+  },
+  {
+    id: "jl-7", sourceId: "pay-4", sourceType: "Penerimaan", sourceNo: "PNR/2026/07/002", tanggal: "06/07/2026",
+    keterangan: "Penerimaan piutang dari CV Karya Mandiri",
+    lines: [
+      { akun: "110102", namaAkun: "Bank BCA - Rekening Giro", debit: 18000000, kredit: 0 },
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 0, kredit: 18000000 },
+    ],
+  },
+  {
+    id: "jl-8", sourceId: "jrn-1", sourceType: "Jurnal Umum", sourceNo: "JU/2026/07/001", tanggal: "01/07/2026",
+    keterangan: "Pembayaran sewa kantor bulan Juli",
+    lines: [
+      { akun: "500301", namaAkun: "Beban Sewa Kantor", debit: 15000000, kredit: 0 },
+      { akun: "110102", namaAkun: "Bank BCA - Rekening Giro", debit: 0, kredit: 15000000 },
+    ],
+  },
+  {
+    id: "jl-9", sourceId: "jrn-2", sourceType: "Jurnal Umum", sourceNo: "JU/2026/07/002", tanggal: "02/07/2026",
+    keterangan: "Penerimaan piutang dari PT Maju Bersama",
+    lines: [
+      { akun: "110103", namaAkun: "Bank Mandiri", debit: 25000000, kredit: 0 },
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 0, kredit: 25000000 },
+    ],
+  },
+  {
+    id: "jl-10", sourceId: "jrn-3", sourceType: "Jurnal Umum", sourceNo: "JU/2026/07/003", tanggal: "03/07/2026",
+    keterangan: "Pembelian ATK",
+    lines: [
+      { akun: "500501", namaAkun: "Beban ATK", debit: 5000000, kredit: 0 },
+      { akun: "110101", namaAkun: "Kas Kecil", debit: 0, kredit: 5000000 },
+    ],
+  },
+  {
+    id: "jl-11", sourceId: "jrn-4", sourceType: "Jurnal Umum", sourceNo: "JU/2026/07/004", tanggal: "04/07/2026",
+    keterangan: "Penjualan ke CV Karya Mandiri",
+    lines: [
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 6100000, kredit: 0 },
+      { akun: "400101", namaAkun: "Pendapatan Penjualan", debit: 0, kredit: 4965000 },
+      { akun: "400201", namaAkun: "Pendapatan Jasa", debit: 0, kredit: 1135000 },
+    ],
+  },
+  {
+    id: "jl-12", sourceId: "sr-1", sourceType: "Retur Penjualan", sourceNo: "SR/2026/07/001", tanggal: "05/07/2026",
+    keterangan: "Retur besi hollow cacat — PT Maju Bersama",
+    lines: [
+      { akun: "400101", namaAkun: "Pendapatan Penjualan", debit: 1525000, kredit: 0 },
+      { akun: "400201", namaAkun: "Pendapatan Jasa", debit: 575000, kredit: 0 },
+      { akun: "110301", namaAkun: "Piutang Usaha", debit: 0, kredit: 2100000 },
+    ],
+  },
+]
+
+/** Lookup journal lines by source transaction id */
+export function getJournalLinesBySource(sourceId: string): JournalLine | undefined {
+  return dummyJournalLines.find((jl) => jl.sourceId === sourceId)
+}
+
 // ──────────────── BANK RECORDS ────────────────
 export interface BankRecord {
   id: string; tanggal: string; noSumber: string; noCek: string; tipeTransaksi: string; keterangan: string; mutasi: number; tipe: "Debit" | "Kredit"; saldo: number

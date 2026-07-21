@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useModuleStore, getModuleById, getModuleIdByPathname } from "@/lib/modules"
+import { useT } from "@/lib/i18n"
 import {
   LayoutDashboard,
   Package,
@@ -80,6 +81,7 @@ export function Sidebar() {
   const [openSections, setOpenSections] = useState<string[]>([])
   const [mounted, setMounted] = useState(false)
   const { activeModule, setActiveModule } = useModuleStore()
+  const { t, tMenu, tModule } = useT()
 
   // Auto-detect active module from current path so the sidebar menu never
   // disappears when navigating directly to a module page.
@@ -175,7 +177,7 @@ export function Sidebar() {
               <span className="text-sm font-semibold">SCW Distribution</span>
               {mounted && moduleInfo && (
                 <span className={cn("text-[10px] font-medium px-1.5 py-0.5 rounded-full w-fit", colors.accent)}>
-                  {moduleInfo.name}
+                  {tModule(moduleInfo.id)}
                 </span>
               )}
             </div>
@@ -212,7 +214,7 @@ export function Sidebar() {
                   <Icon className="h-4 w-4 shrink-0" />
                   {!collapsed && (
                     <>
-                      <span className="flex-1 text-left">{item.label}</span>
+                      <span className="flex-1 text-left">{tMenu(item.label)}</span>
                       {isExpanded ? (
                         <ChevronDown className="h-3 w-3" />
                       ) : (
@@ -234,7 +236,7 @@ export function Sidebar() {
                             : `text-muted-foreground hover:bg-muted hover:text-foreground`
                         )}
                       >
-                        {child.label}
+                        {tMenu(child.label)}
                       </Link>
                     ))}
                   </div>
@@ -255,7 +257,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{tMenu(item.label)}</span>}
             </Link>
           )
         })}
@@ -274,7 +276,7 @@ export function Sidebar() {
           )}
         >
           <Bell className="h-4 w-4 shrink-0" />
-          {!collapsed && <span>Notifications</span>}
+          {!collapsed && <span>{t("sidebar.notifications")}</span>}
         </Link>
 
 
@@ -290,7 +292,7 @@ export function Sidebar() {
               className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-3 w-3" />
-              Ganti Modul
+              {t("sidebar.switchModule")}
             </Link>
             {/* User */}
             <div className="flex items-center gap-3">

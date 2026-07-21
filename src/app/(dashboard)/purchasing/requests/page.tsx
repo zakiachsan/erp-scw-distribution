@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { SearchableSelect, type SearchableSelectOption } from "@/components/ui/searchable-select"
 import {
   Search,
   Plus,
@@ -100,6 +101,37 @@ const initialPRs: PurchaseRequest[] = [
   },
 ]
 
+/* ── Dropdown Options ── */
+const initialRequesters: SearchableSelectOption[] = [
+  { label: "Andi Wijaya", value: "Andi Wijaya" },
+  { label: "Siti Aminah", value: "Siti Aminah" },
+  { label: "Dedi Kurniawan", value: "Dedi Kurniawan" },
+  { label: "Rina Marlina", value: "Rina Marlina" },
+  { label: "Bambang Suprapto", value: "Bambang Suprapto" },
+]
+
+const initialDepartments: SearchableSelectOption[] = [
+  { label: "Purchasing", value: "Purchasing" },
+  { label: "Gudang", value: "Gudang" },
+  { label: "Produksi", value: "Produksi" },
+  { label: "Marketing", value: "Marketing" },
+  { label: "Keuangan", value: "Keuangan" },
+  { label: "HRD", value: "HRD" },
+]
+
+const initialProducts: SearchableSelectOption[] = [
+  { label: "Ceramic Coating A1", value: "Ceramic Coating A1" },
+  { label: "Nano Sealant", value: "Nano Sealant" },
+  { label: "Rak Besi Heavy Duty", value: "Rak Besi Heavy Duty" },
+  { label: "Bearing SKF 6205", value: "Bearing SKF 6205" },
+  { label: "V-Belt B86", value: "V-Belt B86" },
+  { label: "PPF Gloss 1.52x15m", value: "PPF Gloss 1.52x15m" },
+  { label: "Wax Premium Carnauba", value: "Wax Premium Carnauba" },
+  { label: "Machine Polisher Rupes", value: "Machine Polisher Rupes" },
+  { label: "Microfiber Cloth 40x40", value: "Microfiber Cloth 40x40" },
+  { label: "Isopropyl Alcohol 5L", value: "Isopropyl Alcohol 5L" },
+]
+
 /* ── Page ── */
 export default function PurchaseRequestsPage() {
   const [data, setData] = useState<PurchaseRequest[]>(initialPRs)
@@ -116,6 +148,11 @@ export default function PurchaseRequestsPage() {
   const [formItems, setFormItems] = useState<{ productName: string; qty: string; unit: string; specs: string; estPrice: string }[]>([
     { productName: "", qty: "1", unit: "pcs", specs: "", estPrice: "" },
   ])
+
+  /* ── Dropdown state (grows when user adds new) ── */
+  const [requesters, setRequesters] = useState(initialRequesters)
+  const [departments, setDepartments] = useState(initialDepartments)
+  const [products, setProducts] = useState(initialProducts)
 
   const filtered = useMemo(() => {
     if (!search) return data
@@ -319,21 +356,37 @@ export default function PurchaseRequestsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-slate-700">Pengaju *</Label>
-                  <Input
-                    value={form.requester}
-                    onChange={(e) => setForm((prev) => ({ ...prev, requester: e.target.value }))}
-                    placeholder="Nama pengaju"
-                    className="mt-1"
-                  />
+                  <div className="mt-1">
+                    <SearchableSelect
+                      options={requesters}
+                      value={form.requester}
+                      onSelect={(v) => setForm((prev) => ({ ...prev, requester: v }))}
+                      onAddNew={(v) => {
+                        setRequesters((prev) => [...prev, { label: v, value: v }])
+                        setForm((prev) => ({ ...prev, requester: v }))
+                      }}
+                      placeholder="Pilih pengaju"
+                      searchPlaceholder="Cari pengaju..."
+                      addNewLabel="Tambah Pengaju"
+                    />
+                  </div>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-slate-700">Departemen *</Label>
-                  <Input
-                    value={form.department}
-                    onChange={(e) => setForm((prev) => ({ ...prev, department: e.target.value }))}
-                    placeholder="Contoh: Purchasing"
-                    className="mt-1"
-                  />
+                  <div className="mt-1">
+                    <SearchableSelect
+                      options={departments}
+                      value={form.department}
+                      onSelect={(v) => setForm((prev) => ({ ...prev, department: v }))}
+                      onAddNew={(v) => {
+                        setDepartments((prev) => [...prev, { label: v, value: v }])
+                        setForm((prev) => ({ ...prev, department: v }))
+                      }}
+                      placeholder="Pilih departemen"
+                      searchPlaceholder="Cari departemen..."
+                      addNewLabel="Tambah Departemen"
+                    />
+                  </div>
                 </div>
               </div>
               <div>
@@ -371,12 +424,20 @@ export default function PurchaseRequestsPage() {
                     <tbody className="divide-y divide-slate-100">
                       {formItems.map((item, idx) => (
                         <tr key={idx}>
-                          <td className="px-3 py-1.5">
-                            <Input
+                          <td className="px-3 py-1.5 min-w-[180px]">
+                            <SearchableSelect
+                              options={products}
                               value={item.productName}
-                              onChange={(e) => updateFormItem(idx, "productName", e.target.value)}
-                              placeholder="Nama barang"
+                              onSelect={(v) => updateFormItem(idx, "productName", v)}
+                              onAddNew={(v) => {
+                                setProducts((prev) => [...prev, { label: v, value: v }])
+                                updateFormItem(idx, "productName", v)
+                              }}
+                              placeholder="Pilih barang"
+                              searchPlaceholder="Cari barang..."
+                              addNewLabel="Tambah Barang"
                               className="h-8 text-xs"
+                              triggerClassName="h-8 text-xs"
                             />
                           </td>
                           <td className="px-3 py-1.5">

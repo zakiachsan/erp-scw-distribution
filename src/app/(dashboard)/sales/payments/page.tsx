@@ -437,20 +437,11 @@ export default function PaymentsPage() {
                       <TableCell className="text-right">{formatIDR(payment.amount)}</TableCell>
                       <TableCell>{payment.date}</TableCell>
                       <TableCell>
-                        <select
-                          value={payment.status}
-                          onChange={(e) => {
-                            const newStatus = e.target.value as Payment["status"]
-                            setPayments((prev) =>
-                              prev.map((p) => (p.id === payment.id ? { ...p, status: newStatus } : p))
-                            )
-                          }}
-                          className={`cursor-pointer rounded-full border-0 px-2 py-0.5 text-[11px] font-medium outline-none transition-colors hover:opacity-80 ${statusConfig[payment.status].className}`}
+                        <span
+                          className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${statusConfig[payment.status].className}`}
                         >
-                          <option value="Completed">Completed</option>
-                          <option value="Pending">Pending</option>
-                          <option value="Failed">Failed</option>
-                        </select>
+                          {payment.status}
+                        </span>
                       </TableCell>
                       <TableCell><Badge variant="outline">{payment.method}</Badge></TableCell>
                     </TableRow>

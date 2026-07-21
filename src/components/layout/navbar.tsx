@@ -21,58 +21,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-
-const breadcrumbMap: Record<string, string> = {
-  dashboard: "Dashboard",
-  inventory: "Inventory",
-  products: "Products",
-  warehouse: "Warehouse / Rak",
-  "stock-opname": "Stock Opname",
-  "stock-alert": "Stock Alert",
-  "packing-materials": "Packing Materials",
-  purchasing: "Purchasing",
-  orders: "Purchase Orders",
-  suppliers: "Suppliers",
-  "usd-rate": "USD Rate",
-  sales: "Sales",
-  customers: "Customers",
-  invoices: "Invoices",
-  commission: "Commission",
-  "top-customers": "Most-Buy Customers",
-  "tiering-discount": "Tiering Discount",
-  shipping: "Shipping",
-  shipments: "Shipments",
-  couriers: "Couriers",
-  packing: "Packing",
-  queue: "Packing Queue",
-  videos: "Video Gallery",
-  materials: "Materials Stock",
-  accounting: "Accounting",
-  journal: "Journal",
-  ledger: "General Ledger",
-  "balance-sheet": "Balance Sheet",
-  pnl: "P&L",
-  "bank-reconciliation": "Bank Reconciliation",
-  "tax-pph": "Tax PPh",
-  "fixed-asset": "Fixed Asset",
-  budget: "Budget",
-  kpi: "KPI",
-  webcommerce: "WebCommerce",
-  catalog: "Catalog",
-  notifications: "Notifications",
-  settings: "Settings",
-  users: "Users",
-  roles: "Roles",
-  "activity-log": "Activity Log",
-  "sales-team": "Sales Team",
-}
+import { LanguageSwitcher } from "@/components/layout/language-switcher"
+import { useT } from "@/lib/i18n"
 
 export function Navbar() {
   const pathname = usePathname()
   const pathParts = pathname.split("/").filter(Boolean)
+  const { t, tBreadcrumb, mounted } = useT()
 
   const breadcrumbs = pathParts.map((part, index) => ({
-    label: breadcrumbMap[part] || part,
+    label: mounted ? tBreadcrumb(part) : part,
     href: "/" + pathParts.slice(0, index + 1).join("/"),
     isLast: index === pathParts.length - 1,
   }))
@@ -86,7 +44,7 @@ export function Navbar() {
             href="/"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            Home
+            {t("nav.home")}
           </Link>
           {breadcrumbs.map((crumb) => (
             <React.Fragment key={crumb.href}>
@@ -106,13 +64,13 @@ export function Navbar() {
         </nav>
       </div>
 
-      {/* Right side - Search, Notifications, User */}
+      {/* Right side - Search, Notifications, Language, User */}
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative hidden md:block">
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search..."
+            placeholder={t("nav.search")}
             className="w-64 pl-8 h-8"
           />
         </div>
@@ -128,6 +86,9 @@ export function Navbar() {
             </span>
           </button>
         </div>
+
+        {/* Language Switcher */}
+        <LanguageSwitcher />
 
         {/* User Dropdown */}
         <DropdownMenu>
@@ -148,12 +109,12 @@ export function Navbar() {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <User className="h-4 w-4" />
-              Profile
+              {t("nav.profile")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">
               <LogOut className="h-4 w-4" />
-              Logout
+              {t("nav.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

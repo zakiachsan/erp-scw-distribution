@@ -35,6 +35,10 @@ import {
   Weight,
   Truck,
   Printer,
+  Phone,
+  MapPin,
+  FileText,
+  Hash,
 } from "lucide-react"
 
 interface PackingVideo {
@@ -61,6 +65,7 @@ interface PackingDetail {
   id: string
   soRef: string
   customer: string
+  customerPhone: string
   customerAddress: string
   courier: string
   totalPrice: number
@@ -72,12 +77,12 @@ interface PackingDetail {
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
 const PACKING_DATA: Record<string, PackingDetail> = {
-  "PK-001": { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", courier: "JNE", totalPrice: 8500000, items: [{ name: "SCW Snow Foam", qty: 20 }, { name: "SCW Ceramic Coating", qty: 10 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 5, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
-  "PK-002": { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", courier: "J&T Express", totalPrice: 6200000, items: [{ name: "SCW Interior Detailer", qty: 15 }, { name: "SCW Tire Gel", qty: 25 }], materials: [{ name: "Box Medium", qty: 3, unit: "pcs" }, { name: "Bubble Wrap", qty: 8, unit: "meter" }, { name: "Selotip", qty: 4, unit: "roll" }, { name: "Filler Paper", qty: 10, unit: "lembar" }], status: "In Progress" },
-  "PK-003": { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", customerAddress: "Jl. Raya Bandung No. 456, Bandung", courier: "Cargo", totalPrice: 4500000, items: [{ name: "SCW Spray Wax", qty: 30 }, { name: "SCW Glass Cleaner", qty: 20 }], materials: [{ name: "Box Large", qty: 4, unit: "pcs" }, { name: "Bubble Wrap", qty: 12, unit: "meter" }, { name: "Selotip", qty: 6, unit: "roll" }, { name: "Palet Kayu", qty: 1, unit: "pcs" }], status: "Completed" },
-  "PK-004": { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", customerAddress: "Jl. Rungkut Mapan Utara No. 10, Surabaya", courier: "TIKI", totalPrice: 5800000, items: [{ name: "SCW Polish Compound", qty: 10 }], materials: [{ name: "Box Small", qty: 1, unit: "pcs" }, { name: "Bubble Wrap", qty: 3, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "Queued" },
-  "PK-005": { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", customerAddress: "Jl. A.P. Pettarani No. 22, Makassar", courier: "JNE", totalPrice: 3200000, items: [{ name: "SCW Snow Foam", qty: 25 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 6, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
-  "PK-006": { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", customerAddress: "Jl. Sunset Road No. 88, Seminyak, Bali", courier: "Kurir Instant", totalPrice: 6200000, items: [{ name: "SCW Ceramic Coating", qty: 8 }, { name: "SCW Spray Wax", qty: 12 }], materials: [{ name: "Box Medium", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 4, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "In Progress" },
+  "PK-001": { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", customerPhone: "0812-8899-4521", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", courier: "JNE", totalPrice: 8500000, items: [{ name: "SCW Snow Foam", qty: 20 }, { name: "SCW Ceramic Coating", qty: 10 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 5, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
+  "PK-002": { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerPhone: "0813-5522-7788", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", courier: "J&T Express", totalPrice: 6200000, items: [{ name: "SCW Interior Detailer", qty: 15 }, { name: "SCW Tire Gel", qty: 25 }], materials: [{ name: "Box Medium", qty: 3, unit: "pcs" }, { name: "Bubble Wrap", qty: 8, unit: "meter" }, { name: "Selotip", qty: 4, unit: "roll" }, { name: "Filler Paper", qty: 10, unit: "lembar" }], status: "In Progress" },
+  "PK-003": { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", customerPhone: "0821-3344-9012", customerAddress: "Jl. Raya Bandung No. 456, Bandung", courier: "Cargo", totalPrice: 4500000, items: [{ name: "SCW Spray Wax", qty: 30 }, { name: "SCW Glass Cleaner", qty: 20 }], materials: [{ name: "Box Large", qty: 4, unit: "pcs" }, { name: "Bubble Wrap", qty: 12, unit: "meter" }, { name: "Selotip", qty: 6, unit: "roll" }, { name: "Palet Kayu", qty: 1, unit: "pcs" }], status: "Completed" },
+  "PK-004": { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", customerPhone: "0856-7788-1234", customerAddress: "Jl. Rungkut Mapan Utara No. 10, Surabaya", courier: "TIKI", totalPrice: 5800000, items: [{ name: "SCW Polish Compound", qty: 10 }], materials: [{ name: "Box Small", qty: 1, unit: "pcs" }, { name: "Bubble Wrap", qty: 3, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "Queued" },
+  "PK-005": { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", customerPhone: "0811-4455-6677", customerAddress: "Jl. A.P. Pettarani No. 22, Makassar", courier: "JNE", totalPrice: 3200000, items: [{ name: "SCW Snow Foam", qty: 25 }], materials: [{ name: "Box Large", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 6, unit: "meter" }, { name: "Selotip", qty: 3, unit: "roll" }], status: "Queued" },
+  "PK-006": { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", customerPhone: "0819-2233-8899", customerAddress: "Jl. Sunset Road No. 88, Seminyak, Bali", courier: "Kurir Instant", totalPrice: 6200000, items: [{ name: "SCW Ceramic Coating", qty: 8 }, { name: "SCW Spray Wax", qty: 12 }], materials: [{ name: "Box Medium", qty: 2, unit: "pcs" }, { name: "Bubble Wrap", qty: 4, unit: "meter" }, { name: "Selotip", qty: 2, unit: "roll" }], status: "In Progress" },
 }
 
 let videoIdCounter = 100
@@ -451,47 +456,67 @@ export default function PackingDetailPage({ params }: { params: Promise<{ id: st
                 <Truck className="h-4 w-4" />
                 Delivery Tag
               </CardTitle>
-              <CardDescription className="text-[10px]">Tempelan nama, alamat, kurir & nilai asuransi</CardDescription>
+              <CardDescription className="text-[10px]">Tempelan nama, alamat, no. telp, kurir & nilai asuransi</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="rounded-lg border bg-white p-4 space-y-3">
-                {/* Pengirim */}
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Pengirim</div>
-                <div className="text-sm font-bold">SCW Distribution</div>
-                <div className="text-xs text-muted-foreground">Jl. Industri Raya No. 123, Jakarta Utara 14310</div>
-
-                <div className="border-t border-dashed" />
-
-                {/* Penerima */}
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Penerima</div>
-                <div className="text-sm font-bold">{detail.customer}</div>
-                <div className="text-xs text-muted-foreground leading-relaxed">{detail.customerAddress}</div>
-
-                <div className="border-t border-dashed" />
-
-                {/* Kurir & Asuransi */}
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Kurir</div>
-                    <div className="text-sm font-bold text-blue-600">{detail.courier}</div>
+              <div className="rounded-lg border bg-white overflow-hidden">
+                {/* Reference strip — Packing Slip ID & SO Reference */}
+                <div className="grid grid-cols-2 divide-x border-b bg-slate-50">
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
+                      <Hash className="h-3 w-3" />
+                      Packing Slip
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold tracking-tight">{detail.id}</div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Nilai Asuransi</div>
-                    <div className="text-sm font-bold text-amber-600">{formatIDR(detail.totalPrice)}</div>
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider">
+                      <FileText className="h-3 w-3" />
+                      SO Reference
+                    </div>
+                    <div className="mt-0.5 font-mono text-sm font-bold tracking-tight">{detail.soRef}</div>
                   </div>
                 </div>
 
-                <div className="border-t border-dashed" />
-
-                {/* Packing ID */}
-                <div className="flex justify-between items-center">
+                <div className="space-y-3 p-4">
+                  {/* Penerima */}
                   <div>
-                    <div className="text-[10px] text-muted-foreground">Packing Slip</div>
-                    <div className="text-xs font-mono font-bold">{detail.id}</div>
+                    <div className="mb-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">Penerima</div>
+                    <div className="text-base font-bold">{detail.customer}</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-700">
+                      <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                      {detail.customerPhone}
+                    </div>
+                    <div className="mt-1 flex items-start gap-1.5 text-xs text-muted-foreground leading-relaxed">
+                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      {detail.customerAddress}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-[10px] text-muted-foreground">SO Reference</div>
-                    <div className="text-xs font-mono font-bold">{detail.soRef}</div>
+
+                  <div className="border-t border-dashed" />
+
+                  {/* Pengirim */}
+                  <div>
+                    <div className="mb-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">Pengirim</div>
+                    <div className="text-sm font-semibold">SCW Distribution</div>
+                    <div className="mt-0.5 flex items-start gap-1.5 text-xs text-muted-foreground leading-relaxed">
+                      <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      Jl. Industri Raya No. 123, Jakarta Utara 14310
+                    </div>
+                  </div>
+
+                  <div className="border-t border-dashed" />
+
+                  {/* Kurir & Asuransi */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Kurir</div>
+                      <div className="text-sm font-bold text-blue-600">{detail.courier}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Nilai Asuransi</div>
+                      <div className="text-sm font-bold text-amber-600">{formatIDR(detail.totalPrice)}</div>
+                    </div>
                   </div>
                 </div>
               </div>

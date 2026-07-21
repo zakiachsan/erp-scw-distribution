@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download } from "lucide-react"
+import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download, ArrowLeft } from "lucide-react"
 import { dummySalesOrders, type SalesOrder } from "@/lib/accounting-dummy-data"
+import { JournalDetailPanel } from "@/components/accounting/journal-detail-panel"
 
 const thStyle: React.CSSProperties = { padding: "8px 10px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", borderBottom: "1px solid #e0e0e0" }
 const thRight: React.CSSProperties = { ...thStyle, textAlign: "right" }
@@ -19,6 +20,7 @@ export default function FakturPenjualanPage() {
   const [showForm, setShowForm] = useState(false)
   const [filterStatus, setFilterStatus] = useState("semua")
   const [formData, setFormData] = useState({ pelanggan: "", tanggal: "06/07/2026", nomorOtomatis: true, tipeNomor: "Sales Invoice" })
+  const [selected, setSelected] = useState<SalesOrder | null>(null)
 
   const filtered = dummySalesOrders.filter((i: SalesOrder) => {
     if (search && !i.pelanggan.toLowerCase().includes(search.toLowerCase())) return false
@@ -109,23 +111,91 @@ export default function FakturPenjualanPage() {
         </div>
       )}
 
-      <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead><tr style={{ background: "#fff" }}>
-            <th style={thStyle}>Nomor #</th>
-            <th style={thStyle}>Tanggal</th>
-            <th style={thStyle}>Pelanggan</th>
-            <th style={thStyle}>Keterangan</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Tipe ID Wajib</th>
-            <th style={thStyle}>Umur (hr)</th>
-            <th style={thRight}>Total</th>
-          </tr></thead>
-          <tbody>
-            <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
-          </tbody>
-        </table>
-      </div>
+      {/* Detail view */}
+      {selected ? (
+        <div style={{ flex: 1, overflow: "auto", background: "#fff", padding: "16px 20px" }}>
+          <button onClick={() => setSelected(null)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#0176d3", background: "none", border: "none", cursor: "pointer", marginBottom: 16, padding: 0 }}>
+            <ArrowLeft size={14} /> Kembali ke daftar
+          </button>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#001526", margin: 0 }}>{selected.nomor}</h2>
+              <p style={{ fontSize: 13, color: "#444746", margin: "2px 0 0" }}>{selected.pelanggan} — {selected.tanggal}</p>
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 10, background: selected.status === "Approved" ? "#e6f7e6" : selected.status === "Draft" ? "#f5f5f5" : "#e0f0ff", color: selected.status === "Approved" ? "#1a7a1a" : selected.status === "Draft" ? "#666" : "#0176d3" }}>
+              {selected.status}
+            </span>
+          </div>
+
+          {/* Items table */}
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>
+            <thead><tr>
+              <th style={thStyle}>Barang / Jasa</th>
+              <th style={thStyle}>Kode</th>
+              <th style={{ ...thRight, width: 70 }}>Qty</th>
+              <th style={{ ...thStyle, width: 70 }}>Satuan</th>
+              <th style={{ ...thRight, width: 120 }}>Harga</th>
+              <th style={{ ...thRight, width: 120 }}>Diskon</th>
+              <th style={{ ...thRight, width: 130 }}>Total</th>
+            </tr></thead>
+            <tbody>
+              {selected.items.map((item, i) => (
+                <tr key={i} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                  <td style={{ padding: "8px 10px", fontSize: 13, color: "#001526" }}>{item.namaBarang}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 12, fontFamily: "monospace", color: "#888" }}>{item.kodeBarang}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right" }}>{item.qty}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 13, color: "#666" }}>{item.satuan}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontFamily: "monospace" }}>Rp {item.harga.toLocaleString("id-ID")}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontFamily: "monospace", color: item.diskon > 0 ? "#c00" : "#888" }}>{item.diskon > 0 ? `Rp ${item.diskon.toLocaleString("id-ID")}` : "-"}</td>
+                  <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>Rp {item.total.toLocaleString("id-ID")}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ borderTop: "2px solid #e0e0e0", background: "#f8f9fa" }}>
+                <td colSpan={6} style={{ padding: "8px 10px", fontSize: 13, fontWeight: 700, textAlign: "right", color: "#444746" }}>TOTAL</td>
+                <td style={{ padding: "8px 10px", fontSize: 14, fontWeight: 700, textAlign: "right", fontFamily: "monospace", color: "#001526" }}>Rp {selected.total.toLocaleString("id-ID")}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {/* Rincian Jurnal */}
+          <JournalDetailPanel sourceId={selected.id} />
+        </div>
+      ) : (
+        /* List view */
+        <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead><tr style={{ background: "#fff" }}>
+              <th style={thStyle}>Nomor #</th>
+              <th style={thStyle}>Tanggal</th>
+              <th style={thStyle}>Pelanggan</th>
+              <th style={thStyle}>Keterangan</th>
+              <th style={thStyle}>Status</th>
+              <th style={thRight}>Total</th>
+            </tr></thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              ) : (
+                filtered.map((item) => (
+                  <tr key={item.id} onClick={() => setSelected(item)} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", fontSize: 13, color: "#001526" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f7ff")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                    <td style={{ padding: "8px 10px", fontFamily: "monospace", fontWeight: 500, color: "#0176d3" }}>{item.nomor}</td>
+                    <td style={{ padding: "8px 10px", color: "#444746" }}>{item.tanggal}</td>
+                    <td style={{ padding: "8px 10px" }}>{item.pelanggan}</td>
+                    <td style={{ padding: "8px 10px", color: "#444746" }}>{item.keterangan}</td>
+                    <td style={{ padding: "8px 10px" }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 10, background: item.status === "Approved" ? "#e6f7e6" : item.status === "Draft" ? "#f5f5f5" : "#e0f0ff", color: item.status === "Approved" ? "#1a7a1a" : item.status === "Draft" ? "#666" : "#0176d3" }}>{item.status}</span>
+                    </td>
+                    <td style={{ padding: "8px 10px", textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>Rp {item.total.toLocaleString("id-ID")}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

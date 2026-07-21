@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { dummyJournalEntries, JournalEntry } from "@/lib/accounting-dummy-data"
+import { JournalDetailPanel } from "@/components/accounting/journal-detail-panel"
 
 /* ── Inline SVG icons ── */
 const Icon = ({ children, size = 14 }: { children: React.ReactNode; size?: number }) => (
@@ -53,6 +54,7 @@ export default function JurnalUmumPage() {
   const [filterTanggal, setFilterTanggal] = useState("semua")
   const [filterTipe, setFilterTipe] = useState("semua")
   const [showForm, setShowForm] = useState(false)
+  const [selected, setSelected] = useState<JournalEntry | null>(null)
 
   const [formData, setFormData] = useState({
     tanggal: "06/07/2026",
@@ -216,6 +218,7 @@ export default function JurnalUmumPage() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
+              <th style={{ ...thStyle, width: 36 }}></th>
               {[
                 { label: "Nomor #", width: "14%" },
                 { label: "No. Trans #", width: "14%" },
@@ -231,17 +234,51 @@ export default function JurnalUmumPage() {
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
             ) : (
-              filtered.map((item) => (
-                <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0", cursor: "pointer", fontSize: 13, color: "#001526" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f7ff")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                  <td style={{ padding: "8px 12px", fontFamily: "monospace", fontWeight: 500 }}>{item.nomor}</td>
-                  <td style={{ padding: "8px 12px", color: "#0176d3" }}>{item.noTrans}</td>
-                  <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tanggal}</td>
-                  <td style={{ padding: "8px 12px", color: "#444746" }}>{item.keterangan}</td>
-                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace" }}>Rp {item.total.toLocaleString("id-ID")}</td>
-                </tr>
-              ))
+              filtered.map((item) => {
+                const isOpen = selected?.id === item.id
+                return (
+                  <Fragment key={item.id}>
+                    <tr
+                      onClick={() => setSelected(isOpen ? null : item)}
+                      style={{
+                        borderBottom: isOpen ? "none" : "1px solid #f0f0f0", cursor: "pointer", fontSize: 13, color: "#001526",
+                        background: isOpen ? "#e8f2fc" : "transparent",
+                        transition: "background 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "#f0f7ff" }}
+                      onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.background = "transparent" }}
+                    >
+                      <td style={{ padding: "8px 0 8px 12px", width: 36 }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", justifyContent: "center",
+                          width: 20, height: 20, borderRadius: 4, color: isOpen ? "#0176d3" : "#999",
+                          background: isOpen ? "#dbeafe" : "transparent",
+                          transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                          transition: "transform 0.2s ease, background 0.2s ease, color 0.2s ease",
+                        }}>
+                          <Icon size={13}><polyline points="9 18 15 12 9 6" /></Icon>
+                        </span>
+                      </td>
+                      <td style={{ padding: "8px 12px", fontFamily: "monospace", fontWeight: 500 }}>{item.nomor}</td>
+                      <td style={{ padding: "8px 12px", color: "#0176d3" }}>{item.noTrans}</td>
+                      <td style={{ padding: "8px 12px", color: "#444746" }}>{item.tanggal}</td>
+                      <td style={{ padding: "8px 12px", color: "#444746" }}>{item.keterangan}</td>
+                      <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "monospace" }}>Rp {item.total.toLocaleString("id-ID")}</td>
+                    </tr>
+
+                    {/* Expandable Rincian Jurnal — inline right below the selected row */}
+                    {isOpen && (
+                      <tr style={{ background: "#f7fafd", borderBottom: "1px solid #e0e0e0" }}>
+                        <td colSpan={6} style={{ padding: "14px 20px 18px 48px" }}>
+                          <JournalDetailPanel sourceId={item.id} title={`Rincian Jurnal — ${item.nomor}`} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                )
+              })
             )}
           </tbody>
         </table>
