@@ -55,17 +55,41 @@ const btnIcon: React.CSSProperties = {
 const btnIconBlue: React.CSSProperties = { ...btnIcon, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6 }
 const btnIconWhite: React.CSSProperties = { ...btnIcon, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6 }
 
+/* ── Auto-numbering: prefix per tipe akun ── */
+const kodePrefix: Record<string, string> = {
+  "Kas & Bank": "1101",
+  "Piutang": "1200",
+  "Persediaan": "1300",
+  "Aset Lancar Lainnya": "1400",
+  "Aset Tetap": "1500",
+  "Kewajiban": "2100",
+  "Modal": "3100",
+  "Pendapatan": "4100",
+  "Beban": "5100",
+  "Beban Lain-lain": "5900",
+}
+
+function getNextKode(tipe: string, accs: Account[]): string {
+  const prefix = kodePrefix[tipe] || "1100"
+  const existing = accs
+    .filter((a) => a.kode.startsWith(prefix))
+    .map((a) => parseInt(a.kode, 10))
+    .filter((n) => !isNaN(n))
+  return existing.length > 0 ? String(Math.max(...existing) + 1) : prefix + "01"
+}
+
 export default function AkunPerkiraanPage() {
   const [search, setSearch] = useState("")
   const [filterNonAktif, setFilterNonAktif] = useState("semua")
   const [filterTipe, setFilterTipe] = useState("semua")
   const [showForm, setShowForm] = useState(false)
   const [formTab, setFormTab] = useState<FormTab>("informasi")
+  const [accounts, setAccounts] = useState<Account[]>(dummyAccounts)
 
   const [formData, setFormData] = useState({
     tipeAkun: "Kas & Bank",
     subAkun: false,
-    kodePerkiraan: "1101",
+    kodePerkiraan: getNextKode("Kas & Bank", dummyAccounts),
     nama: "",
     saldoAwal: 0,
     perTanggal: "01/07/2026",
@@ -73,26 +97,11 @@ export default function AkunPerkiraanPage() {
     semuaPengguna: true,
   })
 
-  // Auto-generate kode perkiraan based on tipe akun
-  const kodePrefix: Record<string, string> = {
-    "Kas & Bank": "1101",
-    "Piutang": "1200",
-    "Persediaan": "1300",
-    "Aset Lancar Lainnya": "1400",
-    "Aset Tetap": "1500",
-    "Kewajiban": "2100",
-    "Modal": "3100",
-    "Pendapatan": "4100",
-    "Beban": "5100",
-    "Beban Lain-lain": "5900",
-  }
-
   const handleTipeAkunChange = (newTipe: string) => {
-    const prefix = kodePrefix[newTipe] || "1100"
-    setFormData({ ...formData, tipeAkun: newTipe, kodePerkiraan: prefix })
+    setFormData({ ...formData, tipeAkun: newTipe, kodePerkiraan: getNextKode(newTipe, accounts) })
   }
 
-  const filtered = dummyAccounts.filter((item) => {
+  const filtered = accounts.filter((item) => {
     if (filterNonAktif === "aktif" && item.nonAktif) return false
     if (filterNonAktif === "nonaktif" && !item.nonAktif) return false
     if (filterTipe !== "semua" && item.tipeAkun !== filterTipe) return false
@@ -101,10 +110,18 @@ export default function AkunPerkiraanPage() {
   })
 
   const handleSave = () => {
-    console.log("Save:", formData)
-    setShowForm(false)
-    setFormTab("informasi")
-  }
+      const newAccount: Account = {
+        id: `acc-new-${Date.now()}`,
+        kode: formData.kodePerkiraan,
+        nama: formData.nama || "Akun Baru",
+        tipeAkun: formData.tipeAkun as Account["tipeAkun"],
+        saldo: formData.saldoAwal,
+      }
+      setAccounts([...accounts, newAccount])
+      setShowForm(false)
+      setFormTab("informasi")
+      setFormData({ ...formData, nama: "", saldoAwal: 0, catatan: "", kodePerkiraan: getNextKode(formData.tipeAkun, [...accounts, newAccount]) })
+    }
 
   const formTabs: { key: FormTab; label: string }[] = [
     { key: "informasi", label: "Informasi Umum" },
@@ -215,9 +232,10 @@ export default function AkunPerkiraanPage() {
                       <label style={{ fontSize: 13, color: "#444746" }}>Sub Akun</label>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <label style={labelStyle}>Kode Perkiraan *</label>
-                      <input type="text" value={formData.kodePerkiraan} onChange={(e) => setFormData({ ...formData, kodePerkiraan: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
-                    </div>
+                                          <label style={labelStyle}>Kode Perkiraan *</label>
+                                          <input type="text" value={formData.kodePerkiraan} onChange={(e) => setFormData({ ...formData, kodePerkiraan: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
+                                          <span style={{ fontSize: 11, color: "#0176d3", fontStyle: "italic" }}>Otomatis berdasarkan tipe akun</span>
+                                        </div>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <label style={labelStyle}>Nama *</label>

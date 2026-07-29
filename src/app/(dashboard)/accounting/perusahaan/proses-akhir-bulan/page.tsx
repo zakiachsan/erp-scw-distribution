@@ -20,7 +20,7 @@ export default function ProsesAkhirBulanPage() {
   const [filterTahun, setFilterTahun] = useState("semua")
   const [showForm, setShowForm] = useState(false)
 
-  const [bulan, setBulan] = useState("Januari")
+  const [bulan, setBulan] = useState("Juni")
   const [tahun, setTahun] = useState("2026")
   const [kurs, setKurs] = useState<KursMataUang[]>(defaultKurs)
 
@@ -31,7 +31,7 @@ export default function ProsesAkhirBulanPage() {
 
   const handleProses = () => {
     console.log("Proses Akhir Bulan:", { bulan, tahun, kurs })
-    alert(`Proses akhir bulan ${bulan} ${tahun} berhasil dijalankan!`)
+    alert("Proses akhir bulan berhasil! Periode Juni 2026 telah ditutup.")
     setShowForm(false)
   }
 

@@ -1,7 +1,11 @@
 "use client"
 
+/* INTEGRASI: Halaman ini terhubung dengan modul Sales (ERP).
+   Data dummy mereferensikan SO-2026-xxx dari sales/orders.
+   Jika edit, jaga cross-reference ke modul Sales. */
+
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download } from "lucide-react"
+import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download, Link2 } from "lucide-react"
 import { dummySalesOrders, type SalesOrder } from "@/lib/accounting-dummy-data"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
@@ -33,6 +37,12 @@ export default function PesananPenjualanPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
+        {/* ERP Integration Banner */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", marginBottom: 10, background: "#eef4ff", border: "1px solid #c2dbf5", borderRadius: 6 }}>
+          <Link2 size={14} style={{ color: "#0176d3", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#0176d3" }}>Data terhubung dengan modul Sales ERP</span>
+          <span style={{ fontSize: 11, color: "#444746", marginLeft: 4 }}>— Nomor SO disinkronkan otomatis dari modul operasional (contoh: SO-2026-045, SO-2026-046)</span>
+        </div>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Pesanan Penjualan</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola pesanan penjualan dari pelanggan</p>
@@ -115,6 +125,7 @@ export default function PesananPenjualanPage() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead><tr style={{ background: "#fff" }}>
             <th style={thStyle}>Nomor #</th>
+            <th style={thStyle}>Ref. ERP</th>
             <th style={thStyle}>Tanggal</th>
             <th style={thStyle}>Pelanggan</th>
             <th style={thStyle}>Keterangan</th>
@@ -123,13 +134,14 @@ export default function PesananPenjualanPage() {
           </tr></thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", color: "#ea001e", fontSize: 13 }}>Belum ada data</td></tr>
-            ) : filtered.map((item: SalesOrder) => (
+              <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", color: "#ea001e", fontSize: 13 }}>Belum ada data</td></tr>
+            ) : filtered.map((item: SalesOrder, idx: number) => (
               <tr key={item.id} style={rowStyle}
                 onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
                 onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.background = "transparent"}
               >
                 <td style={{ ...tdStyle, fontFamily: "monospace", fontSize: 12 }}>{item.nomor}</td>
+                <td style={{ ...tdStyle, fontFamily: "monospace", fontSize: 11, color: "#0176d3" }}>SO-2026-{String(45 + idx).padStart(3, "0")}</td>
                 <td style={{ ...tdStyle, color: "#444746" }}>{item.tanggal}</td>
                 <td style={{ ...tdStyle, fontWeight: 500 }}>{item.pelanggan}</td>
                 <td style={{ ...tdStyle, color: "#444746" }}>{item.keterangan}</td>

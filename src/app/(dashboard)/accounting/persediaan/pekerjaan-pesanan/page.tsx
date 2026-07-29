@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { dummyJobOrders, type JobOrder } from "@/lib/accounting-dummy-data"
+import { dummyJobOrders, dummyProducts, type JobOrder } from "@/lib/accounting-dummy-data"
 
 /* ── Inline SVG icons ── */
 const Icon = ({ children, size = 14 }: { children: React.ReactNode; size?: number }) => (
@@ -38,7 +38,7 @@ export default function PekerjaanPesananPage() {
   const [filterStatus, setFilterStatus] = useState("semua")
 
   const filtered = dummyJobOrders.filter(i => {
-    if (search && !i.nomor.toLowerCase().includes(search.toLowerCase()) && !i.pelanggan.toLowerCase().includes(search.toLowerCase())) return false
+      if (search && !i.nomor.toLowerCase().includes(search.toLowerCase()) && !i.keterangan.toLowerCase().includes(search.toLowerCase())) return false
     if (filterStatus !== "semua" && i.status !== filterStatus) return false
     return true
   })
@@ -69,7 +69,7 @@ export default function PekerjaanPesananPage() {
           <div style={{ flex: 1 }} />
           <div style={{ position: "relative" }}>
             <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", display: "flex" }}><SearchIcon /></span>
-            <input type="text" placeholder="Cari..." value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && setSearch(search)} style={{ ...inputStyle, paddingLeft: 30, width: 200, height: 32 }} />
+            <input type="text" placeholder="Cari barang..." value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && setSearch(search)} style={{ ...inputStyle, paddingLeft: 30, width: 200, height: 32 }} />
           </div>
           <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
         </div>
@@ -90,9 +90,14 @@ export default function PekerjaanPesananPage() {
                 <input style={inputStyle} placeholder="Otomatis" />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Pelanggan *</label>
-                <input style={inputStyle} placeholder="Cari/Pilih..." />
-              </div>
+                              <label style={labelStyle}>Barang *</label>
+                              <select style={{ ...selectStyle, flex: 1 }}>
+                                <option value="">Cari/Pilih Barang...</option>
+                                {dummyProducts.map(p => (
+                                  <option key={p.id} value={p.id}>{p.kode} - {p.nama}</option>
+                                ))}
+                              </select>
+                            </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Keterangan</label>
                 <input style={inputStyle} placeholder="Deskripsi" />

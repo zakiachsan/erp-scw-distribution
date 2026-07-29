@@ -36,6 +36,7 @@ interface PackingOrder {
   id: string
   soRef: string
   customer: string
+  customerPhone: string
   channel: "Web" | "ERP"
   items: string
   itemQty: number
@@ -44,12 +45,12 @@ interface PackingOrder {
 }
 
 const packingOrders: PackingOrder[] = [
-  { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", channel: "ERP", items: "SCW Snow Foam x20, SCW Ceramic Coating x10", itemQty: 30, status: "Queued", createdAt: "2026-06-01 14:30" },
-  { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", channel: "Web", items: "SCW Interior Detailer x15, SCW Tire Gel x25", itemQty: 40, status: "In Progress", createdAt: "2026-05-30 09:15" },
-  { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", channel: "ERP", items: "SCW Spray Wax x30, SCW Glass Cleaner x20", itemQty: 50, status: "Completed", createdAt: "2026-05-28 11:00" },
-  { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", channel: "Web", items: "SCW Polish Compound x10", itemQty: 10, status: "Queued", createdAt: "2026-05-18 13:45" },
-  { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", channel: "ERP", items: "SCW Snow Foam x25", itemQty: 25, status: "Queued", createdAt: "2026-05-15 08:30" },
-  { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", channel: "Web", items: "SCW Ceramic Coating x8, SCW Spray Wax x12", itemQty: 20, status: "In Progress", createdAt: "2026-06-02 10:00" },
+  { id: "PK-001", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", customerPhone: "0812-8899-4521", channel: "ERP", items: "SCW Snow Foam x20, SCW Ceramic Coating x10", itemQty: 30, status: "Queued", createdAt: "2026-06-01 14:30" },
+  { id: "PK-002", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerPhone: "0813-5522-7788", channel: "Web", items: "SCW Interior Detailer x15, SCW Tire Gel x25", itemQty: 40, status: "In Progress", createdAt: "2026-05-30 09:15" },
+  { id: "PK-003", soRef: "SO-2026-043", customer: "UD Shinemax", customerPhone: "0821-3344-9012", channel: "ERP", items: "SCW Spray Wax x30, SCW Glass Cleaner x20", itemQty: 50, status: "Completed", createdAt: "2026-05-28 11:00" },
+  { id: "PK-004", soRef: "SO-2026-040", customer: "CV ProShine SBY", customerPhone: "0856-7788-1234", channel: "Web", items: "SCW Polish Compound x10", itemQty: 10, status: "Queued", createdAt: "2026-05-18 13:45" },
+  { id: "PK-005", soRef: "SO-2026-039", customer: "AutoCare Makassar", customerPhone: "0811-4455-6677", channel: "ERP", items: "SCW Snow Foam x25", itemQty: 25, status: "Queued", createdAt: "2026-05-15 08:30" },
+  { id: "PK-006", soRef: "SO-2026-046", customer: "GlossUp Bali", customerPhone: "0819-2233-8899", channel: "Web", items: "SCW Ceramic Coating x8, SCW Spray Wax x12", itemQty: 20, status: "In Progress", createdAt: "2026-06-02 10:00" },
 ]
 
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -180,7 +181,10 @@ export default function PackingPage() {
                   <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/packing/${order.id}`)}>
                     <TableCell className="font-sans text-xs font-medium text-blue-600 hover:underline">{order.id}</TableCell>
                     <TableCell className="font-sans text-xs">{order.soRef}</TableCell>
-                    <TableCell className="font-medium">{order.customer}</TableCell>
+                    <TableCell>
+                      <p className="font-medium">{order.customer}</p>
+                      <p className="text-xs text-muted-foreground">{order.customerPhone}</p>
+                    </TableCell>
                     <TableCell className="text-muted-foreground text-xs max-w-48 truncate">{order.items}</TableCell>
                     <TableCell className="text-right">{order.itemQty}</TableCell>
                     <TableCell>

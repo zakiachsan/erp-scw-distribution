@@ -64,6 +64,7 @@ export default function InvoiceDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded">Status dikelola oleh Accounting & Finance</span>
           <Button variant="outline" onClick={() => window.print()}>
             <Printer className="mr-2 h-4 w-4" />
             Print

@@ -147,7 +147,6 @@ export const MODULES: ModuleInfo[] = [
           { label: "Pembayaran", href: "/accounting/kas-bank/pembayaran" },
           { label: "Penerimaan", href: "/accounting/kas-bank/penerimaan" },
           { label: "Transfer Bank", href: "/accounting/kas-bank/transfer-bank" },
-          { label: "Smartlink E-Banking", href: "/accounting/kas-bank/smartlink-ebanking" },
           { label: "Rekening Koran", href: "/accounting/kas-bank/rekening-koran" },
           { label: "Rekonsiliasi Bank", href: "/accounting/kas-bank/rekonsiliasi-bank" },
           { label: "Histori Bank", href: "/accounting/kas-bank/histori-bank" },

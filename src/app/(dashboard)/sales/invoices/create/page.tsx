@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -142,7 +143,17 @@ const purchaseOrders: PO[] = [
 const invoiceableStatuses = ["Confirmed", "Processing", "Shipped", "Completed"]
 
 export default function CreateInvoicePage() {
-  const [selectedPOId, setSelectedPOId] = useState("")
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Memuat...</div>}>
+      <CreateInvoiceContent />
+    </Suspense>
+  )
+}
+
+function CreateInvoiceContent() {
+  const searchParams = useSearchParams()
+  const fromSO = searchParams.get("from")
+  const [selectedPOId, setSelectedPOId] = useState(fromSO || "")
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split("T")[0])
   const [paymentTerms, setPaymentTerms] = useState("")
   const [notes, setNotes] = useState("")

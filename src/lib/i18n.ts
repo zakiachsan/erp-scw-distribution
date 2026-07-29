@@ -358,3 +358,35 @@ export function useT() {
     tModuleDesc: (id: string) => moduleDescs[active][id] ?? moduleDescs.id[id] ?? "",
   }
 }
+
+/* ── Common UI labels — for pages that still have mixed language ── */
+const common: Record<Lang, Record<string, string>> = {
+  id: {
+    save: "Simpan", cancel: "Batal", delete: "Hapus", edit: "Ubah", add: "Tambah",
+    search: "Cari", filter: "Filter", all: "Semua", status: "Status", date: "Tanggal",
+    total: "Total", amount: "Jumlah", notes: "Catatan", actions: "Aksi",
+    customer: "Pelanggan", supplier: "Pemasok", product: "Barang", category: "Kategori",
+    price: "Harga", qty: "Qty", discount: "Diskon", tax: "Pajak", subtotal: "Subtotal",
+    paid: "Lunas", unpaid: "Belum Dibayar", partial: "Sebagian", overdue: "Jatuh Tempo",
+    print: "Cetak", download: "Unduh", back: "Kembali", close: "Tutup",
+    confirm: "Konfirmasi", loading: "Memuat...", noData: "Tidak ada data",
+    create: "Buat", view: "Lihat", detail: "Detail",
+  },
+  en: {
+    save: "Save", cancel: "Cancel", delete: "Delete", edit: "Edit", add: "Add",
+    search: "Search", filter: "Filter", all: "All", status: "Status", date: "Date",
+    total: "Total", amount: "Amount", notes: "Notes", actions: "Actions",
+    customer: "Customer", supplier: "Supplier", product: "Product", category: "Category",
+    price: "Price", qty: "Qty", discount: "Discount", tax: "Tax", subtotal: "Subtotal",
+    paid: "Paid", unpaid: "Unpaid", partial: "Partial", overdue: "Overdue",
+    print: "Print", download: "Download", back: "Back", close: "Close",
+    confirm: "Confirm", loading: "Loading...", noData: "No data",
+    create: "Create", view: "View", detail: "Detail",
+  },
+}
+
+/* ── Print helper — always uses Bahasa Indonesia for print-outs ── */
+export const printLang = common.id
+export function printLabel(key: string): string {
+  return common.id[key] ?? key
+}

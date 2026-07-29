@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Printer, Download, ShoppingCart, TrendingUp, BarChart3 } from "lucide-react"
+import { Printer, Download, ShoppingCart, TrendingUp, BarChart3, Bookmark, X } from "lucide-react"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -30,9 +30,37 @@ const avgPerOrder = totalPenjualan / totalOrder
 
 const thStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", padding: "10px 16px", borderBottom: "2px solid #ecebea", whiteSpace: "nowrap" }
 const tdStyle: React.CSSProperties = { fontSize: 13, color: "#001526", padding: "10px 16px", borderBottom: "1px solid #f0f0f0" }
+const inputStyle: React.CSSProperties = { height: 34, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", boxSizing: "border-box" }
+
+interface FilterPreset { nama: string; tanggalAwal: string; tanggalAkhir: string; periode: string }
 
 export default function LaporanPenjualanPage() {
   const [period, setPeriod] = useState("Juni 2026")
+  const [tanggalAwal, setTanggalAwal] = useState("01/01/2026")
+  const [tanggalAkhir, setTanggalAkhir] = useState("30/06/2026")
+  const [savedPresets, setSavedPresets] = useState<FilterPreset[]>([
+    { nama: "Q1 2026", tanggalAwal: "01/01/2026", tanggalAkhir: "31/03/2026", periode: "Maret 2026" },
+    { nama: "Semester 1", tanggalAwal: "01/01/2026", tanggalAkhir: "30/06/2026", periode: "Juni 2026" },
+  ])
+  const [presetName, setPresetName] = useState("")
+  const [showPresetInput, setShowPresetInput] = useState(false)
+
+  const handleSimpanFilter = () => {
+    if (!presetName.trim()) return
+    setSavedPresets(prev => [...prev, { nama: presetName.trim(), tanggalAwal, tanggalAkhir, periode: period }])
+    setPresetName("")
+    setShowPresetInput(false)
+  }
+
+  const handleApplyPreset = (p: FilterPreset) => {
+    setTanggalAwal(p.tanggalAwal)
+    setTanggalAkhir(p.tanggalAkhir)
+    setPeriod(p.periode)
+  }
+
+  const handleRemovePreset = (nama: string) => {
+    setSavedPresets(prev => prev.filter(p => p.nama !== nama))
+  }
 
   const summaryCards = [
     { title: "Total Penjualan", value: formatIDR(totalPenjualan), desc: `${monthlyData.length} bulan`, icon: TrendingUp, color: "#7c3aed", bg: "#f5f3ff" },
@@ -46,7 +74,7 @@ export default function LaporanPenjualanPage() {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#001526" }}>Laporan Penjualan</h1>
-          <p style={{ fontSize: 13, color: "#444746", marginTop: 4 }}>Ringkasan penjualan — Periode: 1 Januari - 30 Juni 2026</p>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 4 }}>Ringkasan penjualan — Periode: {tanggalAwal} - {tanggalAkhir}</p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <select value={period} onChange={e => setPeriod(e.target.value)} style={{ height: 34, padding: "0 12px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", background: "#fff" }}>
@@ -59,6 +87,42 @@ export default function LaporanPenjualanPage() {
             <Printer size={14} /> Cetak
           </button>
         </div>
+      </div>
+
+      {/* Date Range Filter + Memorize */}
+      <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, padding: "14px 20px", marginBottom: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#444746" }}>Rentang Tanggal:</span>
+          <input style={{ ...inputStyle, width: 120 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} placeholder="DD/MM/YYYY" />
+          <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
+          <input style={{ ...inputStyle, width: 120 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} placeholder="DD/MM/YYYY" />
+          <div style={{ flex: 1 }} />
+          {showPresetInput ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <input style={{ ...inputStyle, width: 160 }} value={presetName} onChange={e => setPresetName(e.target.value)} placeholder="Nama preset..." onKeyDown={e => e.key === "Enter" && handleSimpanFilter()} autoFocus />
+              <button onClick={handleSimpanFilter} style={{ height: 34, padding: "0 12px", fontSize: 12, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>Simpan</button>
+              <button onClick={() => setShowPresetInput(false)} style={{ height: 34, padding: "0 10px", fontSize: 12, fontWeight: 600, background: "#fff", color: "#444746", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}>Batal</button>
+            </div>
+          ) : (
+            <button onClick={() => setShowPresetInput(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#fff", color: "#0176d3", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>
+              <Bookmark size={14} /> Simpan Filter
+            </button>
+          )}
+        </div>
+        {/* Saved Presets as Chips */}
+        {savedPresets.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: "#888" }}>Preset tersimpan:</span>
+            {savedPresets.map(p => (
+              <span key={p.nama} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", fontSize: 12, fontWeight: 500, background: "#eef4ff", color: "#0176d3", border: "1px solid #c2dbf5", borderRadius: 14, cursor: "pointer" }} onClick={() => handleApplyPreset(p)} title={`${p.tanggalAwal} - ${p.tanggalAkhir}`}>
+                {p.nama}
+                <button onClick={e => { e.stopPropagation(); handleRemovePreset(p.nama) }} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", color: "#0176d3", opacity: 0.6 }}>
+                  <X size={11} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Summary Cards */}

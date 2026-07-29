@@ -37,6 +37,8 @@ import {
   Save,
   Pencil,
   X,
+  CalendarClock,
+  Wallet,
 } from "lucide-react"
 
 interface Supplier {
@@ -50,7 +52,16 @@ interface Supplier {
   country: string
   productCategories: string[]
   notes?: string
+  paymentTerms: string
+  outstandingBalance: number
+  lastInvoiceDate: string
+  dueDate: string
 }
+
+const paymentTermsOptions = [
+  "COD", "Net 14", "Net 30", "Net 45", "Net 60", "Net 90",
+  "DP 30% + Net 30", "DP 50% + Pelunasan",
+]
 
 interface POTransaction {
   id: string
@@ -73,7 +84,11 @@ const suppliersData: Record<string, Supplier> = {
     city: "Tangerang",
     country: "Indonesia",
     productCategories: ["Exterior", "Wash", "Interior"],
-    notes: "Main supplier for exterior products. Net 14 payment terms.",
+    notes: "Main supplier for exterior products.",
+    paymentTerms: "Net 30",
+    outstandingBalance: 45200000,
+    lastInvoiceDate: "2025-12-10",
+    dueDate: "2026-01-09",
   },
   "2": {
     id: "2",
@@ -85,7 +100,11 @@ const suppliersData: Record<string, Supplier> = {
     city: "Bandung",
     country: "Indonesia",
     productCategories: ["Decon", "Wheel", "Wash"],
-    notes: "Specialized in chemical products. Net 7 payment terms.",
+    notes: "Specialized in chemical products.",
+    paymentTerms: "Net 14",
+    outstandingBalance: 12800000,
+    lastInvoiceDate: "2025-12-12",
+    dueDate: "2025-12-26",
   },
   "3": {
     id: "3",
@@ -98,6 +117,10 @@ const suppliersData: Record<string, Supplier> = {
     country: "Singapore",
     productCategories: ["Coating", "Protection"],
     notes: "Premium coating supplier. International shipping.",
+    paymentTerms: "DP 50% + Pelunasan",
+    outstandingBalance: 0,
+    lastInvoiceDate: "2025-12-13",
+    dueDate: "",
   },
   "4": {
     id: "4",
@@ -109,6 +132,10 @@ const suppliersData: Record<string, Supplier> = {
     city: "Jakarta",
     country: "Indonesia",
     productCategories: ["Correction", "Prep", "Tools"],
+    paymentTerms: "Net 45",
+    outstandingBalance: 8750000,
+    lastInvoiceDate: "2025-11-20",
+    dueDate: "2026-01-04",
   },
   "5": {
     id: "5",
@@ -121,6 +148,10 @@ const suppliersData: Record<string, Supplier> = {
     country: "United States",
     productCategories: ["Interior", "Protection"],
     notes: "US-based supplier. Long lead times but premium quality.",
+    paymentTerms: "Net 60",
+    outstandingBalance: 156000000,
+    lastInvoiceDate: "2025-10-15",
+    dueDate: "2025-12-14",
   },
   "6": {
     id: "6",
@@ -132,6 +163,10 @@ const suppliersData: Record<string, Supplier> = {
     city: "Semarang",
     country: "Indonesia",
     productCategories: ["Chemical"],
+    paymentTerms: "COD",
+    outstandingBalance: 0,
+    lastInvoiceDate: "2025-08-20",
+    dueDate: "",
   },
 }
 
@@ -182,6 +217,36 @@ const statusConfig = {
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
+function getAgingDays(lastInvoiceDate: string): number {
+  if (!lastInvoiceDate) return 0
+  const now = new Date()
+  const inv = new Date(lastInvoiceDate)
+  return Math.max(0, Math.floor((now.getTime() - inv.getTime()) / (1000 * 60 * 60 * 24)))
+}
+
+function getAgingBadge(days: number, balance: number) {
+  if (balance <= 0) return null
+  if (days <= 30)
+    return <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">0-30 hr</Badge>
+  if (days <= 60)
+    return <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200 text-[10px]">31-60 hr</Badge>
+  if (days <= 90)
+    return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">61-90 hr</Badge>
+  return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[10px]">&gt;90 hr</Badge>
+}
+
+function getDueStatus(dueDate: string, balance: number) {
+  if (balance <= 0 || !dueDate) return null
+  const now = new Date()
+  const due = new Date(dueDate)
+  const daysLeft = Math.floor((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  if (daysLeft < 0)
+    return { label: `Lewat ${Math.abs(daysLeft)} hari`, className: "bg-red-50 text-red-700 border-red-200" }
+  if (daysLeft <= 7)
+    return { label: `${daysLeft} hari lagi`, className: "bg-amber-50 text-amber-700 border-amber-200" }
+  return { label: `${daysLeft} hari lagi`, className: "bg-emerald-50 text-emerald-700 border-emerald-200" }
+}
+
 function formatCurrency(amount: number, currency: string) {
   if (currency === "USD") {
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
@@ -208,6 +273,10 @@ export default function SupplierDetailPage() {
     country: "",
     productCategories: [],
     notes: "",
+    paymentTerms: "Net 30",
+    outstandingBalance: 0,
+    lastInvoiceDate: "",
+    dueDate: "",
   })
 
   const poIds = supplierPOMap[id] || []
@@ -442,7 +511,73 @@ export default function SupplierDetailPage() {
                     <Label>Notes</Label>
                     <Textarea value={editForm.notes || ""} onChange={(e) => handleChange("notes", e.target.value)} />
                   </div>
+                  <div className="space-y-2">
+                    <Label>Payment Terms</Label>
+                    <select
+                      value={editForm.paymentTerms}
+                      onChange={(e) => handleChange("paymentTerms", e.target.value)}
+                      className="h-9 w-full border border-input rounded-md px-2 text-sm bg-transparent"
+                    >
+                      {paymentTermsOptions.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Pembayaran & Hutang */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="h-4 w-4 text-indigo-600" />
+                Pembayaran & Hutang
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Payment Terms</p>
+                <div className="flex items-center gap-1.5">
+                  <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <p className="font-medium">{supplier.paymentTerms}</p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Outstanding Balance</p>
+                {supplier.outstandingBalance > 0 ? (
+                  <p className="text-lg font-semibold text-amber-600">{formatIDR(supplier.outstandingBalance)}</p>
+                ) : (
+                  <p className="font-medium text-emerald-600">Lunas</p>
+                )}
+              </div>
+              {supplier.outstandingBalance > 0 && (
+                <>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Umur Hutang</p>
+                    <div className="flex items-center gap-1.5">
+                      {getAgingBadge(getAgingDays(supplier.lastInvoiceDate), supplier.outstandingBalance)}
+                      <span className="text-xs text-muted-foreground">
+                        sejak {new Date(supplier.lastInvoiceDate).toLocaleDateString("id-ID")}
+                      </span>
+                    </div>
+                  </div>
+                  {supplier.dueDate && (() => {
+                    const due = getDueStatus(supplier.dueDate, supplier.outstandingBalance)
+                    return (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Jatuh Tempo</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-medium">{new Date(supplier.dueDate).toLocaleDateString("id-ID")}</p>
+                          {due && (
+                            <Badge variant="outline" className={due.className}>{due.label}</Badge>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </>
               )}
             </CardContent>
           </Card>

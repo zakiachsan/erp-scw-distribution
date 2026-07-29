@@ -69,7 +69,7 @@ export default function InvoiceListPage() {
       {/* Header */}
       <div>
         <h1 className="text-lg font-bold text-gray-900">Invoices</h1>
-        <p className="text-xs text-gray-500">Riwayat invoice dari Purchase Orders</p>
+        <p className="text-xs text-gray-500">Riwayat invoice dari Sales Orders</p>
       </div>
 
       {/* Summary Cards */}

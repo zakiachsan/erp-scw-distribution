@@ -33,10 +33,10 @@ import {
 import {
   Search,
   Plus,
-  Phone,
-  Mail,
   MapPin,
-  ArrowUpDown,
+  Wallet,
+  AlertTriangle,
+  CalendarClock,
 } from "lucide-react"
 
 interface Supplier {
@@ -50,7 +50,21 @@ interface Supplier {
   country: string
   productCategories: string[]
   lastOrder: string
+  paymentTerms: string
+  outstandingBalance: number
+  lastInvoiceDate: string
 }
+
+const paymentTermsOptions = [
+  "COD",
+  "Net 14",
+  "Net 30",
+  "Net 45",
+  "Net 60",
+  "Net 90",
+  "DP 30% + Net 30",
+  "DP 50% + Pelunasan",
+]
 
 const suppliers: Supplier[] = [
   {
@@ -64,6 +78,9 @@ const suppliers: Supplier[] = [
     country: "Indonesia",
     productCategories: ["Exterior", "Wash", "Interior"],
     lastOrder: "2025-12-10",
+    paymentTerms: "Net 30",
+    outstandingBalance: 45200000,
+    lastInvoiceDate: "2025-12-10",
   },
   {
     id: "2",
@@ -76,6 +93,9 @@ const suppliers: Supplier[] = [
     country: "Indonesia",
     productCategories: ["Decon", "Wheel", "Wash"],
     lastOrder: "2025-12-12",
+    paymentTerms: "Net 14",
+    outstandingBalance: 12800000,
+    lastInvoiceDate: "2025-12-12",
   },
   {
     id: "3",
@@ -88,6 +108,9 @@ const suppliers: Supplier[] = [
     country: "Singapore",
     productCategories: ["Coating", "Protection"],
     lastOrder: "2025-12-13",
+    paymentTerms: "DP 50% + Pelunasan",
+    outstandingBalance: 0,
+    lastInvoiceDate: "2025-12-13",
   },
   {
     id: "4",
@@ -100,6 +123,9 @@ const suppliers: Supplier[] = [
     country: "Indonesia",
     productCategories: ["Correction", "Prep", "Tools"],
     lastOrder: "2025-12-14",
+    paymentTerms: "Net 45",
+    outstandingBalance: 8750000,
+    lastInvoiceDate: "2025-11-20",
   },
   {
     id: "5",
@@ -112,6 +138,9 @@ const suppliers: Supplier[] = [
     country: "United States",
     productCategories: ["Interior", "Protection"],
     lastOrder: "2025-12-08",
+    paymentTerms: "Net 60",
+    outstandingBalance: 156000000,
+    lastInvoiceDate: "2025-10-15",
   },
   {
     id: "6",
@@ -124,50 +153,29 @@ const suppliers: Supplier[] = [
     country: "Indonesia",
     productCategories: ["Chemical"],
     lastOrder: "2025-08-20",
+    paymentTerms: "COD",
+    outstandingBalance: 0,
+    lastInvoiceDate: "2025-08-20",
   },
 ]
 
-interface POTransaction {
-  id: string
-  status: "Draft" | "Sent" | "Received" | "Paid"
-  itemCount: number
+const fmtIDR = (n: number) => "Rp " + n.toLocaleString("id-ID")
+
+function getAgingDays(lastInvoiceDate: string): number {
+  const now = new Date()
+  const inv = new Date(lastInvoiceDate)
+  return Math.max(0, Math.floor((now.getTime() - inv.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
-const poTransactions: POTransaction[] = [
-  { id: "1", status: "Paid", itemCount: 6 },
-  { id: "2", status: "Received", itemCount: 3 },
-  { id: "3", status: "Sent", itemCount: 4 },
-  { id: "4", status: "Draft", itemCount: 2 },
-  { id: "5", status: "Paid", itemCount: 5 },
-  { id: "6", status: "Sent", itemCount: 3 },
-  { id: "7", status: "Draft", itemCount: 1 },
-  { id: "8", status: "Paid", itemCount: 7 },
-  { id: "9", status: "Received", itemCount: 3 },
-  { id: "10", status: "Sent", itemCount: 4 },
-]
-
-const supplierPOMap: Record<string, string[]> = {
-  "1": ["1", "2", "3", "4", "5"],
-  "2": ["6", "7"],
-  "3": ["8", "9"],
-  "4": ["10"],
-  "5": [],
-  "6": [],
-}
-
-function getSupplierStats(supplierId: string) {
-  const poIds = supplierPOMap[supplierId] || []
-  const orders = poIds
-    .map((poId) => poTransactions.find((po) => po.id === poId))
-    .filter(Boolean) as POTransaction[]
-
-  const shippedOrders = orders.filter((o) => o.status === "Received" || o.status === "Paid")
-  const shippedQty = shippedOrders.reduce((sum, o) => sum + o.itemCount, 0)
-
-  return {
-    qtyShipped: shippedQty,
-    ordersShipped: shippedOrders.length,
-  }
+function getAgingBadge(days: number, balance: number) {
+  if (balance <= 0) return null
+  if (days <= 30)
+    return <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">0-30 hr</Badge>
+  if (days <= 60)
+    return <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200 text-[10px]">31-60 hr</Badge>
+  if (days <= 90)
+    return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">61-90 hr</Badge>
+  return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[10px]">&gt;90 hr</Badge>
 }
 
 export default function SuppliersPage() {
@@ -177,6 +185,7 @@ export default function SuppliersPage() {
   const [contact, setContact] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
+  const [terms, setTerms] = useState("Net 30")
 
   const addSupplier = () => {
     if (!name.trim()) return
@@ -185,23 +194,21 @@ export default function SuppliersPage() {
     setContact("")
     setPhone("")
     setEmail("")
+    setTerms("Net 30")
     setAddOpen(false)
   }
 
   const filtered = useMemo(() => {
-    const result = suppliers.filter(
+    return suppliers.filter(
       (s) =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.contactPerson.toLowerCase().includes(search.toLowerCase()) ||
         s.city.toLowerCase().includes(search.toLowerCase())
     )
-    // Sort by qty items shipped (descending)
-    return result.sort((a, b) => {
-      const statsA = getSupplierStats(a.id)
-      const statsB = getSupplierStats(b.id)
-      return statsB.qtyShipped - statsA.qtyShipped
-    })
   }, [search])
+
+  const totalOutstanding = suppliers.reduce((sum, s) => sum + s.outstandingBalance, 0)
+  const overdueCount = suppliers.filter((s) => s.outstandingBalance > 0 && getAgingDays(s.lastInvoiceDate) > 30).length
 
   return (
     <div className="space-y-6 p-6">
@@ -209,7 +216,7 @@ export default function SuppliersPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Suppliers</h1>
           <p className="text-muted-foreground">
-            Manage your supplier directory and contact information
+            Daftar pemasok, payment terms & umur hutang
           </p>
         </div>
         <Button onClick={() => setAddOpen(true)}>
@@ -217,6 +224,50 @@ export default function SuppliersPage() {
           Add Supplier
         </Button>
       </div>
+
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total Pemasok</p>
+                <p className="mt-1 text-lg font-semibold">{suppliers.length}</p>
+              </div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-50">
+                <MapPin className="h-4 w-4 text-indigo-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Total Hutang</p>
+                <p className="mt-1 text-lg font-semibold text-amber-600">{fmtIDR(totalOutstanding)}</p>
+              </div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-50">
+                <Wallet className="h-4 w-4 text-amber-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Jatuh Tempo (&gt;30 hr)</p>
+                <p className="mt-1 text-lg font-semibold text-red-600">{overdueCount} supplier</p>
+              </div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-50">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent>
           <DialogHeader>
@@ -231,13 +282,27 @@ export default function SuppliersPage() {
               <Label>Contact Person</Label>
               <Input placeholder="Enter contact person" value={contact} onChange={(e) => setContact(e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <Label>Phone</Label>
-              <Input placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
-              <Input placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Label>Payment Terms</Label>
+              <select
+                value={terms}
+                onChange={(e) => setTerms(e.target.value)}
+                className="h-9 w-full border border-input rounded-md px-2 text-sm bg-transparent"
+              >
+                {paymentTermsOptions.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
             </div>
             <Button onClick={addSupplier} className="w-full">
               <Plus className="mr-2 h-4 w-4" />
@@ -272,83 +337,54 @@ export default function SuppliersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Supplier</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Categories</TableHead>
-                <TableHead className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    Shipped
-                    <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Qty Items</TableHead>
+                <TableHead>Payment Terms</TableHead>
+                <TableHead className="text-right">Outstanding</TableHead>
+                <TableHead>Umur Hutang</TableHead>
                 <TableHead>Last Order</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((supplier) => (
-                <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50">
-                  <TableCell>
-                    <Link href={`/purchasing/suppliers/${supplier.id}`} className="text-blue-600 hover:underline font-sans font-medium text-sm">
-                      {supplier.name}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">
-                      {supplier.contactPerson}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1 text-sm">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        {supplier.phone}
+              {filtered.map((supplier) => {
+                const agingDays = getAgingDays(supplier.lastInvoiceDate)
+                return (
+                  <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableCell>
+                      <Link href={`/purchasing/suppliers/${supplier.id}`} className="text-blue-600 hover:underline font-sans font-medium text-sm">
+                        {supplier.name}
+                      </Link>
+                      <p className="text-xs text-muted-foreground">
+                        {supplier.contactPerson} · {supplier.city}, {supplier.country}
+                      </p>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1.5">
+                        <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-sm">{supplier.paymentTerms}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm">
-                        <Mail className="h-3 w-3 text-muted-foreground" />
-                        {supplier.email}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <MapPin className="h-3 w-3 text-muted-foreground" />
-                      {supplier.city}, {supplier.country}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1 max-h-[2.6rem] overflow-hidden">
-                      {supplier.productCategories.slice(0, 4).map((cat) => (
-                        <Badge key={cat} variant="outline" className="text-xs">
-                          {cat}
-                        </Badge>
-                      ))}
-                      {supplier.productCategories.length > 4 && (
-                        <Badge variant="outline" className="text-xs text-muted-foreground">
-                          +{supplier.productCategories.length - 4}
-                        </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {supplier.outstandingBalance > 0 ? (
+                        <span className="text-sm font-semibold text-amber-600">{fmtIDR(supplier.outstandingBalance)}</span>
+                      ) : (
+                        <span className="text-sm text-emerald-600">Lunas</span>
                       )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-sans text-sm text-muted-foreground">
-                      {(() => {
-                        const stats = getSupplierStats(supplier.id)
-                        return stats.ordersShipped
-                      })()}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-sans font-semibold text-sm">
-                      {(() => {
-                        const stats = getSupplierStats(supplier.id)
-                        return stats.qtyShipped
-                      })()}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {supplier.lastOrder}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      {supplier.outstandingBalance > 0 ? (
+                        <div className="flex items-center gap-1.5">
+                          {getAgingBadge(agingDays, supplier.outstandingBalance)}
+                          <span className="text-[10px] text-muted-foreground">{agingDays} hr</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {supplier.lastOrder}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </CardContent>

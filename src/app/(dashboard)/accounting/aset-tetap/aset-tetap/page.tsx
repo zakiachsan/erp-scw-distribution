@@ -26,19 +26,42 @@ export default function AsetTetapPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [filterKategori, setFilterKategori] = useState("semua")
+  const [assets, setAssets] = useState<FixedAsset[]>(dummyFixedAssets)
   const [formData, setFormData] = useState({
     nama: "", kodeOtomatis: true, tanggalBeli: "07/07/2026", tanggalPakai: "07/07/2026",
     asetTidakBerwujud: false, metodePenyusutan: "Metode Garis Lurus",
     akunAset: "1501 - Peralatan Kantor", akunAkumulasi: "1502 - Akum. Penyusutan Peralatan", akunBeban: "6101 - Beban Penyusutan",
     kuantitas: 1, umurTahun: "5", umurBulan: "0", rasio: 20, nilaiSisa: 0,
+    hargaPerolehan: 0, kategori: "Kendaraan",
   })
 
   // Auto-calculate rasio from umur
   const totalBulan = (parseInt(formData.umurTahun) || 0) * 12 + (parseInt(formData.umurBulan) || 0)
   const rasioOtomatis = totalBulan > 0 ? Math.round((1 / totalBulan) * 12 * 100) : 0
 
-  const filtered = dummyFixedAssets.filter(i => !search || i.nama.toLowerCase().includes(search.toLowerCase()))
-  const handleSave = () => { setShowForm(false) }
+  const filtered = assets.filter(i => !search || i.nama.toLowerCase().includes(search.toLowerCase()))
+    const handleSave = () => {
+      const totalNilai = formData.hargaPerolehan * formData.kuantitas
+      const totalBulan = (parseInt(formData.umurTahun) || 0) * 12 + (parseInt(formData.umurBulan) || 0)
+      const penyusutanBulanan = totalBulan > 0 ? Math.round((formData.hargaPerolehan - formData.nilaiSisa) / totalBulan) : 0
+      const newAsset: FixedAsset = {
+        id: `fa-new-${Date.now()}`,
+        nomor: `FA-${String(assets.length + 1).padStart(3, "0")}`,
+        nama: formData.nama || "Aset Baru",
+        kategori: formData.kategori,
+        tanggalBeli: formData.tanggalBeli,
+        kuantitas: formData.kuantitas,
+        hargaPerolehan: formData.hargaPerolehan,
+        totalNilai,
+        nilaiBuku: totalNilai,
+        umurEkonomis: parseInt(formData.umurTahun) || 5,
+        metodePenyusutan: formData.metodePenyusutan,
+        penyusutanBulanan,
+      }
+      setAssets([...assets, newAsset])
+      setShowForm(false)
+      setFormData({ ...formData, nama: "", hargaPerolehan: 0, kuantitas: 1 })
+    }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -48,7 +71,8 @@ export default function AsetTetapPage() {
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola data aset tetap</p>
         </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
-            <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
+                      <button onClick={() => setShowForm(!showForm)} style={{ ...btnIcon, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, padding: "0 12px", width: "auto", fontSize: 13, fontWeight: 600, gap: 6 }}><Plus size={14} /> Tambah Aset Baru</button>
+                      <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} style={selectStyle}>
             <option value="semua">Kategori Aset: Semua</option>
             </select>
             <div style={{ flex: 1 }} />
@@ -66,9 +90,26 @@ export default function AsetTetapPage() {
             <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Data Baru</h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Nama *</label>
-                <input type="text" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} style={{ ...inputStyle, border: "1px solid #90caf9" }} />
-              </div>
+                              <label style={labelStyle}>Nama *</label>
+                              <input type="text" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} style={{ ...inputStyle, border: "1px solid #90caf9" }} />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <label style={labelStyle}>Kategori *</label>
+                              <select value={formData.kategori} onChange={(e) => setFormData({...formData, kategori: e.target.value})} style={{ ...selectStyle, flex: 1 }}>
+                                <option>Kendaraan</option>
+                                <option>Mesin</option>
+                                <option>Elektronik</option>
+                                <option>Gedung</option>
+                                <option>Peralatan Kantor</option>
+                              </select>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <label style={labelStyle}>Harga Perolehan *</label>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                <span style={{ fontSize: 11, color: "#999" }}>Rp</span>
+                                <input type="number" value={formData.hargaPerolehan} onChange={(e) => setFormData({...formData, hargaPerolehan: Number(e.target.value)})} style={{ ...inputStyle, maxWidth: 150 }} />
+                              </div>
+                            </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Kuantitas *</label>
                 <input type="number" value={formData.kuantitas} onChange={(e) => setFormData({...formData, kuantitas: Number(e.target.value)})} style={{ ...inputStyle, maxWidth: 80 }} />

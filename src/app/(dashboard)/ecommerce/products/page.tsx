@@ -78,19 +78,16 @@ const statusConfig = {
   draft: { label: "Draft", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
 }
 
-const stockStatus = (stock: number) => {
-  if (stock === 0) return { label: "Habis", className: "bg-red-100 text-red-800" }
-  if (stock < 20) return { label: "Rendah", className: "bg-amber-100 text-amber-800" }
-  return { label: "Tersedia", className: "bg-emerald-100 text-emerald-800" }
-}
-
 export default function ProductsPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [productList, setProductList] = useState(products)
+  const [editingStock, setEditingStock] = useState<string | null>(null)
+  const [stockValue, setStockValue] = useState("")
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
+    return productList.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.sku.toLowerCase().includes(search.toLowerCase())
@@ -98,12 +95,20 @@ export default function ProductsPage() {
         statusFilter === "all" || p.status === statusFilter
       return matchesSearch && matchesStatus
     })
-  }, [search, statusFilter])
+  }, [search, statusFilter, productList])
 
-  const totalProducts = products.length
-  const publishedCount = products.filter((p) => p.status === "published").length
-  const draftCount = products.filter((p) => p.status === "draft").length
-  const outOfStockCount = products.filter((p) => p.stock === 0).length
+  const totalProducts = productList.length
+  const publishedCount = productList.filter((p) => p.status === "published").length
+  const draftCount = productList.filter((p) => p.status === "draft").length
+  const outOfStockCount = productList.filter((p) => p.stock === 0).length
+
+  const saveStock = (id: string) => {
+    const val = parseInt(stockValue)
+    if (!isNaN(val) && val >= 0) {
+      setProductList((prev) => prev.map((p) => (p.id === id ? { ...p, stock: val } : p)))
+    }
+    setEditingStock(null)
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -224,7 +229,6 @@ export default function ProductsPage() {
             </TableHeader>
             <TableBody>
               {filtered.map((product) => {
-                const ss = stockStatus(product.stock)
                 return (
                   <TableRow key={product.id}>
                     <TableCell>
@@ -249,12 +253,27 @@ export default function ProductsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <p className="font-medium">{product.stock}</p>
-                        <Badge variant="outline" className={`text-xs ${ss.className}`}>
-                          {ss.label}
-                        </Badge>
-                      </div>
+                      {editingStock === product.id ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            value={stockValue}
+                            onChange={(e) => setStockValue(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") saveStock(product.id); if (e.key === "Escape") setEditingStock(null) }}
+                            className="h-7 w-16 rounded border border-input px-1.5 text-sm text-center"
+                            autoFocus
+                          />
+                          <button onClick={() => saveStock(product.id)} className="text-emerald-600 hover:text-emerald-800 text-xs font-medium">OK</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setEditingStock(product.id); setStockValue(String(product.stock)) }}
+                          className="text-left group"
+                          title="Klik untuk ubah stok"
+                        >
+                          <p className="font-medium group-hover:text-blue-600">{product.stock}</p>
+                        </button>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={statusConfig[product.status].className}>

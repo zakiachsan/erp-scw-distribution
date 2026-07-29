@@ -63,6 +63,19 @@ interface LogisticItem {
   paymentLog?: PaymentRecord[]
 }
 
+interface CourierPayment {
+  id: string
+  courier: string
+  invoiceNo: string
+  currency: "IDR" | "USD" | "SGD"
+  rate: number
+  amount: number
+  paidAmount: number
+  dueDate: string
+  status: "Belum Dibayar" | "Sebagian" | "Lunas"
+  notes: string
+}
+
 /* ── Data (stateful via getInitialData) ── */
 function getInitialData(): Record<string, LogisticItem> {
   if (typeof window === "undefined") return {}
@@ -130,6 +143,26 @@ function saveData(data: Record<string, LogisticItem>) {
   if (typeof window !== "undefined") {
     localStorage.setItem("scw-logistic-data", JSON.stringify(data))
   }
+}
+
+/* Dummy: biaya kirim terpisah per shipment */
+const courierPaymentsByShipment: Record<string, CourierPayment[]> = {
+  lg1: [
+    {
+      id: "cp-lg1-1", courier: "Kargo Darat Sejahtera", invoiceNo: "KDS-2025-1201",
+      currency: "IDR", rate: 1, amount: 2850000, paidAmount: 2850000,
+      dueDate: "2025-12-26", status: "Lunas",
+      notes: "Trucking kontainer dari pelabuhan ke gudang",
+    },
+  ],
+  lg4: [
+    {
+      id: "cp-lg4-1", courier: "DHL Express", invoiceNo: "DHL-INV-88231",
+      currency: "USD", rate: 16250, amount: 450, paidAmount: 0,
+      dueDate: "2026-01-02", status: "Belum Dibayar",
+      notes: "Forwarder luar negeri — customs clearance + freight",
+    },
+  ],
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -529,6 +562,55 @@ export default function LogisticDetailPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Pembayaran Kurir Terpisah */}
+          {(() => {
+            const cps = courierPaymentsByShipment[id] || []
+            if (cps.length === 0) return null
+            const fmtC = (n: number, c: string) =>
+              c === "IDR" ? "Rp " + n.toLocaleString("id-ID") : `${c} ${n.toLocaleString("en-US")}`
+            return (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <Banknote className="h-4 w-4 text-indigo-600" />
+                    Pembayaran Kurir Terpisah
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">Biaya kirim di luar PO — forwarder / ekspedisi tambahan</p>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {cps.map((cp) => (
+                    <div key={cp.id} className="p-3 border border-slate-200 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">{cp.courier}</p>
+                        <Badge variant="outline" className={
+                          cp.status === "Lunas" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                          cp.status === "Sebagian" ? "bg-cyan-50 text-cyan-700 border-cyan-200" :
+                          "bg-amber-50 text-amber-700 border-amber-200"
+                        }>{cp.status}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{cp.invoiceNo}</p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Nilai</span>
+                        <span className="font-medium">{fmtC(cp.amount, cp.currency)}</span>
+                      </div>
+                      {cp.currency !== "IDR" && (
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>Kurs {cp.rate.toLocaleString("id-ID")}</span>
+                          <span>≈ Rp {(cp.amount * cp.rate).toLocaleString("id-ID")}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Jatuh tempo</span>
+                        <span>{new Date(cp.dueDate).toLocaleDateString("id-ID")}</span>
+                      </div>
+                      {cp.notes && <p className="text-[11px] text-muted-foreground italic">{cp.notes}</p>}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )
+          })()}
 
           {/* Quick Actions */}
           <Card>

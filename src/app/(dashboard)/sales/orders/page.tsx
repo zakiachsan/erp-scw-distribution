@@ -196,12 +196,13 @@ export default function SalesOrdersPage() {
                   <TableHead>Status</TableHead>
                   <TableHead>Payment</TableHead>
                   <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-10 text-sm text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-10 text-sm text-muted-foreground">
                       Tidak ada Sales Order ditemukan
                     </TableCell>
                   </TableRow>
@@ -232,6 +233,18 @@ export default function SalesOrdersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right text-sm">{formatIDR(order.total)}</TableCell>
+                      <TableCell className="text-right">
+                        {order.status !== "Draft" ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); router.push(`/sales/invoices/create?from=${order.id}`) }}
+                            className="rounded-md bg-emerald-600 px-2.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-emerald-700"
+                          >
+                            Buat Invoice
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

@@ -71,6 +71,8 @@ export default function CustomerListPage() {
       totalPurchase: 0,
       totalOrders: 0,
       avgOrderValue: 0,
+      customerType: "Reseller",
+      paymentTerms: "Net 30",
     }
     setCustomerList([...customerList, newCust])
     setCustName("")
@@ -244,13 +246,14 @@ export default function CustomerListPage() {
                   Terakhir Beli <SortIcon col="lastPurchase" />
                 </th>
                 <th className="px-3 py-2">Tier</th>
-
+                <th className="px-3 py-2">Type</th>
+                <th className="px-3 py-2">Payment Terms</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-3 py-10 text-center text-xs text-muted-foreground">
+                  <td colSpan={8} className="px-3 py-10 text-center text-xs text-muted-foreground">
                     Tidak ada customer ditemukan
                   </td>
                 </tr>
@@ -269,7 +272,8 @@ export default function CustomerListPage() {
                         {c.tier}
                       </Badge>
                     </td>
-
+                    <td className="px-3 py-2 text-xs">{c.customerType}</td>
+                    <td className="px-3 py-2 text-xs text-muted-foreground">{c.paymentTerms}</td>
                   </tr>
                 ))
               )}

@@ -109,15 +109,29 @@ const tierDiscountMap: Record<string, number> = {
   Platinum: 0.12,
 }
 
+const QUOTATION_DATA: Record<string, { customerId: string; items: { productId: string; qty: number }[] }> = {
+  "QUO-2026-010": { customerId: "C003", items: [{ productId: "P01", qty: 20 }, { productId: "P05", qty: 30 }] },
+  "QUO-2026-008": { customerId: "C001", items: [{ productId: "P01", qty: 20 }, { productId: "P02", qty: 10 }] },
+  "QUO-2026-005": { customerId: "C007", items: [{ productId: "P02", qty: 8 }, { productId: "P05", qty: 12 }] },
+  "QUO-2026-003": { customerId: "C002", items: [{ productId: "P03", qty: 15 }, { productId: "P04", qty: 25 }] },
+}
+
 function CreateSalesOrderContent() {
   const searchParams = useSearchParams()
   const pipelineId = searchParams.get("pipelineId")
+  const quotationId = searchParams.get("from")
   const pipelineDeal = pipelineId ? PIPELINE_DEALS[pipelineId] : null
+  const quotationSource = quotationId ? QUOTATION_DATA[quotationId] : null
 
-  const [selectedCustomer, setSelectedCustomer] = useState(pipelineDeal?.customerId || "")
+  const [selectedCustomer, setSelectedCustomer] = useState(
+    pipelineDeal?.customerId || quotationSource?.customerId || ""
+  )
   const [items, setItems] = useState<OrderItem[]>(() => {
-    if (pipelineId && PIPELINE_QUOTATION_ITEMS[pipelineId]) {
-      return PIPELINE_QUOTATION_ITEMS[pipelineId].map((qi) => {
+    const source = pipelineId && PIPELINE_QUOTATION_ITEMS[pipelineId]
+      ? PIPELINE_QUOTATION_ITEMS[pipelineId]
+      : quotationSource?.items
+    if (source) {
+      return source.map((qi) => {
         const product = products.find((p) => p.id === qi.productId)
         return {
           productId: qi.productId,
@@ -189,12 +203,18 @@ function CreateSalesOrderContent() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl  tracking-tight">Create Purchase Order</h1>
+          <h1 className="text-2xl  tracking-tight">Create Sales Order</h1>
           <p className="text-muted-foreground">Fill in the details to create a new sales order</p>
           {pipelineDeal && (
             <Badge variant="outline" className="mt-1 text-xs bg-indigo-50 text-indigo-700 border-indigo-200">
               <ShoppingCart className="h-3 w-3 mr-1" />
               Dari Pipeline: {pipelineDeal.company}
+            </Badge>
+          )}
+          {quotationId && !pipelineDeal && (
+            <Badge variant="outline" className="mt-1 text-xs bg-indigo-50 text-indigo-700 border-indigo-200">
+              <ShoppingCart className="h-3 w-3 mr-1" />
+              Dari Quotation: {quotationId}
             </Badge>
           )}
         </div>

@@ -83,7 +83,7 @@ export default function QuotationListPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-gray-900">Quotation</h1>
-          <p className="text-xs text-gray-500">Kelola penawaran harga kepada customer sebelum Purchase Order</p>
+          <p className="text-xs text-gray-500">Kelola penawaran harga kepada customer sebelum Sales Order</p>
         </div>
         <Link href="/sales/quotations/create">
           <Button size="sm">
@@ -185,12 +185,13 @@ export default function QuotationListPage() {
                   <TableHead>Pajak</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10 text-sm text-muted-foreground">
+                    <TableCell colSpan={9} className="text-center py-10 text-sm text-muted-foreground">
                       Tidak ada quotation ditemukan
                     </TableCell>
                   </TableRow>
@@ -227,6 +228,18 @@ export default function QuotationListPage() {
                         </select>
                       </TableCell>
                       <TableCell className="text-right text-sm">{formatIDR(q.total)}</TableCell>
+                      <TableCell className="text-right">
+                        {q.status === "Accepted" ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); router.push(`/sales/orders/create?from=${q.id}`) }}
+                            className="rounded-md bg-indigo-600 px-2.5 py-1 text-[11px] font-medium text-white transition-colors hover:bg-indigo-700"
+                          >
+                            Buat SO
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

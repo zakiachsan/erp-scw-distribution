@@ -1,5 +1,10 @@
 "use client"
 
+/* INTEGRASI: Halaman ini terhubung dengan modul Sales/Invoices (ERP).
+   Rincian pembayaran mengambil data invoice (INV-2026-xxx).
+   Multi-invoice payment + pelunasan sebagian.
+   Jika edit, jaga cross-reference ke invoices. */
+
 import { useState } from "react"
 import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download } from "lucide-react"
 import { dummyPayments } from "@/lib/accounting-dummy-data"
@@ -22,6 +27,29 @@ export default function PembayaranPage() {
   const [formData, setFormData] = useState({
     cashBank: "", voucherOtomatis: true, tipeVoucher: "Bank", tanggal: "06/07/2026",
   })
+
+  // ── Dummy invoices for multi-invoice payment ──
+  const invoiceOptions = [
+    { id: "INV-2026-038", customer: "PT Autogloss Indonesia", amount: 8500000, paid: 0 },
+    { id: "INV-2026-037", customer: "CV Ceramic Pro JKT", amount: 6200000, paid: 3100000 },
+    { id: "INV-2026-033", customer: "CV ProShine SBY", amount: 5800000, paid: 0 },
+    { id: "INV-2026-031", customer: "DetailPro Semarang", amount: 2800000, paid: 2800000 },
+  ]
+  const [selectedInvoices, setSelectedInvoices] = useState<{ id: string; payAmount: string }[]>([])
+  const [invSearch, setInvSearch] = useState("")
+
+  const toggleInvoice = (invId: string) => {
+    setSelectedInvoices(prev => {
+      const exists = prev.find(s => s.id === invId)
+      if (exists) return prev.filter(s => s.id !== invId)
+      const inv = invoiceOptions.find(i => i.id === invId)
+      return [...prev, { id: invId, payAmount: String(inv ? inv.amount - inv.paid : 0) }]
+    })
+  }
+  const updatePayAmount = (invId: string, val: string) => {
+    setSelectedInvoices(prev => prev.map(s => s.id === invId ? { ...s, payAmount: val } : s))
+  }
+  const totalPayment = selectedInvoices.reduce((sum, s) => sum + (parseInt(s.payAmount.replace(/\D/g, "")) || 0), 0)
 
   const pembayaranData = dummyPayments.filter(p => p.tipe === "pembayaran")
   const filtered = pembayaranData.filter(i => {
@@ -91,21 +119,46 @@ export default function PembayaranPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <div style={{ position: "relative", flex: 1, maxWidth: 250 }}>
                   <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input style={{ ...INPUT, paddingLeft: 28, width: "100%" }} placeholder="Cari/Pilih Akun Perkiraan..." />
+                  <input style={{ ...INPUT, paddingLeft: 28, width: "100%" }} placeholder="Cari invoice..." value={invSearch} onChange={e => setInvSearch(e.target.value)} />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#001526", marginLeft: 8 }}>Rincian Pembayaran *</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#001526", marginLeft: 8 }}>Rincian Pembayaran * <span style={{ fontWeight: 400, color: "#888", fontSize: 11 }}>(pilih 1 atau lebih invoice, bisa pelunasan sebagian)</span></span>
               </div>
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
                 <thead><tr>
-                  <th style={{ ...TH, width: 40 }}></th>
-                  <th style={TH}>Account</th>
-                  <th style={TH}>Account Name</th>
-                  <th style={{ ...TH, textAlign: "right" }}>Amount</th>
+                  <th style={{ ...TH, width: 40 }}>✓</th>
+                  <th style={TH}>Invoice #</th>
+                  <th style={TH}>Customer</th>
+                  <th style={{ ...TH, textAlign: "right" }}>Total Tagihan</th>
+                  <th style={{ ...TH, textAlign: "right" }}>Sisa</th>
+                  <th style={{ ...TH, textAlign: "right", width: 140 }}>Jumlah Bayar</th>
                 </tr></thead>
-                <tbody><tr><td colSpan={4} style={{ padding: 40, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr></tbody>
+                <tbody>
+                  {invoiceOptions.filter(inv => !invSearch || inv.id.toLowerCase().includes(invSearch.toLowerCase()) || inv.customer.toLowerCase().includes(invSearch.toLowerCase())).map(inv => {
+                    const sisa = inv.amount - inv.paid
+                    const selected = selectedInvoices.find(s => s.id === inv.id)
+                    return (
+                      <tr key={inv.id} style={{ background: selected ? "#f0f7ff" : "transparent", cursor: "pointer" }} onClick={() => toggleInvoice(inv.id)}>
+                        <td style={{ ...TD, textAlign: "center" }}>
+                          <input type="checkbox" checked={!!selected} readOnly style={{ accentColor: "#0176d3" }} />
+                        </td>
+                        <td style={{ ...TD, fontFamily: "monospace", fontWeight: 500 }}>{inv.id}</td>
+                        <td style={TD}>{inv.customer}</td>
+                        <td style={{ ...TD, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(inv.amount)}</td>
+                        <td style={{ ...TD, textAlign: "right", fontFamily: "monospace", color: sisa > 0 ? "#ea001e" : "#2e844a" }}>{sisa > 0 ? formatIDR(sisa) : "Lunas"}</td>
+                        <td style={{ ...TD, textAlign: "right" }} onClick={e => e.stopPropagation()}>
+                          {selected ? (
+                            <input style={{ ...INPUT, width: 120, textAlign: "right" }} value={selected.payAmount} onChange={e => updatePayAmount(inv.id, e.target.value)} />
+                          ) : (
+                            <span style={{ color: "#ccc" }}>—</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
               </table>
               <div style={{ display: "flex", justifyContent: "flex-end", fontSize: 13, fontWeight: 600, borderTop: "1px solid #eee", paddingTop: 8 }}>
-                <span>Amount: <span style={{ fontWeight: 700 }}>0</span></span>
+                <span>Total Pembayaran: <span style={{ fontWeight: 700, color: "#0176d3" }}>{formatIDR(totalPayment)}</span></span>
               </div>
             </div>
             <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, ...BTN_ICON }} title="Simpan">
