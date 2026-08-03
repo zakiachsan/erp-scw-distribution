@@ -127,7 +127,6 @@
   "125": "package.json",
   "126": "README.md",
   "127": "BudgetPage",
-  "128": "invoices/[id]/page.tsx",
   "129": "KPIPage",
   "130": "fob/page.tsx",
   "131": "log-aktifitas/page.tsx",
@@ -161,6 +160,9 @@
   "159": "EstimasiHargaPage",
   "160": "WorkOrdersPage",
   "161": "CreatePaymentPage",
+  "162": "CreateReceiptPage",
   "164": "clsx",
+  "168": "formatRupiah",
+  "173": "CommissionPage",
   "177": "formatIDR"
 }
