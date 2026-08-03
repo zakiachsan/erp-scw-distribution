@@ -179,10 +179,11 @@ export default function PemasokPage() {
             <th style={thStyle}>Kategori</th>
             <th style={thStyle}>Kota</th>
             <th style={thRight}>Saldo</th>
+            <th style={thStyle}>DP &amp; Pelunasan</th>
           </tr></thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              <tr><td colSpan={6} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
             ) : filtered.map((item: Supplier) => (
               <tr key={item.id} style={rowStyle}
                 onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
@@ -195,6 +196,25 @@ export default function PemasokPage() {
                 </td>
                 <td style={{ ...tdStyle, color: "#444746" }}>{item.kota}</td>
                 <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(item.saldo)}</td>
+                {/* A3 — DP & Pelunasan panel (mirror of Purchasing > Suppliers) */}
+                <td style={tdStyle}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 11 }}>
+                    <span>
+                      <span style={{ color: "#666" }}>DP: </span>
+                      <span style={{ fontFamily: "monospace", color: "#0d7a3d", fontWeight: 600 }}>
+                        {(item as any).dpPaid ? formatIDR((item as any).dpPaid) : "—"}
+                      </span>
+                    </span>
+                    <span>
+                      <span style={{ color: "#666" }}>Sisa: </span>
+                      <span style={{ fontFamily: "monospace", color: (item as any).totalInvoice - (item as any).dpPaid > 0 ? "#b95000" : "#888", fontWeight: 600 }}>
+                        {(item as any).totalInvoice && (item as any).totalInvoice > 0
+                          ? formatIDR((item as any).totalInvoice - ((item as any).dpPaid ?? 0))
+                          : "—"}
+                      </span>
+                    </span>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

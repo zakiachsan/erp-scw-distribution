@@ -69,6 +69,9 @@ const kodePrefix: Record<string, string> = {
   "Beban Lain-lain": "5900",
 }
 
+/* ── Currency list (per user feedback Revisi 30Jul26) ── */
+const CURRENCIES = ["IDR", "USD", "SGD", "EUR", "JPY", "CNY", "MYR", "AUD"]
+
 function getNextKode(tipe: string, accs: Account[]): string {
   const prefix = kodePrefix[tipe] || "1100"
   const existing = accs
@@ -89,8 +92,13 @@ export default function AkunPerkiraanPage() {
   const [formData, setFormData] = useState({
     tipeAkun: "Kas & Bank",
     subAkun: false,
+    parentKode: "",
+    parentSearch: "",
+    parentOpen: false,
+    parentKodeOri: "", // remember selected parent when search list changes
     kodePerkiraan: getNextKode("Kas & Bank", dummyAccounts),
     nama: "",
+    mataUang: "IDR",
     saldoAwal: 0,
     perTanggal: "01/07/2026",
     catatan: "",
@@ -98,8 +106,17 @@ export default function AkunPerkiraanPage() {
   })
 
   const handleTipeAkunChange = (newTipe: string) => {
-    setFormData({ ...formData, tipeAkun: newTipe, kodePerkiraan: getNextKode(newTipe, accounts) })
+    setFormData({ ...formData, tipeAkun: newTipe, kodePerkiraan: getNextKode(newTipe, accounts), parentKode: "", parentSearch: "" })
   }
+
+  // Filter parent account list by user search (showing kode + nama)
+  const filteredParents = (formData.subAkun)
+    ? accounts.filter((a) => {
+        const q = formData.parentSearch.toLowerCase()
+        if (!q) return true
+        return a.kode.toLowerCase().includes(q) || a.nama.toLowerCase().includes(q)
+      })
+    : []
 
   const filtered = accounts.filter((item) => {
     if (filterNonAktif === "aktif" && item.nonAktif) return false
@@ -110,18 +127,18 @@ export default function AkunPerkiraanPage() {
   })
 
   const handleSave = () => {
-      const newAccount: Account = {
-        id: `acc-new-${Date.now()}`,
-        kode: formData.kodePerkiraan,
-        nama: formData.nama || "Akun Baru",
-        tipeAkun: formData.tipeAkun as Account["tipeAkun"],
-        saldo: formData.saldoAwal,
-      }
-      setAccounts([...accounts, newAccount])
-      setShowForm(false)
-      setFormTab("informasi")
-      setFormData({ ...formData, nama: "", saldoAwal: 0, catatan: "", kodePerkiraan: getNextKode(formData.tipeAkun, [...accounts, newAccount]) })
+    const newAccount: Account = {
+      id: `acc-new-${Date.now()}`,
+      kode: formData.kodePerkiraan,
+      nama: formData.nama || "Akun Baru",
+      tipeAkun: formData.tipeAkun as Account["tipeAkun"],
+      saldo: formData.saldoAwal,
     }
+    setAccounts([...accounts, newAccount])
+    setShowForm(false)
+    setFormTab("informasi")
+    setFormData({ ...formData, nama: "", saldoAwal: 0, catatan: "", parentKode: "", parentSearch: "", parentKodeOri: "", kodePerkiraan: getNextKode(formData.tipeAkun, [...accounts, newAccount]) })
+  }
 
   const formTabs: { key: FormTab; label: string }[] = [
     { key: "informasi", label: "Informasi Umum" },
@@ -228,20 +245,64 @@ export default function AkunPerkiraanPage() {
                       </select>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <input type="checkbox" checked={formData.subAkun} onChange={(e) => setFormData({ ...formData, subAkun: e.target.checked })} style={{ width: 16, height: 16 }} />
+                      <input type="checkbox" checked={formData.subAkun} onChange={(e) => setFormData({ ...formData, subAkun: e.target.checked, parentKode: "", parentSearch: "", parentKodeOri: "" })} style={{ width: 16, height: 16 }} />
                       <label style={{ fontSize: 13, color: "#444746" }}>Sub Akun</label>
                     </div>
+                    {formData.subAkun && (
+                      <div style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <label style={labelStyle}>Induk Akun *</label>
+                        <div style={{ flex: 1, position: "relative" }}>
+                          <input
+                            type="text"
+                            placeholder="Cari akun induk (kode / nama)..."
+                            value={formData.parentSearch}
+                            onChange={(e) => setFormData({ ...formData, parentSearch: e.target.value, parentOpen: true })}
+                            onFocus={() => setFormData({ ...formData, parentOpen: true })}
+                            onBlur={() => setTimeout(() => setFormData((f) => ({ ...f, parentOpen: false })), 150)}
+                            style={inputStyle}
+                          />
+                          {formData.parentOpen && (
+                            <div style={{
+                              position: "absolute", top: 34, left: 0, right: 0, maxHeight: 220, overflowY: "auto",
+                              background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+                              boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10,
+                            }}>
+                              {filteredParents.length === 0 ? (
+                                <div style={{ padding: 12, fontSize: 12, color: "#888", textAlign: "center" }}>Tidak ada hasil</div>
+                              ) : filteredParents.slice(0, 50).map((a) => (
+                                <div
+                                  key={a.id}
+                                  onMouseDown={() => setFormData({ ...formData, parentKode: a.kode, parentSearch: `${a.kode} — ${a.nama}`, parentKodeOri: a.kode, parentOpen: false })}
+                                  style={{ padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5", background: formData.parentKodeOri === a.kode ? "#f0f7ff" : "transparent" }}
+                                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#f0f7ff")}
+                                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = formData.parentKodeOri === a.kode ? "#f0f7ff" : "transparent")}
+                                >
+                                  <span style={{ fontFamily: "monospace", fontWeight: 600, color: "#0176d3", marginRight: 6 }}>{a.kode}</span>
+                                  <span style={{ color: "#001526" }}>{a.nama}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                          <label style={labelStyle}>Kode Perkiraan *</label>
-                                          <input type="text" value={formData.kodePerkiraan} onChange={(e) => setFormData({ ...formData, kodePerkiraan: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
-                                          <span style={{ fontSize: 11, color: "#0176d3", fontStyle: "italic" }}>Otomatis berdasarkan tipe akun</span>
-                                        </div>
+                      <label style={labelStyle}>Kode Perkiraan *</label>
+                      <input type="text" value={formData.kodePerkiraan} onChange={(e) => setFormData({ ...formData, kodePerkiraan: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
+                      <span style={{ fontSize: 11, color: "#0176d3", fontStyle: "italic" }}>Otomatis berdasarkan tipe akun</span>
+                    </div>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <label style={labelStyle}>Nama *</label>
                         <input type="text" value={formData.nama} onChange={(e) => setFormData({ ...formData, nama: e.target.value })} style={inputStyle} />
                       </div>
                       <p style={{ fontSize: 11, color: "#999", fontStyle: "italic", marginTop: 4, marginLeft: 138 }}>Contoh: BCA a/c XXX-XXX, dll</p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <label style={labelStyle}>Mata Uang</label>
+                      <select value={formData.mataUang} onChange={(e) => setFormData({ ...formData, mataUang: e.target.value })} style={{ ...selectStyle, flex: 1, maxWidth: 200 }}>
+                        {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
                     </div>
                   </div>
                 </div>

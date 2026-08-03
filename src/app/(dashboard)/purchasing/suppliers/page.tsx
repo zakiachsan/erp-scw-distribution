@@ -53,6 +53,9 @@ interface Supplier {
   paymentTerms: string
   outstandingBalance: number
   lastInvoiceDate: string
+  /* A3 — DP & Pelunasan tracking */
+  dpPaid: number       // total down payment sudah dibayar
+  totalInvoice: number // total tagihan dari semua invoice belum lunas
 }
 
 const paymentTermsOptions = [
@@ -81,6 +84,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "Net 30",
     outstandingBalance: 45200000,
     lastInvoiceDate: "2025-12-10",
+    dpPaid: 15000000,
+    totalInvoice: 60200000,
   },
   {
     id: "2",
@@ -96,6 +101,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "Net 14",
     outstandingBalance: 12800000,
     lastInvoiceDate: "2025-12-12",
+    dpPaid: 0,
+    totalInvoice: 12800000,
   },
   {
     id: "3",
@@ -111,6 +118,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "DP 50% + Pelunasan",
     outstandingBalance: 0,
     lastInvoiceDate: "2025-12-13",
+    dpPaid: 22500000,
+    totalInvoice: 22500000,
   },
   {
     id: "4",
@@ -126,6 +135,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "Net 45",
     outstandingBalance: 8750000,
     lastInvoiceDate: "2025-11-20",
+    dpPaid: 0,
+    totalInvoice: 8750000,
   },
   {
     id: "5",
@@ -141,6 +152,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "Net 60",
     outstandingBalance: 156000000,
     lastInvoiceDate: "2025-10-15",
+    dpPaid: 78000000,
+    totalInvoice: 234000000,
   },
   {
     id: "6",
@@ -156,6 +169,8 @@ const suppliers: Supplier[] = [
     paymentTerms: "COD",
     outstandingBalance: 0,
     lastInvoiceDate: "2025-08-20",
+    dpPaid: 0,
+    totalInvoice: 0,
   },
 ]
 
@@ -340,12 +355,16 @@ export default function SuppliersPage() {
                 <TableHead>Payment Terms</TableHead>
                 <TableHead className="text-right">Outstanding</TableHead>
                 <TableHead>Umur Hutang</TableHead>
+                <TableHead>DP &amp; Pelunasan</TableHead>
                 <TableHead>Last Order</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((supplier) => {
                 const agingDays = getAgingDays(supplier.lastInvoiceDate)
+                const dpPaid = supplier.dpPaid ?? 0
+                const totalInv = supplier.totalInvoice ?? 0
+                const sisa = totalInv - dpPaid
                 return (
                   <TableRow key={supplier.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell>
@@ -378,6 +397,22 @@ export default function SuppliersPage() {
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-0.5 text-[11px]">
+                        <div className="flex items-center gap-1">
+                          <span className="text-muted-foreground">DP:</span>
+                          <span className={dpPaid > 0 ? "font-medium text-emerald-700" : "text-muted-foreground"}>
+                            {dpPaid > 0 ? fmtIDR(dpPaid) : "—"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-muted-foreground">Sisa:</span>
+                          <span className={sisa > 0 ? "font-medium text-amber-700" : "text-muted-foreground"}>
+                            {sisa > 0 ? fmtIDR(sisa) : "Lunas"}
+                          </span>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {supplier.lastOrder}

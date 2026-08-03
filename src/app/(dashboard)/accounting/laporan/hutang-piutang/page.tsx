@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Printer, Download, Receipt, Users, Building } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Printer, Download, Receipt, Users, Building, Filter as FilterIcon } from "lucide-react"
+import { ReportFilterBuilder, applyFilters, type FilterRule } from "@/components/accounting/report-filter-builder"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -34,6 +35,11 @@ const tdStyle: React.CSSProperties = { fontSize: 13, color: "#001526", padding: 
 
 export default function HutangPiutangPage() {
   const [period, setPeriod] = useState("Juni 2026")
+  /* B7 — Accurate-style penyaringan */
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [filterRules, setFilterRules] = useState<FilterRule[]>([])
+  const filteredPiutang = useMemo(() => applyFilters(piutangData as unknown as Record<string, unknown>[], filterRules) as typeof piutangData, [filterRules])
+  const filteredHutang = useMemo(() => applyFilters(hutangData as unknown as Record<string, unknown>[], filterRules) as typeof hutangData, [filterRules])
 
   const summaryCards = [
     { title: "Total Piutang", value: formatIDR(totalPiutang), desc: `${piutangData.filter(p => p.status === "Belum").length} belum lunas`, icon: Users, color: "#059669", bg: "#ecfdf5" },
@@ -53,6 +59,9 @@ export default function HutangPiutangPage() {
           <select value={period} onChange={e => setPeriod(e.target.value)} style={{ height: 34, padding: "0 12px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", background: "#fff" }}>
             {periods.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
+          <button onClick={() => setFilterOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: filterRules.length > 0 ? "#eef4ff" : "#fff", color: filterRules.length > 0 ? "#0176d3" : "#001526", border: `1px solid ${filterRules.length > 0 ? "#c2dbf5" : "#d8d8d8"}`, borderRadius: 6, cursor: "pointer" }}>
+            <FilterIcon size={14} /> {filterRules.length > 0 ? `Filter (${filterRules.length})` : "Filter"}
+          </button>
           <button onClick={() => alert("Download PDF placeholder")} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#fff", color: "#001526", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}>
             <Download size={14} /> PDF
           </button>
@@ -85,7 +94,7 @@ export default function HutangPiutangPage() {
         <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflow: "hidden" }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #ecebea", background: "#ecfdf5" }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, color: "#059669" }}>Piutang (Receivables)</h3>
-            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{piutangData.length} item · {piutangData.filter(p => p.status === "Belum").length} belum lunas</p>
+            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{filteredPiutang.length} item · {filteredPiutang.filter(p => p.status === "Belum").length} belum lunas</p>
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -97,7 +106,7 @@ export default function HutangPiutangPage() {
               </tr>
             </thead>
             <tbody>
-              {piutangData.map(row => (
+              {filteredPiutang.map(row => (
                 <tr key={row.id} style={{ cursor: "pointer" }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
@@ -128,7 +137,7 @@ export default function HutangPiutangPage() {
         <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflow: "hidden" }}>
           <div style={{ padding: "16px 24px", borderBottom: "1px solid #ecebea", background: "#fef2f2" }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, color: "#ea001e" }}>Hutang (Payables)</h3>
-            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{hutangData.length} item · {hutangData.filter(p => p.status === "Belum").length} belum lunas</p>
+            <p style={{ fontSize: 11, color: "#444746", marginTop: 2 }}>{filteredHutang.length} item · {filteredHutang.filter(p => p.status === "Belum").length} belum lunas</p>
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -140,7 +149,7 @@ export default function HutangPiutangPage() {
               </tr>
             </thead>
             <tbody>
-              {hutangData.map(row => (
+              {filteredHutang.map(row => (
                 <tr key={row.id} style={{ cursor: "pointer" }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
@@ -167,6 +176,21 @@ export default function HutangPiutangPage() {
           </table>
         </div>
       </div>
+
+      {/* B7 — Penyaringan Data modal */}
+      <ReportFilterBuilder
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        rules={filterRules}
+        onApply={setFilterRules}
+        columns={[
+          { value: "customer",    label: "Customer (Piutang)" },
+          { value: "supplier",    label: "Supplier (Hutang)" },
+          { value: "jumlah",      label: "Jumlah" },
+          { value: "jatuhTempo",  label: "Jatuh Tempo" },
+          { value: "status",      label: "Status" },
+        ]}
+      />
     </div>
   )
 }

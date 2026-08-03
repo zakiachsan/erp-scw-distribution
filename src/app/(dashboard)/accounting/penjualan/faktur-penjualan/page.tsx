@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download, ArrowLeft } from "lucide-react"
 import { dummySalesOrders, type SalesOrder } from "@/lib/accounting-dummy-data"
 import { JournalDetailPanel } from "@/components/accounting/journal-detail-panel"
+import { BuatBaruModal } from "@/components/accounting/buat-baru-modal"
 
 const thStyle: React.CSSProperties = { padding: "8px 10px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", borderBottom: "1px solid #e0e0e0" }
 const thRight: React.CSSProperties = { ...thStyle, textAlign: "right" }
@@ -38,6 +39,9 @@ export default function FakturPenjualanPage() {
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Buat dan kelola faktur/invoice penjualan</p>
         </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+            <button onClick={() => setShowForm(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "0 14px", height: 32, fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>
+              <Plus size={14} /> Buat Baru
+            </button>
             <select style={selectStyle}><option>Tanggal: Semua</option></select>
             <select style={selectStyle}><option>Pelanggan: Semua</option></select>
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={selectStyle}>
@@ -56,58 +60,36 @@ export default function FakturPenjualanPage() {
           </div>
       </div>
 
+      <BuatBaruModal
+        open={showForm}
+        onOpenChange={setShowForm}
+        title="Buat Faktur Penjualan"
+        subtitle="Faktur baru akan berstatus Draft"
+        fields={[
+          { key: "pelanggan", label: "Pelanggan", type: "select", required: true, options: [
+            { value: "PT Maju Bersama", label: "PT Maju Bersama" },
+            { value: "CV Karya Mandiri", label: "CV Karya Mandiri" },
+            { value: "UD Sukses Selalu", label: "UD Sukses Selalu" },
+            { value: "PT Teknindo Solusi", label: "PT Teknindo Solusi" },
+            { value: "Toko Berkah Abadi", label: "Toko Berkah Abadi" },
+          ]},
+          { key: "tanggal", label: "Tanggal", type: "date", required: true, defaultValue: "06/07/2026" },
+          { key: "tipeNomor", label: "Tipe Nomor", type: "select", defaultValue: "Sales Invoice", options: [
+            { value: "Sales Invoice", label: "Sales Invoice" },
+          ]},
+          { key: "keterangan", label: "Keterangan", type: "textarea", placeholder: "Catatan faktur..." },
+        ]}
+        itemFields={[
+          { key: "nama", label: "Nama Barang", type: "text" },
+          { key: "qty", label: "Qty", type: "number" },
+          { key: "harga", label: "Harga", type: "number" },
+        ]}
+        onSave={() => setShowForm(false)}
+      />
+
       {showForm && (
-        <div style={{ background: "#f3f3f3", padding: "16px 20px", borderBottom: "1px solid #d8d8d8" }}>
-          <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "relative" }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Data Baru</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Customer *</label>
-                <div style={{ position: "relative", flex: 1 }}>
-                  <Search size={12} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input type="text" value={formData.pelanggan} onChange={(e) => setFormData({...formData, pelanggan: e.target.value})} placeholder="Cari/Pilih Pelanggan..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Invoice No *</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div onClick={() => setFormData({...formData, nomorOtomatis: !formData.nomorOtomatis})} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: formData.nomorOtomatis ? "#0176d3" : "#ccc", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
-                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 2, left: formData.nomorOtomatis ? 18 : 2, transition: "left 0.2s" }} />
-                  </div>
-                  <select value={formData.tipeNomor} onChange={(e) => setFormData({...formData, tipeNomor: e.target.value})} style={selectStyle}><option>Sales Invoice</option></select>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Date *</label>
-                <input type="text" value={formData.tanggal} onChange={(e) => setFormData({...formData, tanggal: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <button style={btnIconOutline}>Ambil ▾</button>
-                <button style={btnIconOutline}>Proses ▾</button>
-              </div>
-            </div>
-            <div style={{ borderTop: "1px solid #eee", paddingTop: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <div style={{ position: "relative", flex: 1, maxWidth: 250 }}>
-                  <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input type="text" placeholder="Cari/Pilih Barang & Jasa..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#001526", marginLeft: 8 }}>Rincian Barang *</span>
-              </div>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, marginBottom: 12 }}>
-                <thead><tr>
-                  {["Item Name","Code#","Quantity","Unit","@Price","Discount","Total Price"].map(h => <th key={h} style={h === "@Price" || h === "Discount" || h === "Total Price" ? thRight : thStyle}>{h}</th>)}
-                </tr></thead>
-                <tbody><tr><td colSpan={7} style={{ padding: 30, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr></tbody>
-              </table>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 24, fontSize: 13, borderTop: "1px solid #eee", paddingTop: 8 }}>
-                <span>Sub Total: <b>0</b></span><span>Discount (%): <b>0</b></span><span>Total: <b>0</b></span>
-              </div>
-            </div>
-            <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, ...btnIcon }} title="Simpan">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
-            </button>
-          </div>
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: -1 }}>
+          <span style={{ display: "none" }}>placeholder</span>
         </div>
       )}
 

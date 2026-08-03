@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Printer, Download, ShoppingCart, TrendingUp, BarChart3, Bookmark, X } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Printer, Download, ShoppingCart, TrendingUp, BarChart3, Bookmark, X, Filter as FilterIcon } from "lucide-react"
+import { ReportFilterBuilder, applyFilters, type FilterRule } from "@/components/accounting/report-filter-builder"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -44,6 +45,10 @@ export default function LaporanPenjualanPage() {
   ])
   const [presetName, setPresetName] = useState("")
   const [showPresetInput, setShowPresetInput] = useState(false)
+  /* B7 — Accurate-style penyaringan */
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [filterRules, setFilterRules] = useState<FilterRule[]>([])
+  const filteredMonthly = useMemo(() => applyFilters(monthlyData as unknown as Record<string, unknown>[], filterRules) as typeof monthlyData, [filterRules])
 
   const handleSimpanFilter = () => {
     if (!presetName.trim()) return
@@ -63,9 +68,9 @@ export default function LaporanPenjualanPage() {
   }
 
   const summaryCards = [
-    { title: "Total Penjualan", value: formatIDR(totalPenjualan), desc: `${monthlyData.length} bulan`, icon: TrendingUp, color: "#7c3aed", bg: "#f5f3ff" },
+    { title: "Total Penjualan", value: formatIDR(totalPenjualan), desc: `${filteredMonthly.length} bulan (filtered: ${filterRules.length})`, icon: TrendingUp, color: "#7c3aed", bg: "#f5f3ff" },
     { title: "Rata-rata per Order", value: formatIDR(avgPerOrder), desc: `${totalOrder} total order`, icon: BarChart3, color: "#7c3aed", bg: "#f5f3ff" },
-    { title: "Jumlah Order", value: totalOrder.toString(), desc: `${monthlyData.length} bulan`, icon: ShoppingCart, color: "#7c3aed", bg: "#f5f3ff" },
+    { title: "Jumlah Order", value: totalOrder.toString(), desc: `${filteredMonthly.length} bulan`, icon: ShoppingCart, color: "#7c3aed", bg: "#f5f3ff" },
   ]
 
   return (
@@ -86,8 +91,24 @@ export default function LaporanPenjualanPage() {
           <button onClick={() => window.print()} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>
             <Printer size={14} /> Cetak
           </button>
+          <button onClick={() => setFilterOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: filterRules.length > 0 ? "#eef4ff" : "#fff", color: filterRules.length > 0 ? "#0176d3" : "#001526", border: `1px solid ${filterRules.length > 0 ? "#c2dbf5" : "#d8d8d8"}`, borderRadius: 6, cursor: "pointer" }}>
+            <FilterIcon size={14} /> {filterRules.length > 0 ? `Filter (${filterRules.length})` : "Filter"}
+          </button>
         </div>
       </div>
+
+      {/* B7 — Penyaringan Data modal */}
+      <ReportFilterBuilder
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        rules={filterRules}
+        onApply={setFilterRules}
+        columns={[
+          { value: "bulan",   label: "Bulan" },
+          { value: "order",   label: "Jumlah Order" },
+          { value: "total",   label: "Total" },
+        ]}
+      />
 
       {/* Date Range Filter + Memorize */}
       <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, padding: "14px 20px", marginBottom: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
@@ -159,7 +180,7 @@ export default function LaporanPenjualanPage() {
               </tr>
             </thead>
             <tbody>
-              {monthlyData.map(row => (
+              {filteredMonthly.map(row => (
                 <tr key={row.bulan} style={{ cursor: "pointer" }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}

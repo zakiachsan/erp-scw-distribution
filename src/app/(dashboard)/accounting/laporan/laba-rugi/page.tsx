@@ -48,6 +48,23 @@ const tdStyle: React.CSSProperties = { fontSize: 13, color: "#001526", padding: 
 
 export default function LabaRugiPage() {
   const [period, setPeriod] = useState("Juni 2026")
+  const [view, setView] = useState<"standar" | "multi-periode" | "multi-year">("standar")
+
+  /* B6 — Multi-periode data: side-by-side months Jan-Jun 2026 */
+  const monthlyData = [
+    { month: "Jan 2026", pendapatan: 42500000, hpp: 22500000, beban: 8400000, laba: 11600000 },
+    { month: "Feb 2026", pendapatan: 48000000, hpp: 25400000, beban: 9100000, laba: 13500000 },
+    { month: "Mar 2026", pendapatan: 52000000, hpp: 27500000, beban: 9500000, laba: 15000000 },
+    { month: "Apr 2026", pendapatan: 49500000, hpp: 26200000, beban: 8800000, laba: 14500000 },
+    { month: "Mei 2026", pendapatan: 58000000, hpp: 30700000, beban: 10200000, laba: 17100000 },
+    { month: "Jun 2026", pendapatan: 62500000, hpp: 33100000, beban: 11000000, laba: 18400000 },
+  ]
+  /* B6 — Multi-year data: 3 years */
+  const yearlyData = [
+    { year: "2024", pendapatan: 580000000, hpp: 336000000, beban: 109000000, laba: 135000000 },
+    { year: "2025", pendapatan: 685000000, hpp: 376000000, beban: 119000000, laba: 190000000 },
+    { year: "2026", pendapatan: 312500000, hpp: 165400000, beban: 57000000,  laba: 90100000 }, /* YTD Jun */
+  ]
 
   const labaKotor = sections[0].totalValue - sections[1].totalValue
   const totalBeban = bebanRows.reduce((s, r) => s + r.value, 0)
@@ -63,19 +80,21 @@ export default function LabaRugiPage() {
   return (
     <div style={{ padding: "24px 28px", maxWidth: 1000, margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#001526" }}>Laba Rugi</h1>
-          <p style={{ fontSize: 13, color: "#444746", marginTop: 4 }}>Income Statement — Periode: 1 Januari - 30 Juni 2026</p>
+          <p style={{ fontSize: 13, color: "#444746", marginTop: 4 }}>Income Statement — {view === "standar" ? "Periode: 1 Januari - 30 Juni 2026" : view === "multi-periode" ? "Multi Periode (Jan–Jun 2026)" : "Multi Year (2024–2026)"}</p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <select
-            value={period}
-            onChange={e => setPeriod(e.target.value)}
-            style={{ height: 34, padding: "0 12px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", background: "#fff" }}
-          >
-            {periods.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+          {view === "standar" && (
+            <select
+              value={period}
+              onChange={e => setPeriod(e.target.value)}
+              style={{ height: 34, padding: "0 12px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", background: "#fff" }}
+            >
+              {periods.map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+          )}
           <button
             onClick={() => alert("Download PDF placeholder")}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#fff", color: "#001526", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}
@@ -91,7 +110,87 @@ export default function LabaRugiPage() {
         </div>
       </div>
 
-      {/* Statement Table */}
+      {/* B6 — Variant tabs */}
+      <div style={{ display: "flex", borderBottom: "1px solid #e0e0e0", marginBottom: 16 }}>
+        <TabBtn active={view === "standar"} onClick={() => setView("standar")}>Standar</TabBtn>
+        <TabBtn active={view === "multi-periode"} onClick={() => setView("multi-periode")}>Multi Periode</TabBtn>
+        <TabBtn active={view === "multi-year"} onClick={() => setView("multi-year")}>Multi Year</TabBtn>
+      </div>
+
+      {/* Multi-periode: side-by-side monthly comparison */}
+      {view === "multi-periode" && (
+        <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, textAlign: "left" }}>PERIODE</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>PENDAPATAN</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>HPP</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>LABA KOTOR</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>BEBAN</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>LABA BERSIH</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {monthlyData.map((r, i) => {
+                const labaKotor = r.pendapatan - r.hpp
+                const pct = (r.laba / r.pendapatan) * 100
+                return (
+                  <tr key={r.month} style={{ background: i % 2 === 0 ? "#fff" : "#fafbfc" }}>
+                    <td style={{ ...tdStyle, fontWeight: 600, color: "#0176d3" }}>{r.month}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(r.pendapatan)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#c1342b" }}>({formatIDR(r.hpp)})</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#0d7a3d" }}>{formatIDR(labaKotor)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#c1342b" }}>({formatIDR(r.beban)})</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", fontWeight: 700, color: "#059669" }}>{formatIDR(r.laba)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: pct >= 25 ? "#0d7a3d" : "#b95000", fontWeight: 600 }}>{pct.toFixed(1)}%</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Multi-year: 3-year side-by-side */}
+      {view === "multi-year" && (
+        <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, textAlign: "left" }}>TAHUN</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>PENDAPATAN</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>HPP</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>LABA KOTOR</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>BEBAN</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>LABA BERSIH</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>% YoY</th>
+              </tr>
+            </thead>
+            <tbody>
+              {yearlyData.map((r, i) => {
+                const labaKotor = r.pendapatan - r.hpp
+                const yoy = i > 0 ? ((r.laba - yearlyData[i-1].laba) / yearlyData[i-1].laba) * 100 : 0
+                return (
+                  <tr key={r.year} style={{ background: i % 2 === 0 ? "#fff" : "#fafbfc" }}>
+                    <td style={{ ...tdStyle, fontWeight: 600, color: "#0176d3" }}>{r.year}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace" }}>{formatIDR(r.pendapatan)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#c1342b" }}>({formatIDR(r.hpp)})</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#0d7a3d" }}>{formatIDR(labaKotor)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: "#c1342b" }}>({formatIDR(r.beban)})</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", fontWeight: 700, color: "#059669" }}>{formatIDR(r.laba)}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontFamily: "monospace", color: yoy >= 0 ? "#0d7a3d" : "#c1342b", fontWeight: 600 }}>{i === 0 ? "—" : `${yoy >= 0 ? "+" : ""}${yoy.toFixed(1)}%`}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Statement Table — only when "standar" */}
+      {view === "standar" && (
       <div style={{ background: "#fff", border: "1px solid #ecebea", borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -161,6 +260,23 @@ export default function LabaRugiPage() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
+  )
+}
+
+function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "10px 18px", fontSize: 13, fontWeight: active ? 600 : 400,
+        background: "transparent", color: active ? "#0176d3" : "#666",
+        border: "none", borderBottom: active ? "2px solid #0176d3" : "2px solid transparent",
+        marginBottom: -1, cursor: "pointer",
+      }}
+    >
+      {children}
+    </button>
   )
 }

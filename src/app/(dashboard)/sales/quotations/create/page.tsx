@@ -58,14 +58,14 @@ const productCategories: Record<string, string> = {
 
 // ─── Customer Data ─────────────────────────────────────────────────────────
 const customers = [
-  { id: "C001", name: "PT Autogloss Indonesia", type: "Dealer" as CustomerType, tier: "Platinum", address: "Jl. Alternatif Cibinong No. 88, Bogor", phone: "021-87654321", email: "sales@autogloss.co.id", npwp: "01.234.567.8-012.000", creditLimit: 50000000, remaining: 32000000 },
-  { id: "C002", name: "CV Ceramic Pro JKT", type: "Workshop" as CustomerType, tier: "Gold", address: "Jl. Panjang No. 12, Jakarta Barat", phone: "021-54321098", email: "order@ceramicpro.co.id", npwp: "02.345.678.9-013.000", creditLimit: 40000000, remaining: 18000000 },
-  { id: "C003", name: "UD Shinemax", type: "Reseller" as CustomerType, tier: "Gold", address: "Jl. Raya Bandung No. 456, Bandung", phone: "022-76543210", email: "info@shinemax.co.id", npwp: "03.456.789.0-014.000", creditLimit: 30000000, remaining: 28000000 },
-  { id: "C004", name: "PT DetailWorks BDG", type: "Workshop" as CustomerType, tier: "Silver", address: "Jl. Soekarno-Hatta No. 789, Bandung", phone: "022-65432109", email: "procurement@detailworks.co.id", npwp: "04.567.890.1-015.000", creditLimit: 25000000, remaining: 25000000 },
-  { id: "C005", name: "CV ProShine SBY", type: "Reseller" as CustomerType, tier: "Silver", address: "Jl. Rungkut Mapan Utara No. 10, Surabaya", phone: "031-87654321", email: "info@proshine.co.id", npwp: "05.678.901.2-016.000", creditLimit: 20000000, remaining: 12000000 },
-  { id: "C006", name: "AutoCare Makassar", type: "Dealer" as CustomerType, tier: "Bronze", address: "Jl. A.P. Pettarani No. 22, Makassar", phone: "0411-8765432", email: "cs@autocare-mks.co.id", npwp: "06.789.012.3-017.000", creditLimit: 15000000, remaining: 15000000 },
-  { id: "C007", name: "GlossUp Bali", type: "Workshop" as CustomerType, tier: "Platinum", address: "Jl. Sunset Road No. 88, Seminyak, Bali", phone: "0361-8765432", email: "hello@glossupbali.com", npwp: "07.890.123.4-018.000", creditLimit: 20000000, remaining: 5000000 },
-  { id: "C008", name: "DetailPro Semarang", type: "Reseller" as CustomerType, tier: "Bronze", address: "Jl. Pandanaran No. 55, Semarang", phone: "024-8765432", email: "order@detailpro.co.id", npwp: "08.901.234.5-019.000", creditLimit: 15000000, remaining: 10000000 },
+  { id: "C001", name: "PT Autogloss Indonesia", type: "Dealer" as CustomerType, tier: "Platinum", address: "Jl. Alternatif Cibinong No. 88, Bogor", phone: "021-87654321", email: "sales@autogloss.co.id", npwp: "01.234.567.8-012.000", creditLimit: 50000000, remaining: 32000000, paymentTerms: "Net 30" },
+  { id: "C002", name: "CV Ceramic Pro JKT", type: "Workshop" as CustomerType, tier: "Gold", address: "Jl. Panjang No. 12, Jakarta Barat", phone: "021-54321098", email: "order@ceramicpro.co.id", npwp: "02.345.678.9-013.000", creditLimit: 40000000, remaining: 18000000, paymentTerms: "Net 14" },
+  { id: "C003", name: "UD Shinemax", type: "Reseller" as CustomerType, tier: "Gold", address: "Jl. Raya Bandung No. 456, Bandung", phone: "022-76543210", email: "info@shinemax.co.id", npwp: "03.456.789.0-014.000", creditLimit: 30000000, remaining: 28000000, paymentTerms: "Net 30" },
+  { id: "C004", name: "PT DetailWorks BDG", type: "Workshop" as CustomerType, tier: "Silver", address: "Jl. Soekarno-Hatta No. 789, Bandung", phone: "022-65432109", email: "procurement@detailworks.co.id", npwp: "04.567.890.1-015.000", creditLimit: 25000000, remaining: 25000000, paymentTerms: "Net 30" },
+  { id: "C005", name: "CV ProShine SBY", type: "Reseller" as CustomerType, tier: "Silver", address: "Jl. Rungkut Mapan Utara No. 10, Surabaya", phone: "031-87654321", email: "info@proshine.co.id", npwp: "05.678.901.2-016.000", creditLimit: 20000000, remaining: 12000000, paymentTerms: "Net 30" },
+  { id: "C006", name: "AutoCare Makassar", type: "Dealer" as CustomerType, tier: "Bronze", address: "Jl. A.P. Pettarani No. 22, Makassar", phone: "0411-8765432", email: "cs@autocare-mks.co.id", npwp: "06.789.012.3-017.000", creditLimit: 15000000, remaining: 15000000, paymentTerms: "Net 30" },
+  { id: "C007", name: "GlossUp Bali", type: "Workshop" as CustomerType, tier: "Platinum", address: "Jl. Sunset Road No. 88, Seminyak, Bali", phone: "0361-8765432", email: "hello@glossupbali.com", npwp: "07.890.123.4-018.000", creditLimit: 20000000, remaining: 5000000, paymentTerms: "Net 14" },
+  { id: "C008", name: "DetailPro Semarang", type: "Reseller" as CustomerType, tier: "Bronze", address: "Jl. Pandanaran No. 55, Semarang", phone: "024-8765432", email: "order@detailpro.co.id", npwp: "08.901.234.5-019.000", creditLimit: 15000000, remaining: 10000000, paymentTerms: "Net 30" },
 ]
 
 // ─── Products ──────────────────────────────────────────────────────────────
@@ -122,11 +122,15 @@ function CreateQuotationForm() {
   const selectedCustomer = customers.find((c) => c.id === customerId)
   const selectedDelivery = deliveryOptions.find((d) => d.id === deliveryId)
 
-  // Auto-set customer type when customer is selected
+  // Auto-set customer type AND payment terms from customer master
   const handleCustomerChange = (id: string) => {
     setCustomerId(id)
     const c = customers.find((x) => x.id === id)
-    if (c) setCustomerType(c.type)
+    if (c) {
+      setCustomerType(c.type)
+      if (c.paymentTerms) setPaymentTerms(c.paymentTerms)
+      setTimeout(applyTieringDiscountToAll, 0)
+    }
   }
 
   // Auto-apply tiering discount when customer type changes
@@ -266,20 +270,15 @@ function CreateQuotationForm() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label className="text-xs">Type of Customer *</Label>
-              <Select
-                value={customerType}
-                onValueChange={(v) => { setCustomerType(v as CustomerType); setTimeout(applyTieringDiscountToAll, 0) }}
-              >
-                <SelectTrigger className="h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Reseller">Reseller</SelectItem>
-                  <SelectItem value="Dealer">Dealer</SelectItem>
-                  <SelectItem value="Workshop">Workshop</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label className="text-xs">Type of Customer</Label>
+              <div className="mt-1 flex items-center gap-2">
+                <Badge variant="outline" className="border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] text-indigo-700">
+                  {customerType}
+                </Badge>
+                <span className="text-[10px] text-muted-foreground">
+                  Diatur di master Customer — hubungi Accounting untuk ubah
+                </span>
+              </div>
               <p className="text-[10px] text-muted-foreground mt-1">Menentukan discount tiering otomatis</p>
             </div>
             <div>
@@ -287,20 +286,15 @@ function CreateQuotationForm() {
               <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-9" />
             </div>
             <div>
-              <Label className="text-xs">Syarat Pembayaran *</Label>
-              <Select value={paymentTerms} onValueChange={setPaymentTerms}>
-                <SelectTrigger className="h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="COD">COD (Cash on Delivery)</SelectItem>
-                  <SelectItem value="Net 7">Net 7 Hari</SelectItem>
-                  <SelectItem value="Net 14">Net 14 Hari</SelectItem>
-                  <SelectItem value="Net 30">Net 30 Hari</SelectItem>
-                  <SelectItem value="Net 60">Net 60 Hari</SelectItem>
-                  <SelectItem value="DP 50%">DP 50% + Pelunasan</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label className="text-xs">Syarat Pembayaran</Label>
+              <div className="mt-1 flex items-center gap-2">
+                <Badge variant="outline" className="border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] text-emerald-700">
+                  {paymentTerms}
+                </Badge>
+                <span className="text-[10px] text-muted-foreground">
+                  Read-only — dikelola Accounting &amp; Finance
+                </span>
+              </div>
             </div>
             <div>
               <Label className="text-xs">Pengiriman *</Label>

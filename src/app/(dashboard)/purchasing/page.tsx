@@ -337,12 +337,17 @@ export default function PurchasingPage() {
                 <TableHead className="text-right">Items</TableHead>
                 <TableHead className="text-right">Total</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Proses</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((po) => {
                 const cfg = statusConfig[po.status]
                 const Icon = cfg.icon
+                /* A1b — post-process options per Revisi 30Jul26.
+                 * After PO is created, user can trigger next: Penerimaan / UM / Faktur / Bayar.
+                 * The dropdown only shows when PO is at "Sent" or beyond (not "Paid"). */
+                const canProcess = po.status === "Sent" || po.status === "Received" || po.status === "Partial" || po.status === "Ready to Pay"
                 return (
                   <TableRow key={po.id}>
                     <TableCell className="font-sans font-medium text-sm">
@@ -364,6 +369,26 @@ export default function PurchasingPage() {
                         <Icon className="mr-1 h-3 w-3" />
                         {cfg.label}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {canProcess ? (
+                        <Select onValueChange={(v) => {
+                          if (!v) return
+                          window.location.href = `/accounting/pembelian/${v}?from=${po.poNumber}`
+                        }}>
+                          <SelectTrigger className="ml-auto h-7 w-[150px] border-blue-200 bg-blue-50 text-[11px] text-blue-700 hover:bg-blue-100">
+                            <SelectValue placeholder="Pilih proses..." />
+                          </SelectTrigger>
+                          <SelectContent align="end">
+                            <SelectItem value="penerimaan-barang">Penerimaan Barang</SelectItem>
+                            <SelectItem value="uang-muka-pembelian">Uang Muka Pembelian</SelectItem>
+                            <SelectItem value="faktur-pembelian">Faktur Pembelian</SelectItem>
+                            <SelectItem value="pembayaran-pembelian">Pembayaran Pembelian</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 )

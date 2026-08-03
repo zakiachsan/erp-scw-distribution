@@ -6,7 +6,7 @@
    Jika edit, jaga cross-reference ke invoices. */
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download } from "lucide-react"
+import { Plus, RefreshCw, Search } from "lucide-react"
 import { dummyPayments } from "@/lib/accounting-dummy-data"
 
 // ── SLDS Shared Styles ──
@@ -68,20 +68,18 @@ export default function PembayaranPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
           <select value={filterTanggal} onChange={e => setFilterTanggal(e.target.value)} style={SELECT}><option value="semua">Tanggal: Semua</option></select>
           <select value={filterKasBank} onChange={e => setFilterKasBank(e.target.value)} style={SELECT}><option value="semua">Kas/Bank: Semua</option><option value="Bank BCA">Bank BCA</option><option value="Bank Mandiri">Bank Mandiri</option><option value="Kas Kecil">Kas Kecil</option></select>
-          <button style={BTN_ICON}><Filter size={14} /></button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
-          <button onClick={() => setShowForm(!showForm)} style={BTN_ICON}><Plus size={16} /></button>
-          <button style={BTN_ICON_OUTLINE}><RefreshCw size={14} /></button>
           <div style={{ flex: 1 }} />
-          <button style={BTN_ICON_OUTLINE}><Download size={14} /></button>
-          <button style={BTN_ICON_OUTLINE}><Printer size={14} /></button>
-          <button style={BTN_ICON_OUTLINE}><Settings size={14} /></button>
           <div style={{ position: "relative" }}>
             <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-            <input style={{ ...INPUT, paddingLeft: 30, width: 180 }} placeholder="Cari..." value={search} onChange={e => setSearch(e.target.value)} />
+            <input style={{ ...INPUT, paddingLeft: 30, width: 200 }} placeholder="Cari pembayaran..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <span style={{ fontSize: 11, color: "#888" }}>{filtered.length}</span>
+          <button
+            onClick={() => setShowForm(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}
+          >
+            <Plus size={14} /> Buat Baru
+          </button>
+          <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
         </div>
       </div>
 

@@ -34,7 +34,7 @@ import {
   ArrowUpDown,
   X,
 } from "lucide-react"
-import { customers, type Customer } from "@/lib/sales-data"
+import { customers, type Customer, type CustomerType, type PaymentTerm, type ShippingMethod } from "@/lib/sales-data"
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
@@ -54,29 +54,51 @@ export default function CustomerListPage() {
   const [sortKey, setSortKey] = useState<SortKey>("totalPurchase")
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc")
   const [addOpen, setAddOpen] = useState(false)
-  const [custName, setCustName] = useState("")
-  const [custCompany, setCustCompany] = useState("")
   const [customerList, setCustomerList] = useState(customers)
+  const [newCust, setNewCust] = useState({
+    name: "",
+    company: "",
+    customerType: "Reseller" as CustomerType,
+    paymentTerms: "Net 30" as PaymentTerm,
+    defaultShipping: "JNE" as ShippingMethod,
+    pic: "",
+    phone: "",
+    email: "",
+    address: "",
+    npwp: "",
+    currency: "IDR" as "IDR" | "USD" | "SGD",
+    creditLimit: 0,
+  })
 
   const addCustomer = () => {
-    if (!custName.trim()) return
-    const newCust: Customer = {
+    if (!newCust.name.trim()) return
+    const created: Customer = {
       id: `C${String(customerList.length + 1).padStart(3, "0")}`,
-      name: custName,
-      company: custCompany || "Unknown",
-      creditLimit: 0,
-      remainingCredit: 0,
+      name: newCust.name,
+      company: newCust.company || "Unknown",
+      customerType: newCust.customerType,
+      paymentTerms: newCust.paymentTerms,
+      defaultShipping: newCust.defaultShipping,
+      pic: newCust.pic,
+      phone: newCust.phone,
+      email: newCust.email,
+      address: newCust.address,
+      npwp: newCust.npwp,
+      currency: newCust.currency,
+      creditLimit: newCust.creditLimit,
+      remainingCredit: newCust.creditLimit,
       lastPurchase: new Date().toISOString().split("T")[0],
       tier: "Bronze",
       totalPurchase: 0,
       totalOrders: 0,
       avgOrderValue: 0,
-      customerType: "Reseller",
-      paymentTerms: "Net 30",
     }
-    setCustomerList([...customerList, newCust])
-    setCustName("")
-    setCustCompany("")
+    setCustomerList([...customerList, created])
+    setNewCust({
+      name: "", company: "", customerType: "Reseller", paymentTerms: "Net 30",
+      defaultShipping: "JNE", pic: "", phone: "", email: "", address: "", npwp: "",
+      currency: "IDR", creditLimit: 0,
+    })
     setAddOpen(false)
   }
 
@@ -137,20 +159,136 @@ export default function CustomerListPage() {
             <Plus className="mr-1.5 h-3.5 w-3.5" />
             Tambah Customer
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[88vh] max-w-2xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Tambah Customer Baru</DialogTitle>
+              <p className="text-xs text-muted-foreground">
+                Info quotation (Tipe Customer &amp; Syarat Pembayaran) sekarang diisi di sini — akan otomatis terisi di Penawaran.
+                Pengubahan hanya bisa dilakukan oleh Accounting.
+              </p>
             </DialogHeader>
             <div className="space-y-3 pt-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Nama Customer</Label>
-                <Input placeholder="Nama customer" value={custName} onChange={(e) => setCustName(e.target.value)} className="h-8 text-sm" />
+              {/* Identitas */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Nama Customer *</Label>
+                  <Input placeholder="Nama customer" value={newCust.name} onChange={(e) => setNewCust({ ...newCust, name: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Perusahaan</Label>
+                  <Input placeholder="Nama perusahaan" value={newCust.company} onChange={(e) => setNewCust({ ...newCust, company: e.target.value })} className="h-8 text-sm" />
+                </div>
+              </div>
+
+              {/* Quotation info — dipindahkan dari Penawaran ke sini */}
+              <div className="grid grid-cols-3 gap-3 rounded-md border border-indigo-100 bg-indigo-50/40 p-3">
+                <div className="col-span-3 -mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-indigo-700">
+                  <Badge variant="outline" className="h-4 border-indigo-300 bg-white px-1.5 text-[10px] text-indigo-700">Info Quotation</Badge>
+                  <span>Diatur di master Customer — ubah via Accounting</span>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Tipe Customer *</Label>
+                  <select
+                    value={newCust.customerType}
+                    onChange={(e) => setNewCust({ ...newCust, customerType: e.target.value as CustomerType })}
+                    className="h-8 w-full rounded-md border border-input bg-white px-2 text-sm"
+                  >
+                    <option>Reseller</option>
+                    <option>Dealer</option>
+                    <option>Workshop</option>
+                    <option>Retail</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Syarat Pembayaran *</Label>
+                  <select
+                    value={newCust.paymentTerms}
+                    onChange={(e) => setNewCust({ ...newCust, paymentTerms: e.target.value as PaymentTerm })}
+                    className="h-8 w-full rounded-md border border-input bg-white px-2 text-sm"
+                  >
+                    <option>COD</option>
+                    <option>Net 14</option>
+                    <option>Net 30</option>
+                    <option>Net 45</option>
+                    <option>Net 60</option>
+                    <option>DP 30% + Net 30</option>
+                    <option>DP 50% + Pelunasan</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Pengiriman Default</Label>
+                  <select
+                    value={newCust.defaultShipping}
+                    onChange={(e) => setNewCust({ ...newCust, defaultShipping: e.target.value as ShippingMethod })}
+                    className="h-8 w-full rounded-md border border-input bg-white px-2 text-sm"
+                  >
+                    <option>JNE</option>
+                    <option>J&amp;T</option>
+                    <option>SiCepat</option>
+                    <option>AnterAja</option>
+                    <option>Ambil Sendiri</option>
+                    <option>Lainnya</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Kontak */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">PIC (Person in Charge)</Label>
+                  <Input placeholder="Nama PIC" value={newCust.pic} onChange={(e) => setNewCust({ ...newCust, pic: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Telepon</Label>
+                  <Input placeholder="0812-xxxx-xxxx" value={newCust.phone} onChange={(e) => setNewCust({ ...newCust, phone: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Email</Label>
+                  <Input type="email" placeholder="email@domain.com" value={newCust.email} onChange={(e) => setNewCust({ ...newCust, email: e.target.value })} className="h-8 text-sm" />
+                </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Perusahaan</Label>
-                <Input placeholder="Nama perusahaan" value={custCompany} onChange={(e) => setCustCompany(e.target.value)} className="h-8 text-sm" />
+                <Label className="text-xs">Alamat</Label>
+                <textarea
+                  placeholder="Jl. ..., No..., Kota"
+                  value={newCust.address}
+                  onChange={(e) => setNewCust({ ...newCust, address: e.target.value })}
+                  rows={2}
+                  className="w-full rounded-md border border-input bg-white px-2 py-1.5 text-sm"
+                />
               </div>
-              <Button onClick={addCustomer} className="w-full" size="sm" disabled={!custName.trim()}>Tambah</Button>
+
+              {/* Finansial */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">NPWP (opsional)</Label>
+                  <Input placeholder="00.000.000.0-000.000" value={newCust.npwp} onChange={(e) => setNewCust({ ...newCust, npwp: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Mata Uang</Label>
+                  <select
+                    value={newCust.currency}
+                    onChange={(e) => setNewCust({ ...newCust, currency: e.target.value as "IDR" | "USD" | "SGD" })}
+                    className="h-8 w-full rounded-md border border-input bg-white px-2 text-sm"
+                  >
+                    <option>IDR</option>
+                    <option>USD</option>
+                    <option>SGD</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Plafon Kredit</Label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={newCust.creditLimit}
+                    onChange={(e) => setNewCust({ ...newCust, creditLimit: Number(e.target.value) || 0 })}
+                    className="h-8 text-sm"
+                  />
+                </div>
+              </div>
+
+              <Button onClick={addCustomer} className="w-full" size="sm" disabled={!newCust.name.trim()}>Tambah</Button>
             </div>
           </DialogContent>
         </Dialog>

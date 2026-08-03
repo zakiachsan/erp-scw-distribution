@@ -154,12 +154,13 @@ export default function QuotationsListContent() {
                 <TableHead>Vendor</TableHead>
                 <TableHead>Vendor Terpilih</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                     Tidak ada data penawaran.
                   </TableCell>
                 </TableRow>
@@ -195,6 +196,19 @@ export default function QuotationsListContent() {
                       >
                         {qt.status}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {qt.status === "Disetujui" ? (
+                        <Link
+                          href={`/purchasing/create?from=${qt.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 rounded-md border border-blue-300 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100"
+                        >
+                          Buat PO
+                        </Link>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 )

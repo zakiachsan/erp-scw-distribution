@@ -46,7 +46,7 @@ interface CourierPayment {
   courier: string
   poNumber: string
   invoiceNo: string
-  currency: "IDR" | "USD" | "SGD"
+  currency: "IDR" | "USD" | "SGD" | "EUR" | "JPY" | "CNY" | "MYR" | "AUD"
   rate: number
   amount: number
   date: string
@@ -187,7 +187,7 @@ export default function LogisticPage() {
     courier: "",
     poNumber: "",
     invoiceNo: "",
-    currency: "IDR" as "IDR" | "USD" | "SGD",
+    currency: "IDR" as "IDR" | "USD" | "SGD" | "EUR" | "JPY" | "CNY" | "MYR" | "AUD",
     rate: "1",
     amount: "",
     dueDate: "",
@@ -637,11 +637,16 @@ export default function LogisticPage() {
                   <select
                     value={form.currency}
                     onChange={(e) => {
-                      const c = e.target.value as "IDR" | "USD" | "SGD"
+                      const c = e.target.value as "IDR" | "USD" | "SGD" | "EUR" | "JPY" | "CNY" | "MYR" | "AUD"
+                      /* A2a — auto-default kurs for all currencies per skill pattern */
+                      const DEFAULT_RATE: Record<string, string> = {
+                        IDR: "1", USD: "16250", SGD: "12100", EUR: "17500",
+                        JPY: "105", CNY: "2250", MYR: "3450", AUD: "10500",
+                      }
                       setForm((prev) => ({
                         ...prev,
                         currency: c,
-                        rate: c === "IDR" ? "1" : c === "USD" ? "16250" : "12100",
+                        rate: DEFAULT_RATE[c] ?? "1",
                       }))
                     }}
                     className="mt-1 h-9 w-full border border-input rounded-md px-2 text-sm bg-transparent"
@@ -649,6 +654,11 @@ export default function LogisticPage() {
                     <option value="IDR">IDR</option>
                     <option value="USD">USD</option>
                     <option value="SGD">SGD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="JPY">JPY</option>
+                    <option value="CNY">CNY</option>
+                    <option value="MYR">MYR</option>
+                    <option value="AUD">AUD</option>
                   </select>
                 </div>
                 <div>

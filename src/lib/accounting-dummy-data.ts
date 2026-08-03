@@ -314,15 +314,77 @@ export const dummySalesReturns: SalesReturn[] = [
   ]},
 ]
 
+// ──────────────── ASSET CATEGORIES (Kategori Aset) ────────────────
+export interface AssetCategory { id: string; nama: string; kode: string; keterangan?: string }
+export const dummyAssetCategories: AssetCategory[] = [
+  { id: "kat-1", nama: "Kendaraan", kode: "KAT-KEND", keterangan: "Kendaraan operasional kantor dan distribusi" },
+  { id: "kat-2", nama: "Mesin Produksi", kode: "KAT-MESIN", keterangan: "Mesin untuk produksi dan manufaktur" },
+  { id: "kat-3", nama: "Elektronik", kode: "KAT-ELEK", keterangan: "Laptop, komputer, AC, dan perangkat elektronik" },
+  { id: "kat-4", nama: "Gedung", kode: "KAT-GDG", keterangan: "Bangunan kantor dan gudang" },
+  { id: "kat-5", nama: "Peralatan Kantor", kode: "KAT-ALK", keterangan: "Meja, kursi, lemari, dan furnitur kantor" },
+  { id: "kat-6", nama: "Tanah", kode: "KAT-TNH", keterangan: "Tanah kavling untuk lokasi usaha" },
+]
+
 // ──────────────── ASSETS ────────────────
 export interface FixedAsset {
-  id: string; nomor: string; nama: string; kategori: string; tanggalBeli: string; kuantitas: number; hargaPerolehan: number; totalNilai: number; nilaiBuku: number; umurEkonomis: number; metodePenyusutan: string; penyusutanBulanan: number
+  id: string; nomor: string; nama: string; kategori: string; tanggalBeli: string; kuantitas: number; hargaPerolehan: number; totalNilai: number; nilaiBuku: number; umurEkonomis: number; metodePenyusutan: string; penyusutanBulanan: number; status: "Aktif" | "Disposed"; lokasi?: string; catatan?: string
 }
 export const dummyFixedAssets: FixedAsset[] = [
-  { id: "fa-1", nomor: "FA-001", nama: "Toyota Avanza 2024", kategori: "Kendaraan", tanggalBeli: "15/01/2024", kuantitas: 1, hargaPerolehan: 250000000, totalNilai: 250000000, nilaiBuku: 208333333, umurEkonomis: 8, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 2604167 },
-  { id: "fa-2", nomor: "FA-002", nama: "Mesin CNC Milling", kategori: "Mesin", tanggalBeli: "20/03/2024", kuantitas: 1, hargaPerolehan: 450000000, totalNilai: 450000000, nilaiBuku: 403125000, umurEkonomis: 10, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 3750000 },
-  { id: "fa-3", nomor: "FA-003", nama: "Laptop Dell Inspiron", kategori: "Elektronik", tanggalBeli: "01/01/2026", kuantitas: 5, hargaPerolehan: 12000000, totalNilai: 60000000, nilaiBuku: 56250000, umurEkonomis: 4, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 1250000 },
-  { id: "fa-4", nomor: "FA-004", nama: "AC Split 2 PK", kategori: "Elektronik", tanggalBeli: "15/06/2026", kuantitas: 3, hargaPerolehan: 6500000, totalNilai: 19500000, nilaiBuku: 19256250, umurEkonomis: 5, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 325000 },
+  { id: "fa-1", nomor: "FA-001", nama: "Toyota Avanza 2024", kategori: "Kendaraan", tanggalBeli: "15/01/2024", kuantitas: 1, hargaPerolehan: 250000000, totalNilai: 250000000, nilaiBuku: 208333333, umurEkonomis: 8, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 2604167, status: "Aktif", lokasi: "Gudang Pusat", catatan: "Kendaraan operasional sales" },
+  { id: "fa-2", nomor: "FA-002", nama: "Mesin CNC Milling", kategori: "Mesin", tanggalBeli: "20/03/2024", kuantitas: 1, hargaPerolehan: 450000000, totalNilai: 450000000, nilaiBuku: 403125000, umurEkonomis: 10, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 3750000, status: "Aktif", lokasi: "Workshop Bandung", catatan: "Mesin utama produksi" },
+  { id: "fa-3", nomor: "FA-003", nama: "Laptop Dell Inspiron", kategori: "Elektronik", tanggalBeli: "01/01/2026", kuantitas: 5, hargaPerolehan: 12000000, totalNilai: 60000000, nilaiBuku: 56250000, umurEkonomis: 4, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 1250000, status: "Aktif", lokasi: "Kantor Pusat" },
+  { id: "fa-4", nomor: "FA-004", nama: "AC Split 2 PK", kategori: "Elektronik", tanggalBeli: "15/06/2026", kuantitas: 3, hargaPerolehan: 6500000, totalNilai: 19500000, nilaiBuku: 19256250, umurEkonomis: 5, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 325000, status: "Aktif", lokasi: "Kantor Pusat" },
+  { id: "fa-5", nomor: "FA-005", nama: "Gedung Kantor Pusat", kategori: "Gedung", tanggalBeli: "10/05/2023", kuantitas: 1, hargaPerolehan: 1500000000, totalNilai: 1500000000, nilaiBuku: 1425000000, umurEkonomis: 20, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 6250000, status: "Aktif", lokasi: "Kantor Pusat" },
+  { id: "fa-6", nomor: "FA-006", nama: "Meja Kerja Kantor Set", kategori: "Peralatan Kantor", tanggalBeli: "12/03/2025", kuantitas: 15, hargaPerolehan: 3500000, totalNilai: 52500000, nilaiBuku: 44625000, umurEkonomis: 7, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 625000, status: "Aktif", lokasi: "Kantor Pusat" },
+  { id: "fa-7", nomor: "FA-007", nama: "Forklift Caterpillar", kategori: "Mesin", tanggalBeli: "05/08/2024", kuantitas: 1, hargaPerolehan: 180000000, totalNilai: 180000000, nilaiBuku: 153000000, umurEkonomis: 10, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 1500000, status: "Aktif", lokasi: "Gudang Surabaya" },
+  { id: "fa-8", nomor: "FA-008", nama: "Tanah Kavling Surabaya", kategori: "Tanah", tanggalBeli: "20/02/2023", kuantitas: 1, hargaPerolehan: 800000000, totalNilai: 800000000, nilaiBuku: 800000000, umurEkonomis: 0, metodePenyusutan: "Tidak Disusutkan", penyusutanBulanan: 0, status: "Aktif", lokasi: "Surabaya" },
+  { id: "fa-9", nomor: "FA-009", nama: "Printer Canon LBP 810", kategori: "Elektronik", tanggalBeli: "15/06/2023", kuantitas: 1, hargaPerolehan: 4500000, totalNilai: 4500000, nilaiBuku: 0, umurEkonomis: 5, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 75000, status: "Disposed", lokasi: "Kantor Pusat", catatan: "Rusak total - sudah tidak bisa diperbaiki, dihapuskan 15/03/2026" },
+  { id: "fa-10", nomor: "FA-010", nama: "Honda Beat 2021", kategori: "Kendaraan", tanggalBeli: "10/08/2021", kuantitas: 1, hargaPerolehan: 18500000, totalNilai: 18500000, nilaiBuku: 3083333, umurEkonomis: 6, metodePenyusutan: "Metode Garis Lurus", penyusutanBulanan: 256944, status: "Disposed", lokasi: "Kantor Pusat", catatan: "Dijual kepada karyawan pada 20/05/2026 seharga Rp 4.500.000" },
+]
+
+// ──────────────── ASSET CHANGE LOG (Perubahan Aset Tetap) ────────────────
+export interface AssetChange {
+  id: string; tanggal: string; kodeAset: string; namaAset: string; field: string; nilaiLama: string; nilaiBaru: string; pengguna: string; keterangan: string
+}
+export const dummyAssetChanges: AssetChange[] = [
+  { id: "ch-1", tanggal: "12/04/2026", kodeAset: "FA-003", namaAset: "Laptop Dell Inspiron", field: "Lokasi", nilaiLama: "Gudang Pusat", nilaiBaru: "Kantor Pusat", pengguna: "Admin Akunting", keterangan: "Relokasi setelah reorganisasi kantor" },
+  { id: "ch-2", tanggal: "15/03/2026", kodeAset: "FA-009", namaAset: "Printer Canon LBP 810", field: "Status", nilaiLama: "Aktif", nilaiBaru: "Disposed", pengguna: "Budi Santoso", keterangan: "Aset rusak total, dihapuskan dari buku besar" },
+  { id: "ch-3", tanggal: "20/05/2026", kodeAset: "FA-010", namaAset: "Honda Beat 2021", field: "Status", nilaiLama: "Aktif", nilaiBaru: "Disposed", pengguna: "Sari Dewi", keterangan: "Dijual ke karyawan - sale proceeds Rp 4.5jt" },
+  { id: "ch-4", tanggal: "01/06/2026", kodeAset: "FA-004", namaAset: "AC Split 2 PK", field: "Metode Penyusutan", nilaiLama: "Saldo Menurun", nilaiBaru: "Garis Lurus", pengguna: "Admin Akunting", keterangan: "Perubahan metode per kebijakan akuntansi baru" },
+  { id: "ch-5", tanggal: "10/06/2026", kodeAset: "FA-007", namaAset: "Forklift Caterpillar", field: "Umur Ekonomis", nilaiLama: "8 tahun", nilaiBaru: "10 tahun", pengguna: "Admin Akunting", keterangan: "Penyesuaian estimasi umur ekonomis" },
+  { id: "ch-6", tanggal: "18/06/2026", kodeAset: "FA-001", namaAset: "Toyota Avanza 2024", field: "Penanggung Jawab", nilaiLama: "Andi Wijaya", nilaiBaru: "Rina Astuti", pengguna: "Admin Operasional", keterangan: "Mutasi PIC kendaraan operasional" },
+  { id: "ch-7", tanggal: "22/06/2026", kodeAset: "FA-006", namaAset: "Meja Kerja Kantor Set", field: "Lokasi", nilaiLama: "Lantai 1", nilaiBaru: "Lantai 2 & 3", pengguna: "Admin Operasional", keterangan: "Penataan ulang ruang kantor" },
+  { id: "ch-8", tanggal: "28/06/2026", kodeAset: "FA-002", namaAset: "Mesin CNC Milling", field: "Catatan", nilaiLama: "Mesin produksi", nilaiBaru: "Mesin utama produksi + overhaul Q2", pengguna: "Ahmad Fauzi", keterangan: "Update catatan setelah maintenance besar" },
+  { id: "ch-9", tanggal: "02/07/2026", kodeAset: "FA-005", namaAset: "Gedung Kantor Pusat", field: "Asuransi", nilaiLama: "Tidak diasuransikan", nilaiBaru: "Asuransi all-risk Rp 2 M", pengguna: "Admin Akunting", keterangan: "Pengaktifan polis asuransi property" },
+  { id: "ch-10", tanggal: "05/07/2026", kodeAset: "FA-008", namaAset: "Tanah Kavling Surabaya", field: "Sertifikat", nilaiLama: "Dalam proses", nilaiBaru: "Sertifikat HM atas nama PT", pengguna: "Admin Legal", keterangan: "Sertifikat tanah sudah terbit" },
+]
+
+// ──────────────── ASSET DISPOSITIONS (Disposisi Aset Tetap) ────────────────
+export interface AssetDisposition {
+  id: string; tanggal: string; kodeAset: string; namaAset: string; nilaiBuku: number; hargaJual: number; selisih: number; metode: "Dijual" | "Dihapuskan" | "Ditukar"; keterangan: string
+}
+export const dummyAssetDispositions: AssetDisposition[] = [
+  { id: "disp-1", tanggal: "15/03/2026", kodeAset: "FA-009", namaAset: "Printer Canon LBP 810", nilaiBuku: 0, hargaJual: 0, selisih: 0, metode: "Dihapuskan", keterangan: "Rusak total - sudah tidak bisa diperbaiki" },
+  { id: "disp-2", tanggal: "20/05/2026", kodeAset: "FA-010", namaAset: "Honda Beat 2021", nilaiBuku: 3083333, hargaJual: 4500000, selisih: 1416667, metode: "Dijual", keterangan: "Dijual kepada karyawan internal" },
+  { id: "disp-3", tanggal: "10/01/2026", kodeAset: "FA-OLD-01", namaAset: "Meja Kantor Lipat", nilaiBuku: 250000, hargaJual: 150000, selisih: -100000, metode: "Dijual", keterangan: "Penjualan barang bekas kantor" },
+  { id: "disp-4", tanggal: "22/02/2026", kodeAset: "FA-OLD-02", namaAset: "Lemari Arsip Besi", nilaiBuku: 0, hargaJual: 0, selisih: 0, metode: "Dihapuskan", keterangan: "Hilang saat relokasi kantor cabang" },
+  { id: "disp-5", tanggal: "05/04/2026", kodeAset: "FA-OLD-03", namaAset: "Kursi Putar Bekas", nilaiBuku: 175000, hargaJual: 200000, selisih: 25000, metode: "Dijual", keterangan: "Penjualan lelang internal" },
+  { id: "disp-6", tanggal: "18/04/2026", kodeAset: "FA-OLD-04", namaAset: "Komputer Desktop Lama", nilaiBuku: 450000, hargaJual: 600000, selisih: 150000, metode: "Ditukar", keterangan: "Ditukar dengan laptop baru (tambah bayar)" },
+]
+
+// ──────────────── ASSET TRANSFERS (Pindah Aset) ────────────────
+export interface AssetTransfer {
+  id: string; tanggal: string; kodeAset: string; namaAset: string; lokasiAsal: string; lokasiTujuan: string; penanggungJawab: string; keterangan: string
+}
+export const dummyAssetTransfers: AssetTransfer[] = [
+  { id: "tr-1", tanggal: "12/04/2026", kodeAset: "FA-003", namaAset: "Laptop Dell Inspiron", lokasiAsal: "Gudang Pusat", lokasiTujuan: "Kantor Pusat", penanggungJawab: "Admin Operasional", keterangan: "Relokasi setelah reorganisasi" },
+  { id: "tr-2", tanggal: "22/04/2026", kodeAset: "FA-001", namaAset: "Toyota Avanza 2024", lokasiAsal: "Kantor Pusat", lokasiTujuan: "Gudang Bandung", penanggungJawab: "Andi Wijaya", keterangan: "Penugasan operasional Bandung" },
+  { id: "tr-3", tanggal: "05/05/2026", kodeAset: "FA-006", namaAset: "Meja Kerja Kantor Set", lokasiAsal: "Lantai 1", lokasiTujuan: "Lantai 3", penanggungJawab: "Admin Operasional", keterangan: "Penataan ulang ruang kantor" },
+  { id: "tr-4", tanggal: "15/05/2026", kodeAset: "FA-002", namaAset: "Mesin CNC Milling", lokasiAsal: "Workshop Jakarta", lokasiTujuan: "Workshop Bandung", penanggungJawab: "Ahmad Fauzi", keterangan: "Konsolidasi mesin produksi" },
+  { id: "tr-5", tanggal: "01/06/2026", kodeAset: "FA-007", namaAset: "Forklift Caterpillar", lokasiAsal: "Gudang Pusat", lokasiTujuan: "Gudang Surabaya", penanggungJawab: "Dian Prasetyo", keterangan: "Penugasan di gudang baru" },
+  { id: "tr-6", tanggal: "08/06/2026", kodeAset: "FA-004", namaAset: "AC Split 2 PK", lokasiAsal: "Gudang", lokasiTujuan: "Lantai 2 Kantor", penanggungJawab: "Admin Operasional", keterangan: "Pemasangan AC tambahan" },
+  { id: "tr-7", tanggal: "20/06/2026", kodeAset: "FA-003", namaAset: "Laptop Dell Inspiron (2 unit)", lokasiAsal: "Kantor Pusat", lokasiTujuan: "Workshop Bandung", penanggungJawab: "Admin IT", keterangan: "Untuk teknisi workshop" },
+  { id: "tr-8", tanggal: "28/06/2026", kodeAset: "FA-006", namaAset: "Meja Kerja Kantor Set (5 unit)", lokasiAsal: "Kantor Pusat", lokasiTujuan: "Gudang Bandung", penanggungJawab: "Admin Operasional", keterangan: "Penataan cabang Bandung" },
 ]
 
 // ──────────────── INVENTORY MOVEMENTS ────────────────

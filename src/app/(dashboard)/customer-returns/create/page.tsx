@@ -46,25 +46,32 @@ import {
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
 
-// ─── Sales Orders (source of returns) ──────────────────────────────────────
-interface SOItem {
+/* INTEGRASI: Halaman ini hanya menerima referensi dari FAKTUR/INVOICE (bukan dari SO),
+   per Revisi 30Jul26. Dummy invoice di bawah menyertakan SO ref + customer + items
+   yang siap diretur. Lihat juga accounting/penjualan/faktur-penjualan. */
+
+// ─── Invoices (source of returns — per Revisi 30Jul26) ──────────────────────
+interface InvoiceItem {
   name: string
   sku: string
   qty: number
   unitPrice: number
 }
 
-interface SalesOrder {
+interface Invoice {
   id: string
+  soRef: string       // SO asal (untuk referensi, tidak dipakai untuk return)
   customer: string
   customerAddress: string
   date: string
-  items: SOItem[]
+  items: InvoiceItem[]
+  total: number
 }
 
-const salesOrders: SalesOrder[] = [
+const invoices: Invoice[] = [
   {
-    id: "SO-2026-045", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", date: "2026-06-15",
+    id: "INV-2026-220", soRef: "SO-2026-045", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", date: "2026-06-15",
+    total: 0,
     items: [
       { name: "SCW Snow Foam", sku: "SCW-SF-001", qty: 20, unitPrice: 150000 },
       { name: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 10, unitPrice: 250000 },
@@ -74,7 +81,8 @@ const salesOrders: SalesOrder[] = [
     ],
   },
   {
-    id: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", date: "2026-06-12",
+    id: "INV-2026-219", soRef: "SO-2026-044", customer: "CV Ceramic Pro JKT", customerAddress: "Jl. Panjang No. 12, Jakarta Barat", date: "2026-06-12",
+    total: 0,
     items: [
       { name: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 10, unitPrice: 250000 },
       { name: "SCW Glass Cleaner", sku: "SCW-GC-009", qty: 20, unitPrice: 85000 },
@@ -84,7 +92,8 @@ const salesOrders: SalesOrder[] = [
     ],
   },
   {
-    id: "SO-2026-043", customer: "UD Shinemax", customerAddress: "Jl. Raya Bandung No. 456, Bandung", date: "2026-06-10",
+    id: "INV-2026-218", soRef: "SO-2026-043", customer: "UD Shinemax", customerAddress: "Jl. Raya Bandung No. 456, Bandung", date: "2026-06-10",
+    total: 0,
     items: [
       { name: "SCW Snow Foam", sku: "SCW-SF-001", qty: 5, unitPrice: 150000 },
       { name: "SCW Interior Detailer", sku: "SCW-ID-003", qty: 8, unitPrice: 120000 },
@@ -94,7 +103,8 @@ const salesOrders: SalesOrder[] = [
     ],
   },
   {
-    id: "SO-2026-041", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", date: "2026-06-05",
+    id: "INV-2026-217", soRef: "SO-2026-041", customer: "PT Autogloss Indonesia", customerAddress: "Jl. Alternatif Cibinong No. 88, Bogor", date: "2026-06-05",
+    total: 0,
     items: [
       { name: "SCW Snow Foam", sku: "SCW-SF-001", qty: 10, unitPrice: 150000 },
       { name: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 5, unitPrice: 250000 },
@@ -104,7 +114,8 @@ const salesOrders: SalesOrder[] = [
     ],
   },
   {
-    id: "SO-2026-040", customer: "CV ProShine SBY", customerAddress: "Jl. Rungkut Mapan Utara No. 10, Surabaya", date: "2026-06-03",
+    id: "INV-2026-215", soRef: "SO-2026-040", customer: "CV ProShine SBY", customerAddress: "Jl. Rungkut Mapan Utara No. 10, Surabaya", date: "2026-06-03",
+    total: 0,
     items: [
       { name: "SCW Polish Compound", sku: "SCW-PC-007", qty: 5, unitPrice: 180000 },
       { name: "SCW Glass Cleaner", sku: "SCW-GC-009", qty: 10, unitPrice: 85000 },
@@ -113,17 +124,12 @@ const salesOrders: SalesOrder[] = [
       { name: "SCW Tire Gel", sku: "SCW-TG-004", qty: 10, unitPrice: 95000 },
     ],
   },
-  {
-    id: "SO-2026-038", customer: "GlossUp Bali", customerAddress: "Jl. Sunset Road No. 88, Seminyak, Bali", date: "2026-05-28",
-    items: [
-      { name: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 3, unitPrice: 250000 },
-      { name: "SCW Spray Wax", sku: "SCW-SW-008", qty: 5, unitPrice: 110000 },
-      { name: "SCW Interior Detailer", sku: "SCW-ID-003", qty: 6, unitPrice: 120000 },
-      { name: "SCW Snow Foam", sku: "SCW-SF-001", qty: 4, unitPrice: 150000 },
-      { name: "SCW All Purpose Cleaner", sku: "SCW-AW-011", qty: 8, unitPrice: 105000 },
-    ],
-  },
 ]
+invoices.forEach((inv) => {
+  inv.total = inv.items.reduce((s, it) => s + it.qty * it.unitPrice, 0)
+})
+
+const salesOrders: { id: string }[] = [] // legacy — tidak dipakai lagi
 
 // ─── Return Item Interface ─────────────────────────────────────────────────
 interface ReturnItem {
@@ -144,28 +150,28 @@ const reasons = [
 function CreateReturnForm() {
   const router = useRouter()
 
-  const [soId, setSoId] = useState("")
+  const [invoiceId, setInvoiceId] = useState("")
   const [items, setItems] = useState<ReturnItem[]>([])
   const [reason, setReason] = useState("")
   const [customReason, setCustomReason] = useState("")
   const [notes, setNotes] = useState("")
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null)
 
-  const selectedSO = salesOrders.find((so) => so.id === soId)
+  const selectedInvoice = invoices.find((inv) => inv.id === invoiceId)
 
   // When SO is selected, auto-populate items with qty=0 (user picks which to return)
-  const handleSOChange = (id: string) => {
-    setSoId(id)
-    const so = salesOrders.find((s) => s.id === id)
-    if (so) {
-      setItems(so.items.map((_, idx) => ({ productIndex: idx, qty: 0, condition: "Damaged" as const })))
+  const handleInvoiceChange = (id: string) => {
+    setInvoiceId(id)
+    const inv = invoices.find((s) => s.id === id)
+    if (inv) {
+      setItems(inv.items.map((_, idx) => ({ productIndex: idx, qty: 0, condition: "Damaged" as const })))
     }
   }
 
   const updateItem = (index: number, field: keyof ReturnItem, value: string | number) => {
     const updated = [...items]
     if (field === "qty") {
-      const maxQty = selectedSO?.items[updated[index].productIndex]?.qty || 1
+      const maxQty = selectedInvoice?.items[updated[index].productIndex]?.qty || 1
       updated[index] = { ...updated[index], qty: Math.min(Math.max(0, Number(value)), maxQty) }
     } else if (field === "condition") {
       updated[index] = { ...updated[index], condition: value as ReturnItem["condition"] }
@@ -180,21 +186,21 @@ function CreateReturnForm() {
   const activeItems = items.filter((i) => i.qty > 0)
 
   const totalValue = activeItems.reduce((sum, item) => {
-    if (!selectedSO) return sum
-    const product = selectedSO.items[item.productIndex]
+    if (!selectedInvoice) return sum
+    const product = selectedInvoice.items[item.productIndex]
     return sum + (product ? product.unitPrice * item.qty : 0)
   }, 0)
 
   const totalQty = activeItems.reduce((sum, i) => sum + i.qty, 0)
 
   const handleSubmit = () => {
-    if (!soId || activeItems.length === 0) return
+    if (!invoiceId || activeItems.length === 0) return
     const rtnNum = `RTN-2026-${String(Math.floor(Math.random() * 900) + 100).padStart(3, "0")}`
     const finalReason = reason === "Lainnya" ? customReason : reason
     alert(
       `Retur ${rtnNum} berhasil dibuat!\n\n` +
-      `SO Ref: ${soId}\n` +
-      `Customer: ${selectedSO?.customer}\n` +
+      `SO Ref: ${invoiceId}\n` +
+      `Customer: ${selectedInvoice?.customer}\n` +
       `Alasan: ${finalReason}\n` +
       `Item: ${activeItems.length} produk\n` +
       `Total Nilai: ${formatIDR(totalValue)}`
@@ -202,7 +208,7 @@ function CreateReturnForm() {
     router.push("/customer-returns")
   }
 
-  const isFormValid = soId && reason && (reason !== "Lainnya" || customReason) && activeItems.length > 0
+  const isFormValid = invoiceId && reason && (reason !== "Lainnya" || customReason) && activeItems.length > 0
 
   return (
     <div className="space-y-4 p-6 max-w-5xl">
@@ -227,30 +233,30 @@ function CreateReturnForm() {
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs">SO Reference *</Label>
-              <Select value={soId} onValueChange={handleSOChange}>
+              <Select value={invoiceId} onValueChange={handleInvoiceChange}>
                 <SelectTrigger className="h-9 w-full">
                   <SelectValue placeholder="Pilih Sales Order" />
                 </SelectTrigger>
                 <SelectContent className="min-w-[400px]">
-                  {salesOrders.map((so) => (
-                    <SelectItem key={so.id} value={so.id}>
-                      {so.id} — {so.customer} ({so.items.length} produk)
+                  {invoices.map((inv) => (
+                    <SelectItem key={inv.id} value={inv.id}>
+                      {inv.id} — {inv.customer} ({inv.items.length} produk) · dari {inv.soRef}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            {selectedSO && (
+            {selectedInvoice && (
               <div className="rounded-lg bg-slate-50 p-3 text-xs space-y-1.5">
-                <div className="font-medium text-slate-700">{selectedSO.customer}</div>
-                <div className="text-muted-foreground">{selectedSO.customerAddress}</div>
+                <div className="font-medium text-slate-700">{selectedInvoice.customer}</div>
+                <div className="text-muted-foreground">{selectedInvoice.customerAddress}</div>
                 <div className="flex justify-between pt-1 border-t">
                   <span>SO Date</span>
-                  <span>{selectedSO.date}</span>
+                  <span>{selectedInvoice.date}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Items in SO</span>
-                  <span>{selectedSO.items.length} produk</span>
+                  <span>{selectedInvoice.items.length} produk</span>
                 </div>
               </div>
             )}
@@ -306,9 +312,9 @@ function CreateReturnForm() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-sm font-semibold">Barang yang Akan Diretur</CardTitle>
-              {selectedSO && (
+              {selectedInvoice && (
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  Atur Qty Retur {">"} 0 untuk produk yang ingin diretur dari SO {selectedSO.id}
+                  Atur Qty Retur {">"} 0 untuk produk yang ingin diretur dari SO {selectedInvoice.id}
                 </p>
               )}
             </div>
@@ -320,7 +326,7 @@ function CreateReturnForm() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {!selectedSO ? (
+          {!selectedInvoice ? (
             <div className="py-10 text-center text-sm text-muted-foreground">
               Pilih Sales Order terlebih dahulu untuk memilih barang yang akan diretur
             </div>
@@ -342,7 +348,7 @@ function CreateReturnForm() {
                 </TableHeader>
                 <TableBody>
                   {items.map((item, idx) => {
-                    const product = selectedSO.items[item.productIndex]
+                    const product = selectedInvoice.items[item.productIndex]
                     const subtotal = product ? product.unitPrice * item.qty : 0
                     const isReturning = item.qty > 0
                     return (
@@ -438,9 +444,9 @@ function CreateReturnForm() {
           <DialogHeader>
             <DialogTitle>Hapus Produk?</DialogTitle>
             <DialogDescription>
-              {deleteIdx !== null && selectedSO && (
+              {deleteIdx !== null && selectedInvoice && (
                 <>
-                  <span className="font-medium text-foreground">{selectedSO.items[items[deleteIdx]?.productIndex]?.name}</span>{" "}
+                  <span className="font-medium text-foreground">{selectedInvoice.items[items[deleteIdx]?.productIndex]?.name}</span>{" "}
                   akan dihapus dari daftar retur.
                 </>
               )}

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Printer, Download, Package, TrendingUp, BarChart3 } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Printer, Download, Package, TrendingUp, BarChart3, Filter as FilterIcon } from "lucide-react"
+import { ReportFilterBuilder, applyFilters, type FilterRule } from "@/components/accounting/report-filter-builder"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -31,6 +32,10 @@ const tdStyle: React.CSSProperties = { fontSize: 13, color: "#001526", padding: 
 
 export default function LaporanPembelianPage() {
   const [period, setPeriod] = useState("Juni 2026")
+  /* B7 — Accurate-style penyaringan */
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [filterRules, setFilterRules] = useState<FilterRule[]>([])
+  const filteredMonthly = useMemo(() => applyFilters(monthlyData as unknown as Record<string, unknown>[], filterRules) as typeof monthlyData, [filterRules])
 
   return (
     <div style={{ padding: "24px 28px", maxWidth: 1200, margin: "0 auto" }}>
@@ -44,6 +49,9 @@ export default function LaporanPembelianPage() {
           <select value={period} onChange={e => setPeriod(e.target.value)} style={{ height: 34, padding: "0 12px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", background: "#fff" }}>
             {periods.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
+          <button onClick={() => setFilterOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: filterRules.length > 0 ? "#eef4ff" : "#fff", color: filterRules.length > 0 ? "#0176d3" : "#001526", border: `1px solid ${filterRules.length > 0 ? "#c2dbf5" : "#d8d8d8"}`, borderRadius: 6, cursor: "pointer" }}>
+            <FilterIcon size={14} /> {filterRules.length > 0 ? `Filter (${filterRules.length})` : "Filter"}
+          </button>
           <button onClick={() => alert("Download PDF placeholder")} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#fff", color: "#001526", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}>
             <Download size={14} /> PDF
           </button>
@@ -86,7 +94,7 @@ export default function LaporanPembelianPage() {
             </tr>
           </thead>
           <tbody>
-            {monthlyData.map(row => (
+            {filteredMonthly.map(row => (
               <tr key={row.bulan} style={{ cursor: "pointer" }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
@@ -106,6 +114,19 @@ export default function LaporanPembelianPage() {
           </tbody>
         </table>
       </div>
+
+      {/* B7 — Penyaringan Data modal */}
+      <ReportFilterBuilder
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        rules={filterRules}
+        onApply={setFilterRules}
+        columns={[
+          { value: "bulan", label: "Bulan" },
+          { value: "po",    label: "Jumlah PO" },
+          { value: "total", label: "Total Nilai" },
+        ]}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { dummyPayments } from "@/lib/accounting-dummy-data"
 
 // ── SLDS Shared Styles ──
@@ -42,9 +42,15 @@ export default function PenerimaanPage() {
               <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
               <input type="text" placeholder="Cari penerimaan..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
             </div>
+            <button
+              onClick={() => setShowForm(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}
+            >
+              <Plus size={14} /> Buat Baru
+            </button>
             <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
-          </div>
-      </div>
+            </div>
+            </div>
 
       {/* ── Form ── */}
       {showForm && (

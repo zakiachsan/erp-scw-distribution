@@ -97,20 +97,55 @@ function CreatePOPageContent() {
   const searchParams = useSearchParams()
   const vendorParam = searchParams.get("vendor") || ""
   const prParam = searchParams.get("pr") || ""
+  const fromParam = searchParams.get("from") || "" /* A1a: Penawaran Pembelian ref */
+
+  /* A1a — Look up the source Penawaran to auto-fill supplier + items.
+     Maps: q1→CV Teknik Mandiri, q2→PT Sinar Mas, etc. */
+  const PENawaran_LOOKUP: Record<string, { supplierName: string; items: Array<{ productId: string; productName: string; sku: string; qty: number; unitPrice: number }> }> = {
+    q1: { supplierName: "CV Teknik Mandiri", items: [
+      { productId: "1", productName: "SCW Snow Foam", sku: "SCW-SF-001", qty: 50, unitPrice: 95000 },
+      { productId: "3", productName: "SCW Interior Detailer", sku: "SCW-ID-003", qty: 30, unitPrice: 85000 },
+    ]},
+    q2: { supplierName: "PT Sinar Mas", items: [
+      { productId: "2", productName: "SCW Ceramic Coating", sku: "SCW-CC-002", qty: 25, unitPrice: 180000 },
+    ]},
+    q3: { supplierName: "PT Sparepart Jaya", items: [
+      { productId: "5", productName: "SCW Tire Gel", sku: "SCW-TG-004", qty: 40, unitPrice: 65000 },
+      { productId: "7", productName: "SCW Polish Compound", sku: "SCW-PC-007", qty: 20, unitPrice: 95000 },
+    ]},
+  }
+  const sourcePenawaran = fromParam ? PENawaran_LOOKUP[fromParam] : null
 
   const [selectedSupplier, setSelectedSupplier] = useState(() => {
+    if (sourcePenawaran) {
+      const match = suppliers.find((s) => s.name.toLowerCase() === sourcePenawaran.supplierName.toLowerCase())
+      return match ? match.id : ""
+    }
     if (vendorParam) {
       const match = suppliers.find((s) => s.name.toLowerCase() === vendorParam.toLowerCase())
       return match ? match.id : ""
     }
     return ""
   })
-  const [items, setItems] = useState<POItem[]>([])
+  const [items, setItems] = useState<POItem[]>(() => {
+    if (sourcePenawaran) {
+      return sourcePenawaran.items.map((it) => ({
+        productId: it.productId,
+        productName: it.productName,
+        sku: it.sku,
+        qty: it.qty,
+        unitPrice: it.unitPrice,
+        currency: "IDR" as Currency,
+        total: it.qty * it.unitPrice,
+      }))
+    }
+    return []
+  })
   const [selectedProduct, setSelectedProduct] = useState("")
   const [itemQty, setItemQty] = useState("")
   const [itemPrice, setItemPrice] = useState("")
   const [itemCurrency, setItemCurrency] = useState<Currency>("IDR")
-  const [notes, setNotes] = useState("")
+  const [notes, setNotes] = useState(() => sourcePenawaran ? `Auto-generated dari Penawaran ${fromParam}` : "")
 
   const selectedSupplierData = suppliers.find((s) => s.id === selectedSupplier)
 
@@ -183,11 +218,18 @@ function CreatePOPageContent() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Create Purchase Order</h1>
             <p className="text-muted-foreground">
-              {prParam ? `From Purchase Requisition ${prParam}` : "Create a new purchase order for supplier"}
+              {prParam ? `From Purchase Requisition ${prParam}` : sourcePenawaran ? `Auto-filled dari Penawaran ${fromParam}` : "Create a new purchase order for supplier"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {sourcePenawaran && (
+            <Badge variant="outline" className="border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] text-blue-700">
+              <Link href={`/purchasing/quotations/${fromParam}`} className="hover:underline">
+                Dari Penawaran: {fromParam}
+              </Link>
+            </Badge>
+          )}
           <Button disabled={items.length === 0}>
             <Save className="mr-2 h-4 w-4" />
             Simpan

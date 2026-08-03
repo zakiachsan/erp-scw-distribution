@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 
 // ── SLDS Shared Styles ──
 const TH: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", padding: "8px 12px", textAlign: "left", borderBottom: "1px solid #e0e0e0", whiteSpace: "nowrap" }
@@ -48,9 +48,15 @@ export default function TransferBankPage() {
               <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
               <input type="text" placeholder="Cari transfer bank..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
             </div>
+            <button
+              onClick={() => setShowForm(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}
+            >
+              <Plus size={14} /> Buat Baru
+            </button>
             <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
-          </div>
-      </div>
+            </div>
+            </div>
 
       {/* ── Form ── */}
       {showForm && (

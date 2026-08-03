@@ -210,7 +210,10 @@ export const MODULES: ModuleInfo[] = [
         children: [
           { label: "Aset Tetap", href: "/accounting/aset-tetap/aset-tetap" },
           { label: "Kategori Aset", href: "/accounting/aset-tetap/kategori-aset" },
+          { label: "Perubahan Aset Tetap", href: "/accounting/aset-tetap/perubahan-aset-tetap" },
           { label: "Disposisi Aset Tetap", href: "/accounting/aset-tetap/disposisi-aset-tetap" },
+          { label: "Pindah Aset", href: "/accounting/aset-tetap/pindah-aset" },
+          { label: "Aset per Lokasi", href: "/accounting/aset-tetap/aset-per-lokasi" },
         ],
       },
       {
@@ -237,6 +240,10 @@ export const MODULES: ModuleInfo[] = [
           { label: "Laba Rugi", href: "/accounting/laporan/laba-rugi" },
           { label: "Neraca", href: "/accounting/laporan/neraca" },
           { label: "Arus Kas", href: "/accounting/laporan/arus-kas" },
+          { label: "Laba Ditahan", href: "/accounting/laporan/laba-ditahan" },
+          { label: "Rasio Keuangan", href: "/accounting/laporan/rasio-keuangan" },
+          { label: "Perubahan Equitas", href: "/accounting/laporan/perubahan-equitas" },
+          { label: "Grafik", href: "/accounting/laporan/grafik" },
           { label: "Laporan Penjualan", href: "/accounting/laporan/penjualan" },
           { label: "Laporan Pembelian", href: "/accounting/laporan/pembelian" },
           { label: "Laporan Hutang Piutang", href: "/accounting/laporan/hutang-piutang" },
