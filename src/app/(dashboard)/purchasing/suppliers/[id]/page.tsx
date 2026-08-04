@@ -56,6 +56,9 @@ interface Supplier {
   outstandingBalance: number
   lastInvoiceDate: string
   dueDate: string
+  /* A3 — DP & Pelunasan tracking */
+  dpPaid: number       // total down payment sudah dibayar
+  totalInvoice: number // total tagihan (nilai DP + sisa pelunasan)
 }
 
 const paymentTermsOptions = [
@@ -89,6 +92,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 45200000,
     lastInvoiceDate: "2025-12-10",
     dueDate: "2026-01-09",
+    dpPaid: 15000000,
+    totalInvoice: 60200000,
   },
   "2": {
     id: "2",
@@ -105,6 +110,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 12800000,
     lastInvoiceDate: "2025-12-12",
     dueDate: "2025-12-26",
+    dpPaid: 0,
+    totalInvoice: 12800000,
   },
   "3": {
     id: "3",
@@ -121,6 +128,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 0,
     lastInvoiceDate: "2025-12-13",
     dueDate: "",
+    dpPaid: 22500000,
+    totalInvoice: 22500000,
   },
   "4": {
     id: "4",
@@ -136,6 +145,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 8750000,
     lastInvoiceDate: "2025-11-20",
     dueDate: "2026-01-04",
+    dpPaid: 0,
+    totalInvoice: 8750000,
   },
   "5": {
     id: "5",
@@ -152,6 +163,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 156000000,
     lastInvoiceDate: "2025-10-15",
     dueDate: "2025-12-14",
+    dpPaid: 78000000,
+    totalInvoice: 234000000,
   },
   "6": {
     id: "6",
@@ -167,6 +180,8 @@ const suppliersData: Record<string, Supplier> = {
     outstandingBalance: 0,
     lastInvoiceDate: "2025-08-20",
     dueDate: "",
+    dpPaid: 0,
+    totalInvoice: 0,
   },
 }
 
@@ -181,6 +196,11 @@ const poTransactions: POTransaction[] = [
   { id: "8", poNumber: "PO-2025-0035", status: "Paid", date: "2025-11-15", grandTotal: 22100000, currency: "IDR", itemCount: 7 },
   { id: "9", poNumber: "PO-2025-0034", status: "Received", date: "2025-11-10", grandTotal: 9800000, currency: "IDR", itemCount: 3 },
   { id: "10", poNumber: "PO-2025-0033", status: "Sent", date: "2025-11-05", grandTotal: 11200000, currency: "IDR", itemCount: 4 },
+  { id: "11", poNumber: "PO-2026-0021", status: "Sent", date: "2026-07-10", grandTotal: 156000000, currency: "IDR", itemCount: 5 },
+  { id: "12", poNumber: "PO-2026-0018", status: "Received", date: "2026-06-22", grandTotal: 48000000, currency: "USD", itemCount: 3 },
+  { id: "13", poNumber: "PO-2026-0012", status: "Paid", date: "2026-05-30", grandTotal: 30000000, currency: "USD", itemCount: 2 },
+  { id: "14", poNumber: "PO-2026-0019", status: "Received", date: "2026-06-28", grandTotal: 5500000, currency: "IDR", itemCount: 2 },
+  { id: "15", poNumber: "PO-2026-0015", status: "Paid", date: "2026-06-05", grandTotal: 4800000, currency: "IDR", itemCount: 1 },
 ]
 
 const supplierPOMap: Record<string, string[]> = {
@@ -188,8 +208,8 @@ const supplierPOMap: Record<string, string[]> = {
   "2": ["6", "7"],
   "3": ["8", "9"],
   "4": ["10"],
-  "5": [],
-  "6": [],
+  "5": ["11", "12", "13"],
+  "6": ["14", "15"],
 }
 
 const statusConfig = {
@@ -216,24 +236,6 @@ const statusConfig = {
 }
 
 const formatIDR = (val: number) => `Rp ${val.toLocaleString("id-ID")}`
-
-function getAgingDays(lastInvoiceDate: string): number {
-  if (!lastInvoiceDate) return 0
-  const now = new Date()
-  const inv = new Date(lastInvoiceDate)
-  return Math.max(0, Math.floor((now.getTime() - inv.getTime()) / (1000 * 60 * 60 * 24)))
-}
-
-function getAgingBadge(days: number, balance: number) {
-  if (balance <= 0) return null
-  if (days <= 30)
-    return <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">0-30 hr</Badge>
-  if (days <= 60)
-    return <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200 text-[10px]">31-60 hr</Badge>
-  if (days <= 90)
-    return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">61-90 hr</Badge>
-  return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[10px]">&gt;90 hr</Badge>
-}
 
 function getDueStatus(dueDate: string, balance: number) {
   if (balance <= 0 || !dueDate) return null
@@ -277,10 +279,18 @@ export default function SupplierDetailPage() {
     outstandingBalance: 0,
     lastInvoiceDate: "",
     dueDate: "",
+    dpPaid: 0,
+    totalInvoice: 0,
   })
 
   const poIds = supplierPOMap[id] || []
   const transactions = poIds.map((poId) => poTransactions.find((po) => po.id === poId)).filter(Boolean) as POTransaction[]
+
+  /* A3 — DP & Pelunasan */
+  const sisaPelunasan = Math.max(0, (supplier?.totalInvoice ?? 0) - (supplier?.dpPaid ?? 0))
+  const paidPercent = (supplier?.totalInvoice ?? 0) > 0
+    ? Math.round(((supplier?.dpPaid ?? 0) / (supplier?.totalInvoice ?? 1)) * 100)
+    : 0
 
   const draftCount = transactions.filter((t) => t.status === "Draft").length
   const inTransitCount = transactions.filter((t) => t.status === "Sent").length
@@ -363,6 +373,70 @@ export default function SupplierDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Pembayaran — prominent card at top (no scroll needed) */}
+      <Card className="border-indigo-100">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-4 w-4 text-indigo-600" />
+            Pembayaran
+          </CardTitle>
+          <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+            <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
+            {supplier.paymentTerms}
+          </span>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Tagihan</p>
+              <p className="text-lg font-bold mt-1">{formatIDR(supplier.totalInvoice)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Sudah Di-DP</p>
+              <p className={`text-lg font-bold mt-1 ${supplier.dpPaid > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
+                {supplier.dpPaid > 0 ? formatIDR(supplier.dpPaid) : "—"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Sisa Pelunasan</p>
+              <p className={`text-lg font-bold mt-1 ${sisaPelunasan > 0 ? "text-amber-600" : "text-emerald-600"}`}>
+                {sisaPelunasan > 0 ? formatIDR(sisaPelunasan) : "✓ Lunas"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Jatuh Tempo</p>
+              {supplier.outstandingBalance > 0 && supplier.dueDate ? (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <p className="text-lg font-bold">{new Date(supplier.dueDate).toLocaleDateString("id-ID")}</p>
+                  {(() => {
+                    const due = getDueStatus(supplier.dueDate, supplier.outstandingBalance)
+                    return due ? (
+                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${due.className}`}>{due.label}</Badge>
+                    ) : null
+                  })()}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground mt-2">—</p>
+              )}
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="space-y-1.5 mt-5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Progress Pelunasan</span>
+              <span className="font-semibold">{paidPercent}%</span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2.5">
+              <div
+                className={`h-2.5 rounded-full transition-all duration-500 ${paidPercent >= 100 ? "bg-emerald-500" : "bg-cyan-500"}`}
+                style={{ width: `${Math.min(100, paidPercent)}%` }}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -524,60 +598,6 @@ export default function SupplierDetailPage() {
                     </select>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Pembayaran & Hutang */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-indigo-600" />
-                Pembayaran & Hutang
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Payment Terms</p>
-                <div className="flex items-center gap-1.5">
-                  <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
-                  <p className="font-medium">{supplier.paymentTerms}</p>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Outstanding Balance</p>
-                {supplier.outstandingBalance > 0 ? (
-                  <p className="text-lg font-semibold text-amber-600">{formatIDR(supplier.outstandingBalance)}</p>
-                ) : (
-                  <p className="font-medium text-emerald-600">Lunas</p>
-                )}
-              </div>
-              {supplier.outstandingBalance > 0 && (
-                <>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Umur Hutang</p>
-                    <div className="flex items-center gap-1.5">
-                      {getAgingBadge(getAgingDays(supplier.lastInvoiceDate), supplier.outstandingBalance)}
-                      <span className="text-xs text-muted-foreground">
-                        sejak {new Date(supplier.lastInvoiceDate).toLocaleDateString("id-ID")}
-                      </span>
-                    </div>
-                  </div>
-                  {supplier.dueDate && (() => {
-                    const due = getDueStatus(supplier.dueDate, supplier.outstandingBalance)
-                    return (
-                      <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Jatuh Tempo</p>
-                        <div className="flex items-center gap-1.5">
-                          <p className="font-medium">{new Date(supplier.dueDate).toLocaleDateString("id-ID")}</p>
-                          {due && (
-                            <Badge variant="outline" className={due.className}>{due.label}</Badge>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })()}
-                </>
               )}
             </CardContent>
           </Card>

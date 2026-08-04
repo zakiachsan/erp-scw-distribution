@@ -168,10 +168,14 @@ export default function QuotationsListContent() {
               {filtered.map((qt) => {
                 const selected = qt.vendors.find((v) => v.pilihan === "Dipilih")
                 return (
-                  <TableRow key={qt.id} className="hover:bg-muted/30">
+                  <TableRow
+                    key={qt.id}
+                    className="hover:bg-muted/30 cursor-pointer"
+                    onClick={() => (window.location.href = `/purchasing/quotations/${qt.id}`)}
+                  >
                     <TableCell>
                       <Link
-                        href={`/purchasing/requests/${qt.prId}`}
+                        href={`/purchasing/quotations/${qt.id}`}
                         className="text-blue-600 hover:underline font-sans font-medium text-sm"
                       >
                         {qt.prNo}
@@ -197,17 +201,21 @@ export default function QuotationsListContent() {
                         {qt.status}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right">
-                      {qt.status === "Disetujui" ? (
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <Link
+                        href={`/purchasing/quotations/${qt.id}`}
+                        className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        Bandingkan
+                      </Link>
+                      {qt.status === "Disetujui" && (
                         <Link
                           href={`/purchasing/create?from=${qt.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 rounded-md border border-blue-300 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100"
+                          className="inline-flex items-center gap-1 rounded-md border border-blue-300 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 ml-1.5"
                         >
                           Buat PO
                         </Link>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">—</span>
                       )}
                     </TableCell>
                   </TableRow>
