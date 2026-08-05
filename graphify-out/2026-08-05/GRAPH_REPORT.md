@@ -1,16 +1,16 @@
-# Graph Report - erp-scw-distribution  (2026-08-05)
+# Graph Report - erp-scw-distribution  (2026-08-03)
 
 ## Corpus Check
-- 266 files · ~325,915 words
+- 266 files · ~327,037 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2323 nodes · 5116 edges · 159 communities (138 shown, 21 thin omitted)
+- 2339 nodes · 5119 edges · 164 communities (143 shown, 21 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0c1ec8db`
+- Built from commit: `4406a7ec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -151,14 +151,17 @@
 - syarat-pembayaran/page.tsx
 - transaksi-favorit/page.tsx
 - ReceiptsPage
+- ReconciliationPage
 - TransfersPage
 - laporan/page.tsx
 - perusahaan/page.tsx
 - AGENTS.md
+- date-fns
 - eslint.config.mjs
 - next
 - next.config.ts
 - next-env.d.ts
+- @prisma/client
 - react-day-picker
 - react-dom
 - tailwind-merge
@@ -167,7 +170,9 @@
 - storefront/next-env.d.ts
 - EstimasiHargaPage
 - WorkOrdersPage
+- CreatePaymentPage
 - clsx
+- formatIDR
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 134 edges
@@ -184,59 +189,59 @@
 ## Surprising Connections (you probably didn't know these)
 - `ProductDetailPage()` --references--> `react`  [EXTRACTED]
   src/app/commerce/products/[id]/page.tsx → package.json
-- `CustomerReturnDetailPage()` --references--> `react`  [EXTRACTED]
-  src/app/(dashboard)/customer-returns/[id]/page.tsx → package.json
 - `LogisticDetailPage()` --references--> `react`  [EXTRACTED]
   src/app/(dashboard)/purchasing/logistic/[id]/page.tsx → package.json
-- `SalesOrderDetailPage()` --references--> `react`  [EXTRACTED]
-  src/app/(dashboard)/sales/orders/[id]/page.tsx → package.json
 - `Sidebar()` --references--> `react`  [EXTRACTED]
   src/components/layout/sidebar.tsx → package.json
+- `useT()` --references--> `react`  [EXTRACTED]
+  src/lib/i18n.ts → package.json
+- `CustomerReturnDetailPage()` --references--> `react`  [EXTRACTED]
+  src/app/(dashboard)/customer-returns/[id]/page.tsx → package.json
 
 ## Import Cycles
 - None detected.
 
-## Communities (159 total, 21 thin omitted)
+## Communities (164 total, 21 thin omitted)
 
 ### Community 0 - "card.tsx"
 Cohesion: 0.04
-Nodes (83): assets, categoryIcons, FixedAsset, totalAccumDep, totalBookValue, totalPurchaseValue, categoryFilterOptions, WorkOrder (+75 more)
+Nodes (73): departments, EmployeeKPI, employees, KPIMetric, initialReviews, Review, ReviewStatus, statusConfig (+65 more)
 
 ### Community 1 - "CardDescription"
-Cohesion: 0.18
-Nodes (17): Banner, initialBanners, Category, initialCategories, Coupon, CouponsPage(), formatRupiah(), initialCoupons (+9 more)
+Cohesion: 0.08
+Nodes (36): Banner, initialBanners, Category, initialCategories, Coupon, CouponsPage(), formatRupiah(), initialCoupons (+28 more)
 
 ### Community 2 - "table.tsx"
-Cohesion: 0.50
-Nodes (4): formatDate(), formatIDR(), JournalPage(), statusBadge()
+Cohesion: 0.36
+Nodes (7): formatDate(), formatIDR(), journalEntries, JournalEntry, JournalPage(), statusBadge(), transactionTypes
 
 ### Community 3 - "cn"
-Cohesion: 0.11
-Nodes (24): Command(), CommandDialog(), CommandEmpty(), CommandGroup(), CommandInput(), CommandItem(), CommandList(), CommandSeparator() (+16 more)
+Cohesion: 0.16
+Nodes (16): Command(), CommandDialog(), CommandEmpty(), CommandGroup(), CommandInput(), CommandItem(), CommandList(), CommandSeparator() (+8 more)
 
 ### Community 4 - "label.tsx"
-Cohesion: 0.12
-Nodes (17): formatIDR(), initialMembers, SalesTeamMember, SalesTeamPage(), DeliveryOrder, deliveryOrders, podTypes, initialNotifications (+9 more)
+Cohesion: 0.05
+Nodes (72): CreateReturnForm(), formatIDR(), Invoice, InvoiceItem, invoices, reasons, ReturnItem, salesOrders (+64 more)
 
 ### Community 5 - "pembayaran-pembelian/page.tsx"
-Cohesion: 0.09
-Nodes (23): BTN_ICON, formatIDR(), INPUT, PembayaranPage(), SELECT, TD, TH, BTN_ICON (+15 more)
+Cohesion: 0.12
+Nodes (17): BTN_ICON, BTN_ICON_OUTLINE, formatIDR(), INPUT, PembayaranPage(), SELECT, TD, TH (+9 more)
 
 ### Community 6 - "inventory/[id]/page.tsx"
-Cohesion: 0.05
-Nodes (37): DamagedItemsPage(), AllocationItem, CLAIM_STATUSES, ClaimStatus, DamagedDetailPage(), DamagedItemDetail, statusConfig, formatIDR() (+29 more)
+Cohesion: 0.07
+Nodes (26): CourierPayment, courierPaymentsByShipment, getInitialData(), LogisticDetailPage(), LogisticItem, nextStatus, PaymentRecord, saveData() (+18 more)
 
 ### Community 7 - "accounting-dummy-data.ts"
-Cohesion: 0.04
-Nodes (44): btnIcon, btnIconOutline, rowStyle, selectStyle, tdStyle, thStyle, AccountingDashboardPage(), formatIDR() (+36 more)
+Cohesion: 0.06
+Nodes (33): AccountingDashboardPage(), formatIDR(), Tab, defaultKurs, KursMataUang, AssetCategory, AssetChange, AssetDisposition (+25 more)
 
 ### Community 8 - "tiering/page.tsx"
-Cohesion: 0.06
-Nodes (41): defaultProduct, discussionsData, formatPrice(), productData, ProductDetailPage(), relatedProducts, reviewsData, CustomerDetail (+33 more)
+Cohesion: 0.09
+Nodes (31): defaultProduct, discussionsData, formatPrice(), productData, ProductDetailPage(), relatedProducts, reviewsData, Employee (+23 more)
 
 ### Community 9 - "histori-akun/page.tsx"
-Cohesion: 0.07
-Nodes (23): btnIconBlue, btnIconWhite, cardStyle, extendedRecords, inputStyle, selectStyle, thStyle, BTN_ICON (+15 more)
+Cohesion: 0.06
+Nodes (30): btnIconBlue, btnIconWhite, cardStyle, extendedRecords, inputStyle, selectStyle, thStyle, BTN_ICON (+22 more)
 
 ### Community 10 - "SCW Distribution — Modul Akuntansi (Accounting Module)"
 Cohesion: 0.06
@@ -247,28 +252,28 @@ Cohesion: 0.07
 Nodes (28): dom, dom.iterable, esnext, **/*.mts, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, node_modules (+20 more)
 
 ### Community 12 - "roles/page.tsx"
-Cohesion: 0.29
-Nodes (7): BalanceSheetItem, BalanceSheetPage(), currentAssets, equity, fixedAssets, formatIDR(), liabilities
+Cohesion: 0.09
+Nodes (28): allProducts, categories, formatPrice(), priceRanges, ProductCardGrid(), ProductCardList(), BalanceSheetItem, BalanceSheetPage() (+20 more)
 
 ### Community 13 - "badge.tsx"
 Cohesion: 0.05
-Nodes (37): dummyPenyesuaian, KATEGORI_OPTIONS, PenyesuaianHarga, PRODUCT_OPTIONS, rowStyle, tdStyle, thStyle, CUSTOMER_OPTIONS (+29 more)
+Nodes (43): btnIcon, btnIconOutline, inputStyle, labelStyle, rowStyle, selectStyle, tdStyle, thRight (+35 more)
 
 ### Community 14 - "jurnal-umum/page.tsx"
-Cohesion: 0.06
-Nodes (23): btnIconBlue, btnIconWhite, inputStyle, labelStyle, selectStyle, thStyle, btnIcon, btnIconOutline (+15 more)
+Cohesion: 0.09
+Nodes (14): btnIconBlue, btnIconWhite, inputStyle, labelStyle, selectStyle, thStyle, fmt(), JournalDetailPanel() (+6 more)
 
 ### Community 15 - "coupons/page.tsx"
-Cohesion: 0.07
-Nodes (32): AlertDialogMedia(), AlertDialogOverlay(), Avatar(), AvatarBadge(), AvatarFallback(), AvatarGroup(), AvatarGroupCount(), AvatarImage() (+24 more)
+Cohesion: 0.09
+Nodes (28): Avatar(), AvatarBadge(), AvatarFallback(), AvatarGroup(), AvatarGroupCount(), AvatarImage(), CardAction(), CardFooter() (+20 more)
 
 ### Community 16 - "pesanan-penjualan/page.tsx"
-Cohesion: 0.22
-Nodes (9): conditionConfig, CustomerReturnDetailPage(), defaultReturn, formatIDR(), mockReturns, resolutionConfig, ReturnDetail, ReturnItem (+1 more)
+Cohesion: 0.09
+Nodes (24): CartItem, CartPage(), formatPrice(), initialCartItems, accounts, formatIDR(), ledgerData, LedgerEntry (+16 more)
 
 ### Community 17 - "gudang/page.tsx"
 Cohesion: 0.08
-Nodes (14): btnIcon, btnIconWhite, inputStyle, selectStyle, thStyle, btnIcon, btnIconBlue, btnIconWhite (+6 more)
+Nodes (15): btnIcon, btnIconWhite, inputStyle, selectStyle, thStyle, btnIcon, btnIconBlue, btnIconWhite (+7 more)
 
 ### Community 18 - "components.json"
 Cohesion: 0.09
@@ -288,19 +293,19 @@ Nodes (12): ActivityLog, btnIconWhite, btnPrimary, DUMMY_LOGS, DUMMY_USERS, form
 
 ### Community 22 - "dependencies"
 Cohesion: 0.11
-Nodes (19): @base-ui/react, class-variance-authority, cmdk, lucide-react, dependencies, @base-ui/react, class-variance-authority, cmdk (+11 more)
+Nodes (19): @base-ui/react, class-variance-authority, cmdk, date-fns, lucide-react, dependencies, @base-ui/react, class-variance-authority (+11 more)
 
 ### Community 23 - "pencatatan-beban/page.tsx"
 Cohesion: 0.11
 Nodes (8): btnIconBlue, btnIconWhite, btnPrimary, inputStyle, labelStyle, selectStyle, thStyle, ExpenseRecord
 
 ### Community 24 - "faktur-penjualan/page.tsx"
-Cohesion: 0.10
-Nodes (15): defaultCategories, defaultProduct, Product, productMap, statusConfig, PackingMaterial, packingMaterials, statusConfig (+7 more)
+Cohesion: 0.16
+Nodes (14): CustomerTierAssignment, defaultTypeARules, defaultTypeBRules, formatNumber(), formatRupiah(), mockCustomers, mockMonthlyHistory, MonthlyResetLog (+6 more)
 
 ### Community 25 - "input.tsx"
-Cohesion: 0.33
-Nodes (6): react, react, buttonVariants, Calendar(), CalendarDayButton(), SearchableSelect()
+Cohesion: 0.20
+Nodes (10): react, react, CustomerReturnDetailPage(), formatIDR(), formatIDR(), SalesOrderDetailPage(), buttonVariants, Calendar() (+2 more)
 
 ### Community 26 - "anggaran/page.tsx"
 Cohesion: 0.12
@@ -323,8 +328,8 @@ Cohesion: 0.12
 Nodes (11): BarangDanJasaPage(), btnIcon, btnIconBlue, btnIconWhite, btnPrimary, formatIDR(), FormTab, inputStyle (+3 more)
 
 ### Community 31 - "navbar.tsx"
-Cohesion: 0.12
-Nodes (14): AppLayout(), Navbar(), DropdownMenu(), DropdownMenuCheckboxItem(), DropdownMenuContent(), DropdownMenuItem(), DropdownMenuLabel(), DropdownMenuRadioItem() (+6 more)
+Cohesion: 0.13
+Nodes (13): AppLayout(), Navbar(), DropdownMenu(), DropdownMenuCheckboxItem(), DropdownMenuContent(), DropdownMenuItem(), DropdownMenuLabel(), DropdownMenuRadioItem() (+5 more)
 
 ### Community 32 - "aset-tetap/page.tsx"
 Cohesion: 0.10
@@ -351,8 +356,8 @@ Cohesion: 0.14
 Nodes (14): akumPenyusutanOptions, akunAsetOptions, bebanPenyusutanOptions, btnOutlineStyle, btnPrimaryStyle, cardContentStyle, cardHeaderStyle, cardStyle (+6 more)
 
 ### Community 38 - "pesanan-pembelian/page.tsx"
-Cohesion: 0.15
-Nodes (14): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, PesananPembelianPage(), rowStyle, selectStyle (+6 more)
+Cohesion: 0.16
+Nodes (13): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, PesananPembelianPage(), rowStyle, selectStyle (+5 more)
 
 ### Community 39 - "pelanggan/page.tsx"
 Cohesion: 0.15
@@ -379,12 +384,12 @@ Cohesion: 0.13
 Nodes (9): btnIcon, btnIconBlue, btnIconWhite, btnPrimary, dummyData, inputStyle, labelStyle, Satuan (+1 more)
 
 ### Community 45 - "purchasing/[id]/page.tsx"
-Cohesion: 0.05
-Nodes (59): FilterValue, formatIDR(), Quotation, quotations, QuotationsPage(), statusConfig, initialReviews, Review (+51 more)
+Cohesion: 0.06
+Nodes (42): FilterValue, formatIDR(), Payment, payments, PaymentsPage(), statusBadge(), bankOptions, formatDate() (+34 more)
 
 ### Community 46 - "retur-penjualan/page.tsx"
-Cohesion: 0.17
-Nodes (12): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, PesananPenjualanPage(), rowStyle, selectStyle (+4 more)
+Cohesion: 0.15
+Nodes (13): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, ReturPenjualanPage(), rowStyle, selectStyle (+5 more)
 
 ### Community 47 - "penyesuaian-persediaan/page.tsx"
 Cohesion: 0.12
@@ -440,7 +445,7 @@ Nodes (12): btnOutlineStyle, btnPrimaryStyle, cardContentStyle, cardHeaderStyle,
 
 ### Community 60 - "estimasi-harga/page.tsx"
 Cohesion: 0.04
-Nodes (60): CartItem, CartPage(), formatPrice(), initialCartItems, checkoutItems, CheckoutPage(), formatPrice(), paymentMethods (+52 more)
+Nodes (51): cashBankAccounts, CreateReceiptPage(), formatIDR(), generateVoucherNo(), incomeAccounts, ReceiptLine, FilterValue, formatIDR() (+43 more)
 
 ### Community 61 - "PO Detail — Pembayaran Sebagian / DP — UI Plan"
 Cohesion: 0.17
@@ -467,16 +472,16 @@ Cohesion: 0.20
 Nodes (10): fmt(), healthColor(), MONTHS, RasioKeuanganPage(), RatioRow, RATIOS, Tab, TD (+2 more)
 
 ### Community 67 - "pengiriman-pesanan/page.tsx"
-Cohesion: 0.11
-Nodes (17): CUSTOMER_OPTIONS, formatIDR(), PenerimaanPenjualanPage(), rowStyle, selectStyle, tdStyle, thRight, thStyle (+9 more)
+Cohesion: 0.17
+Nodes (10): btnIcon, btnIconOutline, inputStyle, labelStyle, rowStyle, selectStyle, tdStyle, thStyle (+2 more)
 
 ### Community 68 - "penyesuaian-harga-diskon/page.tsx"
-Cohesion: 0.20
-Nodes (11): CourierPayment, courierPaymentsByShipment, getInitialData(), LogisticDetailPage(), LogisticItem, nextStatus, PaymentRecord, saveData() (+3 more)
+Cohesion: 0.17
+Nodes (10): btnIcon, btnIconOutline, inputStyle, labelStyle, rowStyle, selectStyle, tdStyle, thStyle (+2 more)
 
 ### Community 69 - "target-penjualan/page.tsx"
-Cohesion: 0.22
-Nodes (8): CreateReturnForm(), formatIDR(), Invoice, InvoiceItem, invoices, reasons, ReturnItem, salesOrders
+Cohesion: 0.17
+Nodes (10): btnIcon, btnIconOutline, inputStyle, labelStyle, rowStyle, selectStyle, tdStyle, thStyle (+2 more)
 
 ### Community 70 - "fix_toolbar.py"
 Cohesion: 0.27
@@ -491,8 +496,8 @@ Cohesion: 0.27
 Nodes (9): CreateWorkOrderPage(), generateWorkOrderNumber(), inventoryItems, slds, sldsButton(), sldsCard(), sldsInput(), sldsLabel() (+1 more)
 
 ### Community 73 - "transfer-bank/page.tsx"
-Cohesion: 0.22
-Nodes (9): BTN_ICON, dummyData, formatIDR(), INPUT, SELECT, TD, TH, Transfer (+1 more)
+Cohesion: 0.20
+Nodes (10): BTN_ICON, BTN_ICON_OUTLINE, dummyData, formatIDR(), INPUT, SELECT, TD, TH (+2 more)
 
 ### Community 74 - "harga-pemasok/page.tsx"
 Cohesion: 0.18
@@ -515,28 +520,28 @@ Cohesion: 0.20
 Nodes (9): CreatePOPageContent(), CURRENCIES, Currency, CURRENCY_LABELS, CURRENCY_SYMBOLS, formatCurrency(), POItem, products (+1 more)
 
 ### Community 79 - "purchasing/quotations/[id]/page.tsx"
-Cohesion: 0.21
-Nodes (11): fmt(), initialData, parseNum(), QuotationDetail, QuotationDetailPage(), recalcVendor(), satuanList, statusVariant (+3 more)
+Cohesion: 0.50
+Nodes (4): fmt(), parseNum(), QuotationDetailPage(), recalcVendor()
 
 ### Community 80 - "requests/page.tsx"
 Cohesion: 0.22
 Nodes (10): fmt(), initialDepartments, initialProducts, initialPRs, initialRequesters, PRItem, PurchaseRequest, PurchaseRequestsPage() (+2 more)
 
 ### Community 81 - "(dashboard)/sales/quotations/create/page.tsx"
-Cohesion: 0.05
-Nodes (67): budgetData, BudgetItem, divisions, cashBankAccounts, CreatePaymentPage(), expenseAccounts, formatIDR(), generateVoucherNo() (+59 more)
+Cohesion: 0.13
+Nodes (16): categories, defaultProduct, mockProducts, categories, CreateQuotationForm(), customers, CustomerType, customerTypeDiscount (+8 more)
 
 ### Community 82 - "checkout/page.tsx"
-Cohesion: 0.25
-Nodes (8): BTN_ICON, BTN_ICON_OUTLINE, formatIDR(), HistoriBankPage(), INPUT, SELECT, TD, TH
+Cohesion: 0.23
+Nodes (9): checkoutItems, CheckoutPage(), formatPrice(), paymentMethods, savedAddresses, shippingMethods, Checkbox(), RadioGroup() (+1 more)
 
 ### Community 83 - "aset-tetap/[id]/page.tsx"
 Cohesion: 0.22
 Nodes (9): AsetTetapDetailPage(), assetData, AssetDetail, formatIDR(), labelStyle, tdMono, tdStyle, thRight (+1 more)
 
 ### Community 84 - "fixed-asset/page.tsx"
-Cohesion: 0.67
-Nodes (3): FixedAssetPage(), formatIDR(), statusBadge()
+Cohesion: 0.24
+Nodes (9): assets, categoryIcons, FixedAsset, FixedAssetPage(), formatIDR(), statusBadge(), totalAccumDep, totalBookValue (+1 more)
 
 ### Community 85 - "smartlink-ebanking/page.tsx"
 Cohesion: 0.17
@@ -555,12 +560,12 @@ Cohesion: 0.06
 Nodes (41): formatIDR(), hutangData, HutangPiutangPage(), periods, piutangData, tdStyle, thStyle, totalHutang (+33 more)
 
 ### Community 89 - "ecommerce/customers/[id]/page.tsx"
-Cohesion: 0.25
-Nodes (8): flowSteps, formatIDR(), OrderItem, orders, paymentConfig, SalesOrderDetail, SalesOrderDetailPage(), statusConfig
+Cohesion: 0.20
+Nodes (7): customers, OrderItem, PIPELINE_DEALS, PIPELINE_QUOTATION_ITEMS, products, QUOTATION_DATA, tierDiscountMap
 
 ### Community 90 - "suppliers/[id]/page.tsx"
-Cohesion: 0.23
-Nodes (11): formatCurrency(), formatIDR(), getDueStatus(), paymentTermsOptions, POTransaction, poTransactions, statusConfig, Supplier (+3 more)
+Cohesion: 0.21
+Nodes (13): formatCurrency(), formatIDR(), getAgingBadge(), getAgingDays(), getDueStatus(), paymentTermsOptions, POTransaction, poTransactions (+5 more)
 
 ### Community 91 - "(dashboard)/sales/invoices/create/page.tsx"
 Cohesion: 0.20
@@ -587,8 +592,8 @@ Cohesion: 0.17
 Nodes (12): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, PembayaranPembelianPage(), rowStyle, selectStyle (+4 more)
 
 ### Community 97 - "orders/create/page.tsx"
-Cohesion: 0.32
-Nodes (7): Employee, employees, formatIDR(), statusBadge(), TaxPage(), Vendor, vendors
+Cohesion: 0.17
+Nodes (12): btnIcon, btnIconOutline, formatIDR(), inputStyle, labelStyle, PenerimaanPenjualanPage(), rowStyle, selectStyle (+4 more)
 
 ### Community 98 - "balance-sheet/page.tsx"
 Cohesion: 0.21
@@ -603,28 +608,28 @@ Cohesion: 0.20
 Nodes (8): btnIcon, btnIconOutline, rowStyle, selectStyle, tdMono, tdStyle, thStyle, dummyAssetTransfers
 
 ### Community 102 - "tax/page.tsx"
-Cohesion: 0.20
-Nodes (8): formatCompactIDR(), INITIAL_DEALS, PipelineDeal, PipelinePage(), SALES_PEOPLE, StageId, STAGES, DialogHeader()
+Cohesion: 0.22
+Nodes (7): formatCompactIDR(), INITIAL_DEALS, PipelineDeal, PipelinePage(), SALES_PEOPLE, StageId, STAGES
 
 ### Community 103 - "ecommerce/orders/[id]/page.tsx"
 Cohesion: 0.29
 Nodes (7): formatRupiah(), mockOrders, OrderDetail, OrderDetailPage(), OrderItem, statusConfig, statusSteps
 
 ### Community 104 - "(dashboard)/page.tsx"
-Cohesion: 0.33
-Nodes (6): formatRupiah(), Order, orders, OrdersPage(), statusConfig, statusTabs
+Cohesion: 0.32
+Nodes (7): DashboardPage(), getActivityBadge(), getActivityIcon(), quickActions, recentActivities, salesData, statCards
 
 ### Community 105 - "purchasing/page.tsx"
 Cohesion: 0.29
 Nodes (6): CURRENCY_SYMBOLS, formatCurrency(), PurchaseOrder, purchaseOrders, PurchasingPage(), statusConfig
 
 ### Community 106 - "suppliers/page.tsx"
-Cohesion: 0.36
-Nodes (7): fmtIDR(), getAgingBadge(), getAgingDays(), paymentTermsOptions, Supplier, suppliers, SuppliersPage()
+Cohesion: 0.50
+Nodes (4): fmtIDR(), getAgingBadge(), getAgingDays(), SuppliersPage()
 
 ### Community 107 - "react"
-Cohesion: 0.18
-Nodes (4): SettingsLayout(), settingsNav, Checkbox(), TooltipContent()
+Cohesion: 0.22
+Nodes (3): SettingsLayout(), settingsNav, TooltipContent()
 
 ### Community 108 - "commerce/orders/page.tsx"
 Cohesion: 0.33
@@ -647,16 +652,16 @@ Cohesion: 0.22
 Nodes (7): DATA, fmtIDR(), LabaDitahanPage(), RowRetained, TD, TH, TH_RIGHT
 
 ### Community 113 - "accounting/sales/quotations/create/page.tsx"
-Cohesion: 0.33
-Nodes (6): ALL_PRODUCTS, CreateOutbondPage(), LineItem, nextLineId(), Tujuan, TUJUAN_OPTIONS
+Cohesion: 0.38
+Nodes (6): CreateQuotationPage(), customers, formatIDR(), generateQuoteNumber(), products, QuoteItem
 
 ### Community 114 - "accounting/sales/quotations/page.tsx"
-Cohesion: 0.33
-Nodes (6): customerData, CustomerDetailPage(), formatIDR(), purchaseHistory, statusConfig, tierDiscounts
+Cohesion: 0.22
+Nodes (7): btnIcon, btnIconOutline, rowStyle, selectStyle, tdStyle, thStyle, dummyAssetChanges
 
 ### Community 115 - "ecommerce/products/page.tsx"
-Cohesion: 0.40
-Nodes (5): CommissionPage(), formatIDR(), periods, SalesPerson, salesPersons
+Cohesion: 0.28
+Nodes (8): InputGroup(), InputGroupAddon(), inputGroupAddonVariants, InputGroupButton(), inputGroupButtonVariants, InputGroupInput(), InputGroupText(), InputGroupTextarea()
 
 ### Community 116 - "outbond/create/page.tsx"
 Cohesion: 0.29
@@ -667,8 +672,8 @@ Cohesion: 0.29
 Nodes (4): cashFlow, expenseBreakdown, profitTrend, salesVsPurchase
 
 ### Community 118 - "sales-team/[id]/page.tsx"
-Cohesion: 0.50
-Nodes (4): formatDate(), formatIDR(), ReconciliationPage(), statusBadge()
+Cohesion: 0.32
+Nodes (7): CreateInvoicePage(), customers, formatIDR(), generateInvoiceNumber(), InvoiceItem, products, quotations
 
 ### Community 119 - "accounting/reports/page.tsx"
 Cohesion: 0.33
@@ -683,12 +688,12 @@ Cohesion: 0.40
 Nodes (5): formatIDR(), Invoice, InvoiceListPage(), invoices, statusConfig
 
 ### Community 122 - "app-layout.tsx"
-Cohesion: 0.67
-Nodes (3): formatDate(), statusBadge(), WorkOrdersPage()
+Cohesion: 1.00
+Nodes (3): fmtForeign(), fmtIDR(), LogisticPage()
 
 ### Community 123 - "operasional/page.tsx"
-Cohesion: 0.67
-Nodes (3): formatIDR(), PaymentsPage(), statusBadge()
+Cohesion: 0.40
+Nodes (3): quickActions, recentActivities, stats
 
 ### Community 124 - "app/layout.tsx"
 Cohesion: 0.40
@@ -703,48 +708,68 @@ Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
 ### Community 127 - "BudgetPage"
-Cohesion: 0.50
-Nodes (4): BudgetPage(), formatIDR(), progressColor(), utilizationBadge()
+Cohesion: 0.36
+Nodes (7): budgetData, BudgetItem, BudgetPage(), divisions, formatIDR(), progressColor(), utilizationBadge()
 
 ### Community 128 - "invoices/[id]/page.tsx"
-Cohesion: 0.67
-Nodes (3): CreateReceiptPage(), formatIDR(), generateVoucherNo()
+Cohesion: 0.38
+Nodes (5): formatIDR(), invoiceData, InvoiceDetailPage(), statusConfig, Separator()
+
+### Community 129 - "KPIPage"
+Cohesion: 0.50
+Nodes (4): getScoreBg(), getScoreColor(), getScoreLabel(), KPIPage()
 
 ### Community 135 - "ReceiptsPage"
 Cohesion: 0.36
 Nodes (7): cashBankOptions, formatDate(), formatIDR(), mockReceipts, ReceiptItem, ReceiptsPage(), statusBadge()
 
+### Community 136 - "ReconciliationPage"
+Cohesion: 0.40
+Nodes (5): CustomerReturn, CustomerReturnsPage(), formatIDR(), returns, statusConfig
+
 ### Community 137 - "TransfersPage"
-Cohesion: 0.12
-Nodes (17): getScoreBg(), getScoreColor(), getScoreLabel(), KPIPage(), formatIDR(), LedgerPage(), typeBadge(), bankOptions (+9 more)
+Cohesion: 0.36
+Nodes (7): bankOptions, formatDate(), formatIDR(), mockTransfers, statusBadge(), Transfer, TransfersPage()
+
+### Community 141 - "date-fns"
+Cohesion: 0.40
+Nodes (5): Customer, customers, CustomersPage(), formatRupiah(), statusConfig
 
 ### Community 159 - "EstimasiHargaPage"
-Cohesion: 0.26
-Nodes (9): CustomerListPage(), formatIDR(), SortKey, tierConfig, Customer, customers, CustomerType, PaymentTerm (+1 more)
+Cohesion: 0.16
+Nodes (14): LineItem, Product, products, TIER_DISCOUNT, tierColors, CustomerListPage(), formatIDR(), SortKey (+6 more)
 
 ### Community 160 - "WorkOrdersPage"
 Cohesion: 0.50
 Nodes (4): calculateShipping(), EstimasiHargaPage(), formatRupiah(), nextLineId()
 
+### Community 161 - "CreatePaymentPage"
+Cohesion: 0.32
+Nodes (7): cashBankAccounts, CreatePaymentPage(), expenseAccounts, formatIDR(), generateVoucherNo(), PaymentLine, SelectItem()
+
+### Community 177 - "formatIDR"
+Cohesion: 0.29
+Nodes (7): flowSteps, formatIDR(), orders, paymentConfig, SalesOrder, SalesOrdersPage(), statusConfig
+
 ## Knowledge Gaps
-- **1230 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+1225 more)
+- **1240 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+1235 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `coupons/page.tsx` to `card.tsx`, `CardDescription`, `cn`, `modules/page.tsx`, `label.tsx`, `tax/page.tsx`, `tiering/page.tsx`, `react`, `purchasing/[id]/page.tsx`, `purchasing/quotations/[id]/page.tsx`, `(dashboard)/sales/quotations/create/page.tsx`, `input.tsx`, `estimasi-harga/page.tsx`, `navbar.tsx`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `react` connect `input.tsx` to `penyesuaian-harga-diskon/page.tsx`, `modules/page.tsx`, `tiering/page.tsx`, `pesanan-penjualan/page.tsx`, `dependencies`, `ecommerce/customers/[id]/page.tsx`?**
-  _High betweenness centrality (0.021) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `KPIPage`, `clsx`, `next`, `react-day-picker`, `react-dom`, `tailwind-merge`, `zustand`, `input.tsx`, `package.json`?**
+- **Why does `cn()` connect `coupons/page.tsx` to `invoices/[id]/page.tsx`, `CardDescription`, `CreatePaymentPage`, `cn`, `modules/page.tsx`, `label.tsx`, `card.tsx`, `tiering/page.tsx`, `react`, `roles/page.tsx`, `purchasing/[id]/page.tsx`, `pesanan-penjualan/page.tsx`, `(dashboard)/sales/quotations/create/page.tsx`, `checkout/page.tsx`, `ecommerce/products/page.tsx`, `input.tsx`, `estimasi-harga/page.tsx`, `navbar.tsx`?**
+  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+- **Why does `react` connect `input.tsx` to `tiering/page.tsx`, `modules/page.tsx`, `dependencies`, `inventory/[id]/page.tsx`?**
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `clsx`, `next`, `@prisma/client`, `react-day-picker`, `react-dom`, `tailwind-merge`, `zustand`, `input.tsx`, `package.json`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _1230 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1240 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `card.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.041701417848206836 - nodes in this community are weakly interconnected._
-- **Should `cn` be split into smaller, more focused modules?**
-  _Cohesion score 0.10582010582010581 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04402920962199313 - nodes in this community are weakly interconnected._
+- **Should `CardDescription` be split into smaller, more focused modules?**
+  _Cohesion score 0.07878787878787878 - nodes in this community are weakly interconnected._
 - **Should `label.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.12333333333333334 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.045655375552282766 - nodes in this community are weakly interconnected._
