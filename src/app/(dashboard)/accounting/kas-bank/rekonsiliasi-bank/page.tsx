@@ -24,8 +24,8 @@ const dummyBCAMutations = [
 
 export default function RekonsiliasiBankPage() {
   const [akunDipilih, setAkunDipilih] = useState("")
-  const [tanggalAwal, setTanggalAwal] = useState("29/06/2026")
-  const [tanggalAkhir, setTanggalAkhir] = useState("06/07/2026")
+  const [tanggalAwal, setTanggalAwal] = useState("2026-06-29")
+  const [tanggalAkhir, setTanggalAkhir] = useState("2026-07-06")
   const [showData, setShowData] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [importedRecords, setImportedRecords] = useState<BankRecord[]>([])
@@ -40,6 +40,7 @@ export default function RekonsiliasiBankPage() {
     const newRecords: BankRecord[] = dummyBCAMutations.map((m, i) => ({
       id: `bca-rek-${i + 1}`,
       tanggal: m.tanggal,
+      kasBank: "Bank BCA",
       noSumber: `BCA-${m.tanggal.replace(/\//g, "")}`,
       noCek: "-",
       tipeTransaksi: m.kredit > 0 ? "Penerimaan" : "Pembayaran",
@@ -65,9 +66,9 @@ export default function RekonsiliasiBankPage() {
             <input style={{ ...INPUT, paddingLeft: 30, width: "100%" }} placeholder="Cari/Pilih Bank..." value={akunDipilih} onChange={e => setAkunDipilih(e.target.value)} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
             <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
           </div>
           <button onClick={handleRefresh} style={BTN_ICON}><RefreshCw size={14} /></button>
           <button style={{ ...BTN_ICON, background: "#ffc107", borderColor: "#ffc107" }}><Mic size={14} /></button>

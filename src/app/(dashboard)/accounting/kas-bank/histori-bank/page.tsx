@@ -10,17 +10,19 @@ const TD: React.CSSProperties = { fontSize: 13, color: "#001526", padding: "8px 
 const BTN_ICON: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
 const BTN_ICON_OUTLINE: React.CSSProperties = { ...BTN_ICON, background: "#fff", color: "#0176d3", borderColor: "#d8d8d8" }
 const INPUT: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", boxSizing: "border-box" }
+const SELECT: React.CSSProperties = { height: 32, padding: "0 24px 0 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 6, background: "#fff", color: "#001526", cursor: "pointer", appearance: "none", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
 export default function HistoriBankPage() {
-  const [search, setSearch] = useState("")
   const [akunDipilih, setAkunDipilih] = useState("")
-  const [tanggalAwal, setTanggalAwal] = useState("01/07/2026")
-  const [tanggalAkhir, setTanggalAkhir] = useState("06/07/2026")
+  const [filterKasBank, setFilterKasBank] = useState("semua")
+  const [tanggalAwal, setTanggalAwal] = useState("2026-07-01")
+  const [tanggalAkhir, setTanggalAkhir] = useState("2026-07-06")
 
   const filtered = dummyBankRecords.filter(item => {
-    if (search && !item.keterangan.toLowerCase().includes(search.toLowerCase()) && !item.noSumber.toLowerCase().includes(search.toLowerCase())) return false
+    if (akunDipilih && !item.keterangan.toLowerCase().includes(akunDipilih.toLowerCase()) && !item.noSumber.toLowerCase().includes(akunDipilih.toLowerCase())) return false
+    if (filterKasBank !== "semua" && item.kasBank !== filterKasBank) return false
     return true
   })
 
@@ -30,15 +32,22 @@ export default function HistoriBankPage() {
       <div style={{ padding: "12px 20px 0", background: "#fff" }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Histori Bank</h1>
         <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Riwayat transaksi rekening bank</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
           <div style={{ position: "relative", width: 200 }}>
             <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
             <input style={{ ...INPUT, paddingLeft: 30, width: "100%" }} placeholder="Cari/Pilih..." value={akunDipilih} onChange={e => setAkunDipilih(e.target.value)} />
           </div>
+          <select value={filterKasBank} onChange={e => setFilterKasBank(e.target.value)} style={SELECT}>
+            <option value="semua">Kas/Bank: Semua</option>
+            <option value="Bank BCA">Bank BCA</option>
+            <option value="Bank Mandiri">Bank Mandiri</option>
+            <option value="Bank BNI">Bank BNI</option>
+            <option value="Kas Kecil">Kas Kecil</option>
+          </select>
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
             <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
           </div>
           <button style={BTN_ICON}><RefreshCw size={14} /></button>
           <button style={BTN_ICON_OUTLINE}><Download size={14} /></button>
@@ -51,21 +60,23 @@ export default function HistoriBankPage() {
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead><tr>
-            <th style={{ ...TH, width: "11%" }}>TANGGAL</th>
+            <th style={{ ...TH, width: "10%" }}>TANGGAL</th>
+            <th style={{ ...TH, width: "12%" }}>KAS/BANK</th>
             <th style={{ ...TH, width: "11%" }}>NO. SUMBER #</th>
             <th style={{ ...TH, width: "10%" }}>NO CEK #</th>
-            <th style={{ ...TH, width: "13%" }}>TIPE TRANSAKSI</th>
-            <th style={{ ...TH, width: "22%" }}>KETERANGAN</th>
-            <th style={{ ...TH, width: "12%", textAlign: "right" }}>MUTASI</th>
-            <th style={{ ...TH, width: "8%" }}>TIPE</th>
-            <th style={{ ...TH, width: "10%", textAlign: "right" }}>SALDO</th>
+            <th style={{ ...TH, width: "12%" }}>TIPE TRANSAKSI</th>
+            <th style={{ ...TH, width: "20%" }}>KETERANGAN</th>
+            <th style={{ ...TH, width: "11%", textAlign: "right" }}>MUTASI</th>
+            <th style={{ ...TH, width: "7%" }}>TIPE</th>
+            <th style={{ ...TH, width: "9%", textAlign: "right" }}>SALDO</th>
           </tr></thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
+              <tr><td colSpan={9} style={{ padding: 60, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr>
             ) : filtered.map(item => (
               <tr key={item.id} style={{ cursor: "pointer" }} onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#f0f7ff"} onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
                 <td style={{ ...TD, color: "#444746" }}>{item.tanggal}</td>
+                <td style={{ ...TD, color: "#0176d3", fontWeight: 500 }}>{item.kasBank}</td>
                 <td style={{ ...TD, fontFamily: "monospace", color: "#0176d3" }}>{item.noSumber}</td>
                 <td style={{ ...TD, color: "#444746" }}>{item.noCek}</td>
                 <td style={{ ...TD, color: "#444746" }}>{item.tipeTransaksi}</td>

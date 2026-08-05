@@ -57,23 +57,23 @@ const cardStyle: React.CSSProperties = {
 
 /* ── Expand dummyBankRecords with per-account entries so user can scope to a specific akun ── */
 const extendedRecords: (BankRecord & { akunKode: string; akunNama: string })[] = [
-  ...dummyBankRecords.map((r) => ({ ...r, akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" })),
-  { id: "br-bca-1", tanggal: "04/07/2026", noSumber: "PMB/2026/07/002", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Penerimaan jasa welding", mutasi: 12000000, tipe: "Kredit", saldo: 97000000, akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
-  { id: "br-bca-2", tanggal: "07/07/2026", noSumber: "SO/2026/07/004", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan CV Karya Mandiri", mutasi: 18000000, tipe: "Kredit", saldo: 115000000, akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
-  { id: "br-bca-3", tanggal: "08/07/2026", noSumber: "EXP/2026/07/003", noCek: "CEK-002", tipeTransaksi: "Pembayaran", keterangan: "Bayar tagihan TELKOM", mutasi: -3500000, tipe: "Debit", saldo: 111500000, akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
-  { id: "br-mdr-1", tanggal: "02/07/2026", noSumber: "PO/2026/07/002", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Pembelian besi beton", mutasi: -18000000, tipe: "Debit", saldo: 102000000, akunKode: "110103", akunNama: "Bank Mandiri" },
-  { id: "br-mdr-2", tanggal: "06/07/2026", noSumber: "SO/2026/07/005", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Uang muka UD Sukses", mutasi: 8000000, tipe: "Kredit", saldo: 110000000, akunKode: "110103", akunNama: "Bank Mandiri" },
-  { id: "br-mdr-3", tanggal: "09/07/2026", noSumber: "EXP/2026/07/004", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Gaji karyawan batch 1", mutasi: -25000000, tipe: "Debit", saldo: 85000000, akunKode: "110103", akunNama: "Bank Mandiri" },
-  { id: "br-mdr-4", tanggal: "10/07/2026", noSumber: "SO/2026/07/006", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Penjualan ke PT Teknindo", mutasi: 24000000, tipe: "Kredit", saldo: 109000000, akunKode: "110103", akunNama: "Bank Mandiri" },
-  { id: "br-bni-1", tanggal: "03/07/2026", noSumber: "PMB/2026/07/003", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pinjaman modal kerja", mutasi: 100000000, tipe: "Kredit", saldo: 100000000, akunKode: "110104", akunNama: "Bank BNI" },
-  { id: "br-bni-2", tanggal: "05/07/2026", noSumber: "EXP/2026/07/005", noCek: "CEK-003", tipeTransaksi: "Pembayaran", keterangan: "Cicilan pokok pinjaman", mutasi: -15000000, tipe: "Debit", saldo: 85000000, akunKode: "110104", akunNama: "Bank BNI" },
-  { id: "br-bni-3", tanggal: "08/07/2026", noSumber: "SO/2026/07/007", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan Toko Berkah Abadi", mutasi: 5500000, tipe: "Kredit", saldo: 90500000, akunKode: "110104", akunNama: "Bank BNI" },
+  ...dummyBankRecords.map((r) => ({ ...r, kasBank: "Bank BCA", akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" })),
+  { id: "br-bca-1", tanggal: "04/07/2026", noSumber: "PMB/2026/07/002", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Penerimaan jasa welding", mutasi: 12000000, tipe: "Kredit", saldo: 97000000, kasBank: "Bank BCA", akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
+  { id: "br-bca-2", tanggal: "07/07/2026", noSumber: "SO/2026/07/004", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan CV Karya Mandiri", mutasi: 18000000, tipe: "Kredit", saldo: 115000000, kasBank: "Bank BCA", akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
+  { id: "br-bca-3", tanggal: "08/07/2026", noSumber: "EXP/2026/07/003", noCek: "CEK-002", tipeTransaksi: "Pembayaran", keterangan: "Bayar tagihan TELKOM", mutasi: -3500000, tipe: "Debit", saldo: 111500000, kasBank: "Bank BCA", akunKode: "110102", akunNama: "Bank BCA - Rekening Giro" },
+  { id: "br-mdr-1", tanggal: "02/07/2026", noSumber: "PO/2026/07/002", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Pembelian besi beton", mutasi: -18000000, tipe: "Debit", saldo: 102000000, kasBank: "Bank Mandiri", akunKode: "110103", akunNama: "Bank Mandiri" },
+  { id: "br-mdr-2", tanggal: "06/07/2026", noSumber: "SO/2026/07/005", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Uang muka UD Sukses", mutasi: 8000000, tipe: "Kredit", saldo: 110000000, kasBank: "Bank Mandiri", akunKode: "110103", akunNama: "Bank Mandiri" },
+  { id: "br-mdr-3", tanggal: "09/07/2026", noSumber: "EXP/2026/07/004", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Gaji karyawan batch 1", mutasi: -25000000, tipe: "Debit", saldo: 85000000, kasBank: "Bank Mandiri", akunKode: "110103", akunNama: "Bank Mandiri" },
+  { id: "br-mdr-4", tanggal: "10/07/2026", noSumber: "SO/2026/07/006", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Penjualan ke PT Teknindo", mutasi: 24000000, tipe: "Kredit", saldo: 109000000, kasBank: "Bank Mandiri", akunKode: "110103", akunNama: "Bank Mandiri" },
+  { id: "br-bni-1", tanggal: "03/07/2026", noSumber: "PMB/2026/07/003", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pinjaman modal kerja", mutasi: 100000000, tipe: "Kredit", saldo: 100000000, kasBank: "Bank BNI", akunKode: "110104", akunNama: "Bank BNI" },
+  { id: "br-bni-2", tanggal: "05/07/2026", noSumber: "EXP/2026/07/005", noCek: "CEK-003", tipeTransaksi: "Pembayaran", keterangan: "Cicilan pokok pinjaman", mutasi: -15000000, tipe: "Debit", saldo: 85000000, kasBank: "Bank BNI", akunKode: "110104", akunNama: "Bank BNI" },
+  { id: "br-bni-3", tanggal: "08/07/2026", noSumber: "SO/2026/07/007", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan Toko Berkah Abadi", mutasi: 5500000, tipe: "Kredit", saldo: 90500000, kasBank: "Bank BNI", akunKode: "110104", akunNama: "Bank BNI" },
 ]
 
 export default function HistoriAkunPage() {
   const [search, setSearch] = useState("")
-  const [tanggalAwal, setTanggalAwal] = useState("01/07/2026")
-  const [tanggalAkhir, setTanggalAkhir] = useState("31/07/2026")
+  const [tanggalAwal, setTanggalAwal] = useState("2026-07-01")
+  const [tanggalAkhir, setTanggalAkhir] = useState("2026-07-31")
   const [akunDipilih, setAkunDipilih] = useState("")
   const [akunOpen, setAkunOpen] = useState(false)
 
@@ -185,9 +185,9 @@ export default function HistoriAkunPage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input type="text" value={tanggalAwal} onChange={(e) => setTanggalAwal(e.target.value)} placeholder="dd/mm/yyyy" style={{ ...inputStyle, width: 110 }} />
+            <input type="date" value={tanggalAwal} onChange={(e) => setTanggalAwal(e.target.value)} style={{ ...inputStyle, width: 140 }} />
             <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
-            <input type="text" value={tanggalAkhir} onChange={(e) => setTanggalAkhir(e.target.value)} placeholder="dd/mm/yyyy" style={{ ...inputStyle, width: 110 }} />
+            <input type="date" value={tanggalAkhir} onChange={(e) => setTanggalAkhir(e.target.value)} style={{ ...inputStyle, width: 140 }} />
           </div>
 
           <button style={btnIconBlue}><RefreshIcon /></button>

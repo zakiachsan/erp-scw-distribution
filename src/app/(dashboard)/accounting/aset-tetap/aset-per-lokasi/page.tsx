@@ -141,15 +141,15 @@ export default function AsetPerLokasiPage() {
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", border: "1px solid #ecebea", borderRadius: 8, overflow: "hidden" }}>
             <thead><tr>
-              {[
+              {([
                 { l: "#" }, { l: "Lokasi" }, { l: "Kode Aset" }, { l: "Nama Aset" },
-                { l: "Kategori" }, { l: "Nilai Perolehan", align: "right" }, { l: "Nilai Buku", align: "right" },
-              ].map(c => <th key={c.l} style={{ ...thStyle, textAlign: c.align ?? "left" }}>{c.l}</th>)}
+                { l: "Kategori" }, { l: "Nilai Perolehan", align: "right" as const }, { l: "Nilai Buku", align: "right" as const },
+              ] as { l: string; align?: "left" | "right" }[]).map(c => <th key={c.l} style={{ ...thStyle, textAlign: c.align ?? "left" }}>{c.l}</th>)}
             </tr></thead>
             <tbody>
-              {filteredLocations.flatMap(l => l.assets.map((a) => (
+              {filteredLocations.flatMap((l) => l.assets.map((a) => (
                 <tr key={a.id} style={rowStyle}>
-                  <td style={{ ...tdStyle, color: "#444746" }}>{idx + 1}</td>
+                  <td style={{ ...tdStyle, color: "#444746" }}>•</td>
                   <td style={{ ...tdStyle, color: "#0176d3", fontWeight: 500 }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                       <MapPin size={11} style={{ color: "#888" }} /> {l.lokasi}

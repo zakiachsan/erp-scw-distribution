@@ -100,7 +100,7 @@ export default function AkunPerkiraanPage() {
     nama: "",
     mataUang: "IDR",
     saldoAwal: 0,
-    perTanggal: "01/07/2026",
+    perTanggal: "2026-07-01",
     catatan: "",
     semuaPengguna: true,
   })
@@ -328,7 +328,7 @@ export default function AkunPerkiraanPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <label style={{ ...labelStyle, textAlign: "right" }}>per Tgl</label>
                       <input
-                        type="text"
+                        type="date"
                         value={formData.perTanggal}
                         onChange={(e) => setFormData({ ...formData, perTanggal: e.target.value })}
                         style={{ ...inputStyle, maxWidth: 150 }}

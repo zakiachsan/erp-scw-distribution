@@ -64,7 +64,7 @@ export default function PencatatanBebanPage() {
   const [formData, setFormData] = useState({
     hutangBeban: "",
     noBebanOtomatis: true,
-    tanggal: "06/07/2026",
+    tanggal: "2026-07-06",
     jatuhTempo: "",
     keterangan: "",
     akunPerkiraan: "",
@@ -149,7 +149,7 @@ export default function PencatatanBebanPage() {
 
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Tanggal *</label>
-                <input type="text" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
+                <input type="date" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

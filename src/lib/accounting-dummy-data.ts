@@ -292,13 +292,13 @@ export function getJournalLinesBySource(sourceId: string): JournalLine | undefin
 
 // ──────────────── BANK RECORDS ────────────────
 export interface BankRecord {
-  id: string; tanggal: string; noSumber: string; noCek: string; tipeTransaksi: string; keterangan: string; mutasi: number; tipe: "Debit" | "Kredit"; saldo: number
+  id: string; tanggal: string; kasBank: string; noSumber: string; noCek: string; tipeTransaksi: string; keterangan: string; mutasi: number; tipe: "Debit" | "Kredit"; saldo: number
 }
 export const dummyBankRecords: BankRecord[] = [
-  { id: "br-1", tanggal: "01/07/2026", noSumber: "SO/2026/07/001", noCek: "CEK-001", tipeTransaksi: "Pembayaran", keterangan: "Sewa kantor Juli", mutasi: -15000000, tipe: "Debit", saldo: 85000000 },
-  { id: "br-2", tanggal: "03/07/2026", noSumber: "SO/2026/07/002", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan dari PT Maju Bersama", mutasi: 25000000, tipe: "Kredit", saldo: 110000000 },
-  { id: "br-3", tanggal: "05/07/2026", noSumber: "PO/2026/07/001", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Pembelian ATK", mutasi: -5000000, tipe: "Debit", saldo: 105000000 },
-  { id: "br-4", tanggal: "06/07/2026", noSumber: "SO/2026/07/003", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Uang muka dari PT Teknindo", mutasi: 15000000, tipe: "Kredit", saldo: 120000000 },
+  { id: "br-1", tanggal: "01/07/2026", kasBank: "Bank BCA", noSumber: "SO/2026/07/001", noCek: "CEK-001", tipeTransaksi: "Pembayaran", keterangan: "Sewa kantor Juli", mutasi: -15000000, tipe: "Debit", saldo: 85000000 },
+  { id: "br-2", tanggal: "03/07/2026", kasBank: "Bank BCA", noSumber: "SO/2026/07/002", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Pelunasan dari PT Maju Bersama", mutasi: 25000000, tipe: "Kredit", saldo: 110000000 },
+  { id: "br-3", tanggal: "05/07/2026", kasBank: "Bank Mandiri", noSumber: "PO/2026/07/001", noCek: "-", tipeTransaksi: "Pembayaran", keterangan: "Pembelian ATK", mutasi: -5000000, tipe: "Debit", saldo: 105000000 },
+  { id: "br-4", tanggal: "06/07/2026", kasBank: "Bank Mandiri", noSumber: "SO/2026/07/003", noCek: "-", tipeTransaksi: "Penerimaan", keterangan: "Uang muka dari PT Teknindo", mutasi: 15000000, tipe: "Kredit", saldo: 120000000 },
 ]
 
 // ──────────────── SALES RETURNS ────────────────

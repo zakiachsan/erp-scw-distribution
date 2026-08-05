@@ -25,7 +25,7 @@ export default function PesananPenjualanPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [filterStatus, setFilterStatus] = useState("semua")
-  const [formData, setFormData] = useState({ pelanggan: "", tanggal: "06/07/2026", nomorOtomatis: true, tipeNomor: "Sales Order" })
+  const [formData, setFormData] = useState({ pelanggan: "", tanggal: "2026-07-06", nomorOtomatis: true, tipeNomor: "Sales Order" })
 
   const filtered = dummySalesOrders.filter((i: SalesOrder) => {
     if (search && !i.pelanggan.toLowerCase().includes(search.toLowerCase())) return false

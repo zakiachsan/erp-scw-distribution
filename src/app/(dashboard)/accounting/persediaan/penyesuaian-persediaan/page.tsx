@@ -40,7 +40,7 @@ export default function PenyesuaianPersediaanPage() {
   const [showForm, setShowForm] = useState(false)
   const [items, setItems] = useState<AdjustmentItem[]>([])
   const [formData, setFormData] = useState({
-    tanggal: "07/07/2026",
+    tanggal: "2026-07-07",
     tipe: "Penambahan" as AdjustmentType,
     barangId: "",
     qty: 0,
@@ -62,7 +62,7 @@ export default function PenyesuaianPersediaanPage() {
     }
     setItems([...items, newItem])
     setShowForm(false)
-    setFormData({ tanggal: "07/07/2026", tipe: "Penambahan", barangId: "", qty: 0, keterangan: "" })
+    setFormData({ tanggal: "2026-07-07", tipe: "Penambahan", barangId: "", qty: 0, keterangan: "" })
   }
 
   return (
@@ -113,7 +113,7 @@ export default function PenyesuaianPersediaanPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={labelStyle}>Tanggal *</label>
-                  <input type="text" value={formData.tanggal} onChange={e => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, width: 130 }} />
+                  <input type="date" value={formData.tanggal} onChange={e => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, width: 150 }} />
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={labelStyle}>Nomor Adjustment *</label>

@@ -20,7 +20,7 @@ export default function FakturPenjualanPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [filterStatus, setFilterStatus] = useState("semua")
-  const [formData, setFormData] = useState({ pelanggan: "", tanggal: "06/07/2026", nomorOtomatis: true, tipeNomor: "Sales Invoice" })
+  const [formData, setFormData] = useState({ pelanggan: "", tanggal: "2026-07-06", nomorOtomatis: true, tipeNomor: "Sales Invoice" })
   const [selected, setSelected] = useState<SalesOrder | null>(null)
 
   const filtered = dummySalesOrders.filter((i: SalesOrder) => {

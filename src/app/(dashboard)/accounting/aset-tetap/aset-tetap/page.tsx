@@ -91,7 +91,7 @@ export default function AsetTetapPage() {
   const [filterKategori, setFilterKategori] = useState("semua")
   const [assets, setAssets] = useState<FixedAsset[]>(dummyFixedAssets)
   const [formData, setFormData] = useState({
-    nama: "", kodeOtomatis: true, tanggalBeli: "07/07/2026", tanggalPakai: "07/07/2026",
+    nama: "", kodeOtomatis: true, tanggalBeli: "2026-07-07", tanggalPakai: "2026-07-07",
     asetTidakBerwujud: false, metodePenyusutan: "Metode Garis Lurus",
     akunAset: "120301 - Kendaraan Operasional", akunAkumulasi: "120302 - Akumulasi Penyusutan Kendaraan", akunBeban: "500401 - Beban Transportasi",
     akunPengeluaran: "500101 - Beban Gaji Karyawan",
@@ -245,7 +245,7 @@ export default function AsetTetapPage() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Tanggal Beli *</label>
-                <input type="text" value={formData.tanggalBeli} onChange={(e) => setFormData({...formData, tanggalBeli: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} />
+                <input type="date" value={formData.tanggalBeli} onChange={(e) => setFormData({...formData, tanggalBeli: e.target.value})} style={{ ...inputStyle, maxWidth: 150 }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Rasio Penyusutan *</label>
@@ -256,7 +256,7 @@ export default function AsetTetapPage() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Tanggal Pakai *</label>
-                <input type="text" value={formData.tanggalPakai} onChange={(e) => setFormData({...formData, tanggalPakai: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} />
+                <input type="date" value={formData.tanggalPakai} onChange={(e) => setFormData({...formData, tanggalPakai: e.target.value})} style={{ ...inputStyle, maxWidth: 150 }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Nilai Sisa *</label>

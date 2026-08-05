@@ -11,12 +11,12 @@
  */
 
 import { useState, useMemo, useEffect } from "react"
-import { Plus, X, Check } from "lucide-react"
+import { Plus, X, Check, Search } from "lucide-react"
 
 export interface BuatBaruField {
   key: string
   label: string
-  type: "text" | "number" | "date" | "select" | "textarea"
+  type: "text" | "number" | "date" | "select" | "textarea" | "combobox"
   options?: { value: string; label: string }[]
   required?: boolean
   placeholder?: string
@@ -34,6 +34,8 @@ export interface BuatBaruModalProps {
   fromRef?: string
   /** Item table mini-fields (for documents with item rows) */
   itemFields?: { key: string; label: string; type: "text" | "number"; defaultValue?: string | number }[]
+  /** Optional product list for item picker — shows combobox + auto-fills nama/harga */
+  itemProducts?: { value: string; label: string; kode?: string; harga?: number }[]
   /** Submit handler — receives the full data object */
   onSave: (data: Record<string, string | number>) => void
 }
@@ -79,7 +81,7 @@ function buildInitialItems(itemFields?: BuatBaruModalProps["itemFields"]) {
 }
 
 export function BuatBaruModal({
-  open, onOpenChange, title, subtitle, fields, fromRef, itemFields, onSave,
+  open, onOpenChange, title, subtitle, fields, fromRef, itemFields, itemProducts, onSave,
 }: BuatBaruModalProps) {
   /* Initial values via lazy initializer. The parent should pass a fresh `key` to reset
    * state between opens (recommended React pattern — see https://react.dev/learn/you-might-not-need-an-effect).
@@ -87,6 +89,9 @@ export function BuatBaruModal({
   const [data, setData] = useState<Record<string, string | number>>(() => buildInitialData(fields))
   const [items, setItems] = useState(() => buildInitialItems(itemFields))
   const [toast, setToast] = useState<string | null>(null)
+  /* Per-field combobox search text + open state */
+  const [cbSearch, setCbSearch] = useState<Record<string, string>>({})
+  const [cbOpen, setCbOpen] = useState<Record<string, boolean>>({})
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -148,7 +153,52 @@ export function BuatBaruModal({
                   <label style={labelStyle}>
                     {f.label}{f.required && <span style={{ color: "#ea001e" }}> *</span>}
                   </label>
-                  {f.type === "select" ? (
+                  {f.type === "combobox" ? (
+                    <div style={{ position: "relative" }}>
+                      <Search size={12} style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
+                      <input
+                        style={{ ...inputStyle, paddingLeft: 28 }}
+                        placeholder={f.placeholder || "Cari/Pilih..."}
+                        value={String(data[f.key] ?? "")}
+                        onFocus={() => setCbOpen({ ...cbOpen, [f.key]: true })}
+                        onChange={(e) => {
+                          setData({ ...data, [f.key]: e.target.value })
+                          setCbSearch({ ...cbSearch, [f.key]: e.target.value })
+                          setCbOpen({ ...cbOpen, [f.key]: true })
+                        }}
+                        onBlur={() => setTimeout(() => setCbOpen({ ...cbOpen, [f.key]: false }), 150)}
+                      />
+                      {cbOpen[f.key] && (
+                        <div style={{
+                          position: "absolute", top: 36, left: 0, right: 0, maxHeight: 180, overflowY: "auto",
+                          background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10,
+                        }}>
+                          {(f.options || [])
+                            .filter((o) => {
+                              const q = (cbSearch[f.key] ?? "").toLowerCase()
+                              return !q || o.label.toLowerCase().includes(q)
+                            })
+                            .map((o) => (
+                              <div
+                                key={o.value}
+                                onMouseDown={() => {
+                                  setData({ ...data, [f.key]: o.value })
+                                  setCbSearch({ ...cbSearch, [f.key]: "" })
+                                  setCbOpen({ ...cbOpen, [f.key]: false })
+                                }}
+                                style={{
+                                  padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5",
+                                  background: String(data[f.key]) === o.value ? "#f0f7ff" : "transparent",
+                                }}
+                              >
+                                {o.label}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : f.type === "select" ? (
                     <select
                       style={selectStyle}
                       value={String(data[f.key] ?? "")}
@@ -213,15 +263,27 @@ export function BuatBaruModal({
                     {items.map((it, idx) => (
                       <tr key={idx}>
                         <td style={{ padding: "4px 4px 4px 0" }}>
-                          <input
-                            type="text"
-                            style={inputStyle}
-                            placeholder="Nama barang..."
-                            value={it.nama}
-                            onChange={(e) => {
-                              const next = [...items]; next[idx] = { ...next[idx], nama: e.target.value }; setItems(next)
-                            }}
-                          />
+                          {itemProducts ? (
+                            <ProductPicker
+                              products={itemProducts}
+                              value={it.nama}
+                              onPick={(label, harga) => {
+                                const next = [...items]
+                                next[idx] = { ...next[idx], nama: label, harga: harga ?? next[idx].harga }
+                                setItems(next)
+                              }}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              style={inputStyle}
+                              placeholder="Nama barang..."
+                              value={it.nama}
+                              onChange={(e) => {
+                                const next = [...items]; next[idx] = { ...next[idx], nama: e.target.value }; setItems(next)
+                              }}
+                            />
+                          )}
                         </td>
                         <td style={{ padding: "4px 4px" }}>
                           <input
@@ -307,6 +369,69 @@ export function BuatBaruModal({
           display: "flex", alignItems: "center", gap: 8,
         }}>
           <Check size={16} /> {toast}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Searchable product picker for item rows ── */
+function ProductPicker({
+  products, value, onPick,
+}: {
+  products: { value: string; label: string; kode?: string; harga?: number }[]
+  value: string
+  onPick: (label: string, harga?: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState("")
+  const filtered = products.filter((p) => !q || p.label.toLowerCase().includes(q.toLowerCase()))
+
+  return (
+    <div style={{ position: "relative" }}>
+      <Search size={12} style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
+      <input
+        type="text"
+        style={{ ...inputStyle, paddingLeft: 28 }}
+        placeholder="Cari produk..."
+        value={value}
+        onFocus={() => setOpen(true)}
+        onChange={(e) => {
+          setQ(e.target.value)
+          setOpen(true)
+          onPick(e.target.value)
+        }}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+      />
+      {open && (
+        <div style={{
+          position: "absolute", top: 36, left: 0, right: 0, maxHeight: 180, overflowY: "auto",
+          background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 20,
+        }}>
+          {filtered.length === 0 ? (
+            <div style={{ padding: 10, fontSize: 12, color: "#888", textAlign: "center" }}>Tidak ada hasil</div>
+          ) : (
+            filtered.map((p) => (
+              <div
+                key={p.value}
+                onMouseDown={() => {
+                  onPick(p.label, p.harga)
+                  setQ("")
+                  setOpen(false)
+                }}
+                style={{ padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5" }}
+              >
+                <span style={{ fontWeight: 500 }}>{p.label}</span>
+                {p.kode && <span style={{ color: "#999", fontSize: 11, marginLeft: 6 }}>{p.kode}</span>}
+                {p.harga !== undefined && p.harga > 0 && (
+                  <span style={{ color: "#0176d3", fontSize: 11, marginLeft: 8, fontFamily: "monospace" }}>
+                    Rp {p.harga.toLocaleString("id-ID")}
+                  </span>
+                )}
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>

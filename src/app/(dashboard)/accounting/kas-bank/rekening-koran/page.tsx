@@ -25,8 +25,8 @@ const dummyBCAMutations = [
 export default function RekeningKoranPage() {
   const [search, setSearch] = useState("")
   const [akunDipilih, setAkunDipilih] = useState("")
-  const [tanggalAwal, setTanggalAwal] = useState("01/07/2026")
-  const [tanggalAkhir, setTanggalAkhir] = useState("06/07/2026")
+  const [tanggalAwal, setTanggalAwal] = useState("2026-07-01")
+  const [tanggalAkhir, setTanggalAkhir] = useState("2026-07-06")
   const [showImportModal, setShowImportModal] = useState(false)
   const [importedRecords, setImportedRecords] = useState<BankRecord[]>([])
 
@@ -40,6 +40,7 @@ export default function RekeningKoranPage() {
     const newRecords: BankRecord[] = dummyBCAMutations.map((m, i) => ({
       id: `bca-imp-${i + 1}`,
       tanggal: m.tanggal,
+      kasBank: "Bank BCA",
       noSumber: `BCA-${m.tanggal.replace(/\//g, "")}`,
       noCek: "-",
       tipeTransaksi: m.kredit > 0 ? "Penerimaan" : "Pembayaran",
@@ -64,9 +65,9 @@ export default function RekeningKoranPage() {
             <input style={{ ...INPUT, paddingLeft: 30, width: "100%" }} placeholder="Cari/Pilih..." value={akunDipilih} onChange={e => setAkunDipilih(e.target.value)} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAwal} onChange={e => setTanggalAwal(e.target.value)} />
             <span style={{ fontSize: 13, color: "#666" }}>s/d</span>
-            <input style={{ ...INPUT, width: 110 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
+            <input type="date" style={{ ...INPUT, width: 140 }} value={tanggalAkhir} onChange={e => setTanggalAkhir(e.target.value)} />
           </div>
           <button style={BTN_ICON}><RefreshCw size={14} /></button>
           <button onClick={() => setShowImportModal(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}>

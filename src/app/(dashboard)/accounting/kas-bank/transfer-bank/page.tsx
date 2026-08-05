@@ -7,7 +7,6 @@ import { Plus, Search } from "lucide-react"
 const TH: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", padding: "8px 12px", textAlign: "left", borderBottom: "1px solid #e0e0e0", whiteSpace: "nowrap" }
 const TD: React.CSSProperties = { fontSize: 13, color: "#001526", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }
 const BTN_ICON: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
-const BTN_ICON_OUTLINE: React.CSSProperties = { ...BTN_ICON, background: "#fff", color: "#0176d3", borderColor: "#d8d8d8" }
 const INPUT: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", boxSizing: "border-box" }
 const SELECT: React.CSSProperties = { height: 32, padding: "0 24px 0 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 6, background: "#fff", color: "#001526", cursor: "pointer", appearance: "none", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }
 
@@ -23,7 +22,20 @@ export default function TransferBankPage() {
   const [showForm, setShowForm] = useState(false)
   const [filterKe, setFilterKe] = useState("semua")
   const [filterDari, setFilterDari] = useState("semua")
-  const [formData, setFormData] = useState({ tanggal: "08/07/2026", nomorOtomatis: true, tipeNomor: "Bank Transfer", dariBank: "", keBank: "", jumlah: 0 })
+  const [formData, setFormData] = useState({ tanggal: "2026-07-08", nomorOtomatis: true, tipeNomor: "Bank Transfer", dariBank: "", keBank: "", jumlah: 0, keterangan: "" })
+  const [dariOpen, setDariOpen] = useState(false)
+  const [keOpen, setKeOpen] = useState(false)
+  const [dariSearch, setDariSearch] = useState("")
+  const [keSearch, setKeSearch] = useState("")
+
+  /* Searchable kas/bank list — dropdown, bukan free text */
+  const KAS_BANK_OPTIONS = ["Bank BCA", "Bank Mandiri", "Bank BNI", "Kas Kecil"]
+  const filteredDari = KAS_BANK_OPTIONS.filter(k =>
+    !dariSearch || k.toLowerCase().includes(dariSearch.toLowerCase())
+  ).filter(k => k !== formData.keBank) /* from ≠ to */
+  const filteredKe = KAS_BANK_OPTIONS.filter(k =>
+    !keSearch || k.toLowerCase().includes(keSearch.toLowerCase())
+  ).filter(k => k !== formData.dariBank) /* from ≠ to */
 
   const filtered = dummyData.filter(i => {
     if (search && !i.keterangan.toLowerCase().includes(search.toLowerCase())) return false
@@ -66,7 +78,12 @@ export default function TransferBankPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>Trans Date *</label>
-                <input style={{ ...INPUT, maxWidth: 130 }} value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+                <input
+                  type="date"
+                  style={{ ...INPUT, maxWidth: 150 }}
+                  value={formData.tanggal}
+                  onChange={e => setFormData({ ...formData, tanggal: e.target.value })}
+                />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>Number *</label>
@@ -85,20 +102,112 @@ export default function TransferBankPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>From Cash/Bank *</label>
                   <div style={{ position: "relative", flex: 1, maxWidth: 300 }}>
-                    <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                    <input style={{ ...INPUT, paddingLeft: 26, width: "100%" }} placeholder="Cari/Pilih..." value={formData.dariBank} onChange={e => setFormData({...formData, dariBank: e.target.value})} />
+                    <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
+                    <input
+                      style={{ ...INPUT, paddingLeft: 26, width: "100%" }}
+                      placeholder="Cari/Pilih kas & bank..."
+                      value={formData.dariBank}
+                      onFocus={() => setDariOpen(true)}
+                      onChange={(e) => {
+                        setFormData({ ...formData, dariBank: e.target.value })
+                        setDariSearch(e.target.value)
+                        setDariOpen(true)
+                      }}
+                      onBlur={() => setTimeout(() => setDariOpen(false), 150)}
+                    />
+                    {dariOpen && (
+                      <div style={{
+                        position: "absolute", top: 34, left: 0, right: 0, maxHeight: 180, overflowY: "auto",
+                        background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10,
+                      }}>
+                        {filteredDari.length === 0 ? (
+                          <div style={{ padding: 10, fontSize: 12, color: "#888", textAlign: "center" }}>Tidak ada hasil</div>
+                        ) : (
+                          filteredDari.map((k) => (
+                            <div
+                              key={k}
+                              onMouseDown={() => {
+                                setFormData({ ...formData, dariBank: k })
+                                setDariSearch("")
+                                setDariOpen(false)
+                              }}
+                              style={{
+                                padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5",
+                                background: formData.dariBank === k ? "#f0f7ff" : "transparent",
+                              }}
+                              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#f0f7ff")}
+                              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = formData.dariBank === k ? "#f0f7ff" : "transparent")}
+                            >
+                              <span style={{ color: "#001526", fontWeight: formData.dariBank === k ? 600 : 400 }}>{k}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>To Cash/Bank *</label>
                   <div style={{ position: "relative", flex: 1, maxWidth: 300 }}>
-                    <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                    <input style={{ ...INPUT, paddingLeft: 26, width: "100%" }} placeholder="Cari/Pilih..." value={formData.keBank} onChange={e => setFormData({...formData, keBank: e.target.value})} />
+                    <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
+                    <input
+                      style={{ ...INPUT, paddingLeft: 26, width: "100%" }}
+                      placeholder="Cari/Pilih kas & bank..."
+                      value={formData.keBank}
+                      onFocus={() => setKeOpen(true)}
+                      onChange={(e) => {
+                        setFormData({ ...formData, keBank: e.target.value })
+                        setKeSearch(e.target.value)
+                        setKeOpen(true)
+                      }}
+                      onBlur={() => setTimeout(() => setKeOpen(false), 150)}
+                    />
+                    {keOpen && (
+                      <div style={{
+                        position: "absolute", top: 34, left: 0, right: 0, maxHeight: 180, overflowY: "auto",
+                        background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10,
+                      }}>
+                        {filteredKe.length === 0 ? (
+                          <div style={{ padding: 10, fontSize: 12, color: "#888", textAlign: "center" }}>Tidak ada hasil</div>
+                        ) : (
+                          filteredKe.map((k) => (
+                            <div
+                              key={k}
+                              onMouseDown={() => {
+                                setFormData({ ...formData, keBank: k })
+                                setKeSearch("")
+                                setKeOpen(false)
+                              }}
+                              style={{
+                                padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5",
+                                background: formData.keBank === k ? "#f0f7ff" : "transparent",
+                              }}
+                              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#f0f7ff")}
+                              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = formData.keBank === k ? "#f0f7ff" : "transparent")}
+                            >
+                              <span style={{ color: "#001526", fontWeight: formData.keBank === k ? 600 : 400 }}>{k}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>From Transfer Amount *</label>
                   <input type="number" style={{ ...INPUT, maxWidth: 200 }} value={formData.jumlah} onChange={e => setFormData({...formData, jumlah: Number(e.target.value)})} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <label style={{ fontSize: 13, color: "#444746", minWidth: 130 }}>Keterangan</label>
+                  <input
+                    type="text"
+                    style={{ ...INPUT, maxWidth: 300, width: "100%" }}
+                    placeholder="Contoh: Transfer operasional bulanan..."
+                    value={formData.keterangan}
+                    onChange={e => setFormData({ ...formData, keterangan: e.target.value })}
+                  />
                 </div>
               </div>
             </div>

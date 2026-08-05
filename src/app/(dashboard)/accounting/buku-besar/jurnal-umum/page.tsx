@@ -57,7 +57,7 @@ export default function JurnalUmumPage() {
   const [selected, setSelected] = useState<JournalEntry | null>(null)
 
   const [formData, setFormData] = useState({
-    tanggal: "06/07/2026",
+    tanggal: "2026-07-06",
     nomorOtomatis: true,
     tipeNomor: "Journal Voucher",
     tipeTransaksi: "Jurnal Umum",
@@ -129,7 +129,7 @@ export default function JurnalUmumPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Date *</label>
-                <input type="text" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, maxWidth: 130 }} />
+                <input type="date" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} style={{ ...inputStyle, maxWidth: 150 }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={labelStyle}>Number *</label>

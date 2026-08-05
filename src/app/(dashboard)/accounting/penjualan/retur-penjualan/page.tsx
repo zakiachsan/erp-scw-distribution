@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, RefreshCw, Printer, Settings, Search, Filter } from "lucide-react"
-import { dummySalesReturns, type SalesReturn } from "@/lib/accounting-dummy-data"
+import { Plus, Search } from "lucide-react"
+import { BuatBaruModal } from "@/components/accounting/buat-baru-modal"
+import { dummySalesReturns, type SalesReturn, dummyCustomers, dummyProducts } from "@/lib/accounting-dummy-data"
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -10,24 +11,20 @@ const thStyle: React.CSSProperties = { padding: "8px 12px", textAlign: "left", f
 const thRight: React.CSSProperties = { ...thStyle, textAlign: "right" }
 const tdStyle: React.CSSProperties = { padding: "8px 12px", fontSize: 13, color: "#001526" }
 const rowStyle: React.CSSProperties = { borderBottom: "1px solid #f0f0f0" }
-const btnIcon: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
-const btnIconOutline: React.CSSProperties = { ...btnIcon, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8" }
-const inputStyle: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", width: "100%", boxSizing: "border-box" }
 const selectStyle: React.CSSProperties = { height: 32, padding: "0 24px 0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, background: "#fff", color: "#001526", cursor: "pointer", appearance: "none" as const, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat" as const, backgroundPosition: "right 10px center" }
-const labelStyle: React.CSSProperties = { fontSize: 13, color: "#444746", minWidth: 100 }
+
+/* Options sumber dropdown */
+const CUSTOMER_OPTIONS = dummyCustomers.map((c) => ({ value: c.nama, label: c.nama }))
+const PRODUCT_OPTIONS = dummyProducts.map((p) => ({ value: p.id, label: p.nama, kode: p.kode, harga: p.hargaJual }))
 
 export default function ReturPenjualanPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
-  const [filterTipe, setFilterTipe] = useState("semua")
-  const [formData, setFormData] = useState({ pelanggan: "", tanggal: "06/07/2026", nomorOtomatis: true, tipeNomor: "Sales Return", returnFrom: "Faktur", faktur: "" })
 
   const filtered = dummySalesReturns.filter((i: SalesReturn) => {
     if (search && !i.pelanggan.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
-
-  const handleSave = () => { setShowForm(false) }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -36,90 +33,44 @@ export default function ReturPenjualanPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#001526" }}>Retur Penjualan</h1>
           <p style={{ fontSize: 13, color: "#444746", marginTop: 2 }}>Kelola retur barang dari pelanggan</p>
         </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
-            <select style={selectStyle}><option>Tanggal: Semua</option></select>
-            <select style={selectStyle}><option>Pelanggan: Semua</option></select>
-            <select value={filterTipe} onChange={(e) => setFilterTipe(e.target.value)} style={selectStyle}>
-            <option value="semua">Tipe Pengembalian: Semua</option>
-            <option>Faktur</option>
-            <option>Item</option>
-            </select>
-            <select style={selectStyle}><option>Sudah dicetak: Semua</option></select>
-            <div style={{ flex: 1 }} />
-            <div style={{ position: "relative" }}>
-              <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-              <input type="text" placeholder="Cari retur penjualan..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
-              <button
-                onClick={() => setShowForm(true)}
-                style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}
-              >
-                <Plus size={14} /> Buat Baru
-              </button>
-            </div>
-            <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, paddingBottom: 12, flexWrap: "wrap" }}>
+          <select style={selectStyle}><option>Tanggal: Semua</option></select>
+          <select style={selectStyle}><option>Pelanggan: Semua</option></select>
+          <div style={{ flex: 1 }} />
+          <div style={{ position: "relative" }}>
+            <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+            <input type="text" placeholder="Cari retur penjualan..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ height: 32, padding: "0 10px 0 30px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, width: 200, outline: "none" }} />
           </div>
+          <button
+            onClick={() => setShowForm(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 14px", fontSize: 13, fontWeight: 600, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }}
+          >
+            <Plus size={14} /> Buat Baru
+          </button>
+          <span style={{ fontSize: 11, color: "#888", minWidth: 20, textAlign: "right" }}>{filtered.length}</span>
+        </div>
       </div>
 
-      {showForm && (
-        <div style={{ background: "#f3f3f3", padding: "16px 20px", borderBottom: "1px solid #d8d8d8" }}>
-          <div style={{ background: "#fff", borderRadius: 8, padding: "20px 24px", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "relative" }}>
-            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#001526", marginBottom: 16 }}>Data Baru</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Customer *</label>
-                <div style={{ position: "relative", flex: 1 }}>
-                  <Search size={12} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input type="text" value={formData.pelanggan} onChange={(e) => setFormData({...formData, pelanggan: e.target.value})} placeholder="Cari/Pilih Pelanggan..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Return No *</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div onClick={() => setFormData({...formData, nomorOtomatis: !formData.nomorOtomatis})} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: formData.nomorOtomatis ? "#ccc" : "#0176d3", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
-                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 2, left: formData.nomorOtomatis ? 2 : 18, transition: "left 0.2s" }} />
-                  </div>
-                  <select value={formData.tipeNomor} onChange={(e) => setFormData({...formData, tipeNomor: e.target.value})} style={selectStyle}><option>Sales Return</option></select>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Date *</label>
-                <input type="text" value={formData.tanggal} onChange={(e) => setFormData({...formData, tanggal: e.target.value})} style={{ ...inputStyle, maxWidth: 130 }} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={labelStyle}>Return From *</label>
-                <div style={{ display: "flex", gap: 6, flex: 1 }}>
-                  <select value={formData.returnFrom} onChange={(e) => setFormData({...formData, returnFrom: e.target.value})} style={{ ...selectStyle, width: 80 }}><option>Faktur</option><option>Item</option></select>
-                  <div style={{ position: "relative", flex: 1 }}>
-                    <Search size={12} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                    <input type="text" value={formData.faktur} onChange={(e) => setFormData({...formData, faktur: e.target.value})} placeholder="Cari/Pilih Faktur..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ borderTop: "1px solid #eee", paddingTop: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <div style={{ position: "relative", flex: 1, maxWidth: 250 }}>
-                  <Search size={13} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input type="text" placeholder="Cari/Pilih Barang & Jasa..." style={{ ...inputStyle, paddingLeft: 28 }} />
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#001526", marginLeft: 8 }}>Rincian Barang *</span>
-              </div>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, marginBottom: 12 }}>
-                <thead><tr>
-                  {["Item Name","Code#","Quantity","Unit","@Price","Discount","Total Price"].map(h => <th key={h} style={h === "@Price" || h === "Discount" || h === "Total Price" ? thRight : thStyle}>{h}</th>)}
-                </tr></thead>
-                <tbody><tr><td colSpan={7} style={{ padding: 30, textAlign: "center", color: "#888", fontSize: 13 }}>Belum ada data</td></tr></tbody>
-              </table>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 24, fontSize: 13, borderTop: "1px solid #eee", paddingTop: 8 }}>
-                <span>Sub Total: <b>0</b></span><span>Discount: <b>0</b></span><span>Total: <b>0</b></span>
-              </div>
-            </div>
-            <button onClick={handleSave} style={{ position: "absolute", right: 24, top: 20, ...btnIcon }} title="Simpan">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ── Modal Buat Baru — konsisten + dropdown + item berfungsi ── */}
+      <BuatBaruModal
+        key={String(showForm)}
+        open={showForm}
+        onOpenChange={setShowForm}
+        title="Buat Retur Penjualan"
+        subtitle="Retur berdasarkan faktur yang sudah terbit"
+        fields={[
+          { key: "pelanggan", label: "Customer", type: "combobox", options: CUSTOMER_OPTIONS, required: true, placeholder: "Cari/Pilih Pelanggan..." },
+          { key: "tanggal", label: "Date", type: "date", defaultValue: "2026-07-06", required: true },
+          { key: "returnFrom", label: "Return From", type: "select", options: [{ value: "Faktur", label: "Faktur" }, { value: "Item", label: "Item" }], defaultValue: "Faktur" },
+          { key: "tipe", label: "Tipe Pengembalian", type: "select", options: [{ value: "Faktur", label: "Faktur" }, { value: "Item", label: "Item" }], defaultValue: "Faktur" },
+        ]}
+        itemFields={[
+          { key: "qty", label: "Qty", type: "number", defaultValue: 1 },
+          { key: "harga", label: "Harga", type: "number", defaultValue: 0 },
+        ]}
+        itemProducts={PRODUCT_OPTIONS}
+        onSave={() => setShowForm(false)}
+      />
 
       <div style={{ flex: 1, overflow: "auto", background: "#fff" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
