@@ -6,14 +6,13 @@
    Jika edit, jaga cross-reference ke invoices. */
 
 import { useState } from "react"
-import { Plus, RefreshCw, Search } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { dummyPayments } from "@/lib/accounting-dummy-data"
 
 // ── SLDS Shared Styles ──
 const TH: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", padding: "8px 12px", textAlign: "left", borderBottom: "1px solid #e0e0e0", whiteSpace: "nowrap" }
 const TD: React.CSSProperties = { fontSize: 13, color: "#001526", padding: "8px 12px", borderBottom: "1px solid #f0f0f0" }
 const BTN_ICON: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, background: "#0176d3", color: "#fff", border: "1px solid #0176d3", borderRadius: 6, cursor: "pointer" }
-const BTN_ICON_OUTLINE: React.CSSProperties = { ...BTN_ICON, background: "#fff", color: "#0176d3", borderColor: "#d8d8d8" }
 const INPUT: React.CSSProperties = { height: 32, padding: "0 10px", fontSize: 13, border: "1px solid #d8d8d8", borderRadius: 6, outline: "none", boxSizing: "border-box" }
 const SELECT: React.CSSProperties = { height: 32, padding: "0 24px 0 8px", fontSize: 11, border: "1px solid #d8d8d8", borderRadius: 6, background: "#fff", color: "#001526", cursor: "pointer", appearance: "none", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }
 
@@ -25,8 +24,16 @@ export default function PembayaranPage() {
   const [filterTanggal, setFilterTanggal] = useState("semua")
   const [filterKasBank, setFilterKasBank] = useState("semua")
   const [formData, setFormData] = useState({
-    cashBank: "", voucherOtomatis: true, tipeVoucher: "Bank", tanggal: "06/07/2026",
+    cashBank: "", voucherOtomatis: true, tipeVoucher: "Bank", tanggal: "2026-07-06",
   })
+  const [cashBankOpen, setCashBankOpen] = useState(false)
+  const [cashBankSearch, setCashBankSearch] = useState("")
+
+  /* Searchable kas/bank list — dropdown, bukan free text */
+  const KAS_BANK_OPTIONS = ["Bank BCA", "Bank Mandiri", "Bank BNI", "Kas Kecil"]
+  const filteredKasBank = KAS_BANK_OPTIONS.filter(k =>
+    !cashBankSearch || k.toLowerCase().includes(cashBankSearch.toLowerCase())
+  )
 
   // ── Dummy invoices for multi-invoice payment ──
   const invoiceOptions = [
@@ -92,8 +99,49 @@ export default function PembayaranPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={{ fontSize: 13, color: "#444746", minWidth: 100 }}>Cash/Bank *</label>
                 <div style={{ position: "relative", flex: 1 }}>
-                  <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                  <input style={{ ...INPUT, paddingLeft: 26, width: "100%" }} placeholder="Cari/Pilih..." value={formData.cashBank} onChange={e => setFormData({...formData, cashBank: e.target.value})} />
+                  <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
+                  <input
+                    style={{ ...INPUT, paddingLeft: 26, width: "100%" }}
+                    placeholder="Cari/Pilih kas & bank..."
+                    value={formData.cashBank}
+                    onFocus={() => setCashBankOpen(true)}
+                    onChange={(e) => {
+                      setFormData({ ...formData, cashBank: e.target.value })
+                      setCashBankSearch(e.target.value)
+                      setCashBankOpen(true)
+                    }}
+                    onBlur={() => setTimeout(() => setCashBankOpen(false), 150)}
+                  />
+                  {cashBankOpen && (
+                    <div style={{
+                      position: "absolute", top: 34, left: 0, right: 0, maxHeight: 180, overflowY: "auto",
+                      background: "#fff", border: "1px solid #d8d8d8", borderRadius: 6,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10,
+                    }}>
+                      {filteredKasBank.length === 0 ? (
+                        <div style={{ padding: 10, fontSize: 12, color: "#888", textAlign: "center" }}>Tidak ada hasil</div>
+                      ) : (
+                        filteredKasBank.map((k) => (
+                          <div
+                            key={k}
+                            onMouseDown={() => {
+                              setFormData({ ...formData, cashBank: k })
+                              setCashBankSearch("")
+                              setCashBankOpen(false)
+                            }}
+                            style={{
+                              padding: "8px 10px", fontSize: 13, cursor: "pointer", borderBottom: "1px solid #f5f5f5",
+                              background: formData.cashBank === k ? "#f0f7ff" : "transparent",
+                            }}
+                            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#f0f7ff")}
+                            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = formData.cashBank === k ? "#f0f7ff" : "transparent")}
+                          >
+                            <span style={{ color: "#001526", fontWeight: formData.cashBank === k ? 600 : 400 }}>{k}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -107,7 +155,12 @@ export default function PembayaranPage() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <label style={{ fontSize: 13, color: "#444746", minWidth: 100 }}>Date *</label>
-                <input style={{ ...INPUT, maxWidth: 130 }} value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+                <input
+                  type="date"
+                  style={{ ...INPUT, maxWidth: 150 }}
+                  value={formData.tanggal}
+                  onChange={e => setFormData({ ...formData, tanggal: e.target.value })}
+                />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <button style={{ padding: "7px 14px", fontSize: 13, fontWeight: 600, background: "#fff", color: "#0176d3", border: "1px solid #d8d8d8", borderRadius: 6, cursor: "pointer" }}>Ambil ▾</button>
