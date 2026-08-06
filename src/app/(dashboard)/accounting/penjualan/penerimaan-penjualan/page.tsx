@@ -56,7 +56,7 @@ export default function PenerimaanPenjualanPage() {
           { key: "receiveFrom", label: "Receive From", type: "combobox", options: CUSTOMER_OPTIONS, required: true, placeholder: "Cari/Pilih Pelanggan..." },
           { key: "tanggal", label: "Payment Date", type: "date", defaultValue: "2026-07-06", required: true },
           { key: "bank", label: "Bank", type: "combobox", options: [{ value: "Bank BCA", label: "Bank BCA" }, { value: "Bank Mandiri", label: "Bank Mandiri" }, { value: "Bank BNI", label: "Bank BNI" }, { value: "Kas Kecil", label: "Kas Kecil" }], placeholder: "Cari/Pilih..." },
-          { key: "paymentAmount", label: "Payment Amount", type: "number", defaultValue: 0 },
+          { key: "paymentAmount", label: "Payment Amount", type: "money", defaultValue: 0 },
         ]}
         onSave={() => setShowForm(false)}
       />

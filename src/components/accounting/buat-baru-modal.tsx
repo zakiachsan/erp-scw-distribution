@@ -16,7 +16,7 @@ import { Plus, X, Check, Search } from "lucide-react"
 export interface BuatBaruField {
   key: string
   label: string
-  type: "text" | "number" | "date" | "select" | "textarea" | "combobox"
+  type: "text" | "number" | "date" | "select" | "textarea" | "combobox" | "money" | "checkbox"
   options?: { value: string; label: string }[]
   required?: boolean
   placeholder?: string
@@ -33,7 +33,7 @@ export interface BuatBaruModalProps {
   /** Optional pre-fill from upstream document — shown as badge */
   fromRef?: string
   /** Item table mini-fields (for documents with item rows) */
-  itemFields?: { key: string; label: string; type: "text" | "number"; defaultValue?: string | number }[]
+  itemFields?: { key: string; label: string; type: "text" | "number" | "money"; defaultValue?: string | number }[]
   /** Optional product list for item picker — shows combobox + auto-fills nama/harga */
   itemProducts?: { value: string; label: string; kode?: string; harga?: number }[]
   /** Submit handler — receives the full data object */
@@ -70,7 +70,7 @@ function buildInitialData(fields: BuatBaruField[]): Record<string, string | numb
   const init: Record<string, string | number> = {}
   fields.forEach((f) => {
     if (f.defaultValue !== undefined) init[f.key] = f.defaultValue
-    else if (f.type === "number") init[f.key] = 0
+    else if (f.type === "number" || f.type === "money" || f.type === "checkbox") init[f.key] = 0
     else init[f.key] = ""
   })
   return init
@@ -150,9 +150,11 @@ export function BuatBaruModal({
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 16px" }}>
               {fields.map((f) => (
                 <div key={f.key} style={fieldRow}>
-                  <label style={labelStyle}>
-                    {f.label}{f.required && <span style={{ color: "#ea001e" }}> *</span>}
-                  </label>
+                  {f.type !== "checkbox" && (
+                    <label style={labelStyle}>
+                      {f.label}{f.required && <span style={{ color: "#ea001e" }}> *</span>}
+                    </label>
+                  )}
                   {f.type === "combobox" ? (
                     <div style={{ position: "relative" }}>
                       <Search size={12} style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: "#999", zIndex: 1 }} />
@@ -182,7 +184,8 @@ export function BuatBaruModal({
                             .map((o) => (
                               <div
                                 key={o.value}
-                                onMouseDown={() => {
+                                onMouseDown={(e) => {
+                                  e.preventDefault()
                                   setData({ ...data, [f.key]: o.value })
                                   setCbSearch({ ...cbSearch, [f.key]: "" })
                                   setCbOpen({ ...cbOpen, [f.key]: false })
@@ -216,6 +219,28 @@ export function BuatBaruModal({
                       placeholder={f.placeholder}
                       onChange={(e) => setData({ ...data, [f.key]: e.target.value })}
                     />
+                  ) : f.type === "checkbox" ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, height: 34 }}>
+                      <input
+                        type="checkbox"
+                        checked={Number(data[f.key] ?? 0) === 1}
+                        onChange={(e) => setData({ ...data, [f.key]: e.target.checked ? 1 : 0 })}
+                        style={{ width: 16, height: 16, cursor: "pointer" }}
+                      />
+                      <span style={{ fontSize: 13, color: "#444746" }}>{f.label}</span>
+                    </div>
+                  ) : f.type === "money" ? (
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      style={inputStyle}
+                      placeholder={f.placeholder || "0"}
+                      value={Number(data[f.key] ?? 0) ? Number(data[f.key]).toLocaleString("id-ID") : ""}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "")
+                        setData({ ...data, [f.key]: digits ? Number(digits) : 0 })
+                      }}
+                    />
                   ) : (
                     <input
                       type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
@@ -232,15 +257,20 @@ export function BuatBaruModal({
               ))}
             </div>
 
-            {/* Items mini-table */}
+            {/* Items — daftar produk/jasa pada dokumen */}
             {itemFields && (
               <div style={{ marginTop: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#001526" }}>Rincian Item</span>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#001526" }}>Rincian Item</div>
+                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                      Tambah produk/jasa yang dijual pada dokumen ini — pilih produk, kode &amp; harga terisi otomatis
+                    </div>
+                  </div>
                   <button
                     onClick={() => setItems([...items, { nama: "", qty: 1, harga: 0 }])}
                     style={{
-                      display: "inline-flex", alignItems: "center", gap: 4,
+                      display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
                       padding: "4px 10px", fontSize: 11, fontWeight: 600,
                       background: "#eef4ff", color: "#0176d3",
                       border: "1px solid #c2dbf5", borderRadius: 4, cursor: "pointer",
@@ -249,78 +279,66 @@ export function BuatBaruModal({
                     <Plus size={11} /> Tambah Baris
                   </button>
                 </div>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                  <thead>
-                    <tr>
-                      <th style={labelStyle}>Item</th>
-                      <th style={{ ...labelStyle, width: 80, textAlign: "right" }}>Qty</th>
-                      <th style={{ ...labelStyle, width: 120, textAlign: "right" }}>Harga</th>
-                      <th style={{ ...labelStyle, width: 120, textAlign: "right" }}>Total</th>
-                      <th style={{ width: 30 }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((it, idx) => (
-                      <tr key={idx}>
-                        <td style={{ padding: "4px 4px 4px 0" }}>
-                          {itemProducts ? (
-                            <ProductPicker
-                              products={itemProducts}
-                              value={it.nama}
-                              onPick={(label, harga) => {
-                                const next = [...items]
-                                next[idx] = { ...next[idx], nama: label, harga: harga ?? next[idx].harga }
-                                setItems(next)
-                              }}
-                            />
-                          ) : (
-                            <input
-                              type="text"
-                              style={inputStyle}
-                              placeholder="Nama barang..."
-                              value={it.nama}
-                              onChange={(e) => {
-                                const next = [...items]; next[idx] = { ...next[idx], nama: e.target.value }; setItems(next)
-                              }}
-                            />
-                          )}
-                        </td>
-                        <td style={{ padding: "4px 4px" }}>
-                          <input
-                            type="number"
-                            style={{ ...inputStyle, textAlign: "right" }}
-                            value={it.qty}
-                            onChange={(e) => {
-                              const next = [...items]; next[idx] = { ...next[idx], qty: Number(e.target.value) }; setItems(next)
-                            }}
-                          />
-                        </td>
-                        <td style={{ padding: "4px 4px" }}>
-                          <input
-                            type="number"
-                            style={{ ...inputStyle, textAlign: "right" }}
-                            value={it.harga}
-                            onChange={(e) => {
-                              const next = [...items]; next[idx] = { ...next[idx], harga: Number(e.target.value) }; setItems(next)
-                            }}
-                          />
-                        </td>
-                        <td style={{ padding: "4px 4px", textAlign: "right", fontFamily: "monospace", fontWeight: 600 }}>
-                          Rp {(it.qty * it.harga).toLocaleString("id-ID")}
-                        </td>
-                        <td style={{ padding: "4px 0 4px 4px" }}>
-                          <button
-                            onClick={() => setItems(items.filter((_, i) => i !== idx))}
-                            style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ea001e", padding: 2 }}
-                            aria-label="Hapus baris"
-                          >
-                            <X size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+                {items.map((it, idx) => (
+                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {itemProducts ? (
+                        <ProductPicker
+                          products={itemProducts}
+                          value={it.nama}
+                          onPick={(label, harga) => {
+                            const next = [...items]
+                            next[idx] = { ...next[idx], nama: label, harga: harga ?? next[idx].harga }
+                            setItems(next)
+                          }}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          style={inputStyle}
+                          placeholder="Nama barang..."
+                          value={it.nama}
+                          onChange={(e) => {
+                            const next = [...items]; next[idx] = { ...next[idx], nama: e.target.value }; setItems(next)
+                          }}
+                        />
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Qty"
+                      style={{ ...inputStyle, width: 64, textAlign: "right", flexShrink: 0 }}
+                      value={it.qty || ""}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "")
+                        const next = [...items]; next[idx] = { ...next[idx], qty: digits ? Number(digits) : 0 }; setItems(next)
+                      }}
+                    />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Harga"
+                      style={{ ...inputStyle, width: 116, textAlign: "right", flexShrink: 0 }}
+                      value={it.harga ? it.harga.toLocaleString("id-ID") : ""}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "")
+                        const next = [...items]; next[idx] = { ...next[idx], harga: digits ? Number(digits) : 0 }; setItems(next)
+                      }}
+                    />
+                    <span style={{ width: 110, flexShrink: 0, textAlign: "right", fontFamily: "monospace", fontWeight: 600, fontSize: 12, color: "#001526" }}>
+                      Rp {((it.qty || 0) * (it.harga || 0)).toLocaleString("id-ID")}
+                    </span>
+                    <button
+                      onClick={() => setItems(items.filter((_, i) => i !== idx))}
+                      style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ea001e", padding: 2, flexShrink: 0 }}
+                      aria-label="Hapus baris"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: 20, marginTop: 10, paddingTop: 8, borderTop: "1px solid #e0e0e0", fontSize: 13 }}>
                   <span>Sub Total: <b>Rp {total.toLocaleString("id-ID")}</b></span>
                   <span style={{ color: "#0176d3", fontWeight: 700 }}>Total: Rp {total.toLocaleString("id-ID")}</span>
@@ -415,7 +433,8 @@ function ProductPicker({
             filtered.map((p) => (
               <div
                 key={p.value}
-                onMouseDown={() => {
+                onMouseDown={(e) => {
+                  e.preventDefault()
                   onPick(p.label, p.harga)
                   setQ("")
                   setOpen(false)

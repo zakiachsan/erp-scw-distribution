@@ -1,0 +1,340 @@
+/* Daftar Laporan — data struktur menu laporan (framework isi laporan menyusul dari user).
+ * Tiap laporan: { title, desc, icon: "doc" | "grid" | "chart" }.
+ * Icon: doc = biru (laporan detail/standar), grid = ungu (daftar/agregasi), chart = oranye (grafik).
+ */
+
+export type ReportIcon = "doc" | "grid" | "chart"
+
+export interface ReportItem {
+  title: string
+  desc: string
+  icon: ReportIcon
+}
+
+export interface ReportCategory {
+  key: string
+  label: string
+  labelEn: string
+  reports: ReportItem[]
+}
+
+function r(title: string, desc: string, icon: ReportIcon = "doc"): ReportItem {
+  return { title, desc, icon }
+}
+
+function chart(t: string, d: string): ReportItem {
+  return r(t, d, "chart")
+}
+function grid(t: string, d: string): ReportItem {
+  return r(t, d, "grid")
+}
+
+export const REPORT_CATEGORIES: ReportCategory[] = [
+  {
+    key: "keuangan",
+    label: "Keuangan", labelEn: "Finance",
+    reports: [
+      r("Laba/Rugi (Standar)", "Menampilkan laporan laba rugi untuk periode yang dipilih"),
+      r("Laba/Rugi (Multi Periode)", "Menampilkan laba rugi bulanan pada rentang periode terpilih"),
+      r("Laba/Rugi (Multi Year)", "Menampilkan laba rugi per akhir tahun pada rentang periode 3 tahun terakhir"),
+      r("Laba/Rugi (Kuartal)", "Menampilkan laba rugi kuartal pada tahun yang dipilih"),
+      r("Laba/Rugi (Perbandingan Periode)", "Menampilkan laba rugi dibandingkan dengan periode lalu; selisihnya ditampilkan dengan persentase"),
+      r("Laba/Rugi (Perbandingan Anggaran)", "Menampilkan laba rugi dengan kolom anggaran, perbandingan, dan persentasenya"),
+      r("Neraca (Standar)", "Menampilkan Neraca Standar"),
+      r("Neraca (Multi Periode)", "Menampilkan Neraca per akhir bulan pada rentang periode terpilih"),
+      r("Neraca (Multi Year)", "Menampilkan Neraca per akhir tahun pada rentang periode 3 tahun terakhir"),
+      r("Neraca (Perbandingan Periode)", "Menampilkan Neraca dibandingkan dengan periode lalu; selisihnya ditampilkan dengan persentase"),
+      r("Neraca (Induk Skontro)", "Menampilkan laporan neraca secara horizontal"),
+      r("Arus Kas (Langsung)", "Menampilkan arus kas masuk dan keluar untuk periode spesifik"),
+      r("Arus Kas (Tak Langsung)", "Menampilkan arus kas masuk dan keluar untuk periode spesifik"),
+      r("Rincian Arus Kas (Tak Langsung)", "Menampilkan arus kas untuk periode spesifik; 3 bagian: aktivitas operasi, investasi, pendanaan"),
+      chart("Proyeksi Kas per Bulan", "Menampilkan perkiraan nilai kas pada 5 bulan ke depan"),
+      chart("Proyeksi Ketersediaan Kas", "Menampilkan grafik proyeksi ketersediaan/kecukupan kas di periode yang akan datang"),
+      grid("Rincian Gaji Karyawan per Bulan", "Menampilkan rincian gaji dan tunjangan per karyawan per bulan"),
+      grid("Rincian Gaji Karyawan per Tahun", "Menampilkan rincian gaji dan tunjangan per karyawan per tahun"),
+      chart("Porsi Gaji Karyawan", "Menampilkan proporsi nilai gaji semua karyawan"),
+      grid("Rasio Keuangan (Per Tahun)", "Menampilkan informasi rasio tahunan atas data perusahaan"),
+      grid("Rasio Keuangan (Per Bulan)", "Menampilkan informasi rasio per bulan atas data perusahaan"),
+    ],
+  },
+  {
+    key: "buku-besar",
+    label: "Buku Besar", labelEn: "General Ledger",
+    reports: [
+      r("Keseluruhan Jurnal", "Laporan yang menampilkan semua jurnal dari transaksi"),
+      r("Keseluruhan Jurnal (CSV)", "Unduh data CSV laporan yang menampilkan semua jurnal dari transaksi"),
+      r("Ringkasan Buku Besar", "Laporan ringkasan buku besar"),
+      r("Histori Buku Besar", "Laporan histori buku besar"),
+      r("Histori Buku Besar (CSV)", "Unduh data CSV laporan histori buku besar"),
+      r("Rincian Buku Besar", "Laporan rincian buku besar"),
+      r("Rincian Buku Besar (CSV)", "Unduh data CSV laporan rincian buku besar"),
+      r("Rincian Jurnal Akun", "Laporan yang menampilkan rincian proses penjurnalan pada setiap akun pada periode terpilih"),
+      r("Rincian Jurnal Akun (CSV)", "Unduh data CSV laporan rincian proses penjurnalan pada setiap akun"),
+      r("Laba/Rugi Terealisasi", "Menampilkan untung/rugi akibat perbedaan nilai tukar antara faktur dengan pembayarannya"),
+      r("Laba/Rugi Tidak Terealisasi", "Menampilkan untung/rugi tidak terealisasi akibat perbedaan nilai tukar setelah proses akhir bulan"),
+      r("Neraca Percobaan", "Laporan yang menampilkan nilai perubahan akun perkiraan"),
+      r("Daftar Akun Perkiraan", "Laporan yang berisi daftar akun perkiraan"),
+      r("Jurnal Umum", "Laporan yang berisi daftar jurnal umum"),
+      grid("Pajak Penghasilan Karyawan", "Menampilkan daftar nilai pajak penghasilan karyawan per bulan"),
+    ],
+  },
+  {
+    key: "kas-bank",
+    label: "Kas & Bank", labelEn: "Cash & Bank",
+    reports: [
+      r("Histori Bank", "Laporan histori bank"),
+      r("Transaksi Bank Terekonsiliasi", "Laporan transaksi bank yang telah direkonsiliasi"),
+      r("Transaksi Bank Belum Terekonsiliasi", "Laporan transaksi bank yang belum direkonsiliasi"),
+      grid("Ringkasan Pembayaran per Bank", "Laporan ringkasan pembayaran per bank"),
+      grid("Ringkasan Penerimaan per Bank", "Laporan ringkasan penerimaan per bank"),
+      r("Giro Mundur (Belum Jatuh Tempo)", "Laporan daftar cek yang belum jatuh tempo"),
+      r("Arus Kas per Akun", "Laporan arus kas untuk rincian per akun pengeluaran/pemasukan"),
+      grid("Rincian Pembayaran per Bank", "Laporan rincian pembayaran per bank"),
+      grid("Rincian Penerimaan per Bank", "Laporan rincian penerimaan per bank"),
+      r("Daftar Kas", "Laporan daftar akun kas dan bank"),
+      r("Rekening Koran", "Menampilkan rincian rekening koran atas bank dalam rentang waktu tertentu"),
+      grid("Ringkasan Daftar Pembayaran", "Laporan yang berisi ringkasan daftar pembayaran"),
+      grid("Ringkasan Daftar Penerimaan", "Laporan yang berisi ringkasan daftar penerimaan"),
+      r("Rincian Beban Pembayaran", "Laporan yang berisi rincian beban pembayaran"),
+      r("Rekonsiliasi Bank (Jurnal terhadap Rekening Koran)", "Laporan rekonsiliasi bank yang difilter berdasarkan tanggal jurnal"),
+      r("Rekonsiliasi Bank (Rekening Koran terhadap Jurnal)", "Laporan rekonsiliasi bank yang difilter berdasarkan tanggal rekening koran"),
+      grid("Daftar Piutang Karyawan", "Menampilkan rincian peminjaman karyawan"),
+      grid("Angsuran Pinjaman per Karyawan", "Menampilkan angsuran pinjaman per karyawan"),
+    ],
+  },
+  {
+    key: "piutang",
+    label: "Piutang", labelEn: "Receivables",
+    reports: [
+      r("Faktur Belum Lunas", "Menampilkan faktur-faktur yang belum dilunasi"),
+      grid("Faktur Belum Lunas per Pelanggan", "Menampilkan total faktur dari pelanggan yang belum lunas"),
+      grid("Umur Piutang", "Menampilkan umur dari piutang pelanggan yang belum lunas"),
+      r("Rincian Umur Piutang", "Menampilkan umur dari piutang faktur-faktur yang belum lunas"),
+      r("Histori Piutang", "Menampilkan transaksi detail dari piutang pelanggan"),
+      grid("Buku Besar Pembantu Piutang", "Menampilkan nilai faktur, penerimaan, dan retur per pelanggan"),
+      r("Rincian Buku Besar Pembantu Piutang", "Menampilkan rincian transaksi faktur, penerimaan, dan retur per pelanggan"),
+      r("Rata-rata Pembayaran Pelanggan", "Menampilkan rata-rata hari pelanggan membayar tagihan"),
+      chart("Grafik Rata-rata Pembayaran Pelanggan", "Menampilkan grafik rata-rata hari pelanggan membayar tagihan per bulan"),
+      chart("Grafik Umur Piutang", "Menampilkan grafik umur dari piutang pelanggan yang belum lunas"),
+      r("Pernyataan Piutang", "Menampilkan pernyataan rincian piutang kepada pelanggan"),
+      r("Pembayaran Faktur", "Menampilkan daftar pembayaran atas faktur-faktur"),
+      r("Pembayaran PPh Penjualan", "Menampilkan daftar pembayaran atas pemotongan pajak penghasilan penjualan"),
+      r("Penerimaan Penjualan", "Menampilkan daftar penerimaan pembayaran dari pelanggan"),
+      r("Rincian Penerimaan Penjualan", "Menampilkan rincian daftar penerimaan pembayaran dari pelanggan"),
+      grid("Sisa Kredit Pelanggan", "Menampilkan daftar sisa kredit (kelebihan bayar) per pelanggan"),
+      grid("Limit Piutang Pelanggan", "Laporan daftar pelanggan beserta sisa limit piutang yang masih diperbolehkan"),
+      grid("Daftar Pelanggan", "Laporan yang berisi daftar pelanggan"),
+    ],
+  },
+  {
+    key: "penjualan",
+    label: "Penjualan", labelEn: "Sales",
+    reports: [
+      grid("Penjualan per Pelanggan", "Menampilkan daftar nilai penjualan per pelanggan"),
+      grid("Penjualan per Barang", "Menampilkan daftar nilai penjualan per barang"),
+      grid("Penjualan per Merek", "Menampilkan daftar nilai penjualan per merek"),
+      grid("Penjualan per Cabang", "Menampilkan daftar nilai penjualan per cabang"),
+      grid("Penjualan Barang per Gudang", "Menampilkan nilai penjualan barang per gudang"),
+      grid("Penjualan Barang per Cabang", "Menampilkan nilai penjualan barang per cabang"),
+      grid("Penjualan Barang per Pelanggan", "Menampilkan nilai penjualan barang per pelanggan"),
+      grid("Penjualan Pelanggan per Barang", "Menampilkan nilai penjualan pelanggan per barang"),
+      r("Histori Proses Penjualan", "Menampilkan rantai proses penjualan dari penawaran hingga pembayaran"),
+      r("Rincian Penjualan per Barang", "Menampilkan rincian nilai penjualan per barang"),
+      r("Rincian Penjualan per Pelanggan", "Menampilkan rincian nilai penjualan per pelanggan"),
+      grid("Retur Penjualan per Barang", "Menampilkan daftar nilai retur penjualan per barang"),
+      chart("Grafik Penjualan Bulanan", "Menampilkan grafik penjualan bulanan"),
+      chart("Porsi Penjualan per Barang", "Menampilkan porsi penjualan dari barang"),
+      chart("Porsi Penjualan per Pelanggan", "Menampilkan porsi penjualan dari pelanggan"),
+      grid("Penawaran per Barang (Belum Proses)", "Menampilkan nilai penawaran penjualan yang belum diproses per barang"),
+      grid("Penawaran per Pelanggan (Belum Proses)", "Menampilkan nilai penawaran penjualan yang belum diproses per pelanggan"),
+      grid("Pesanan per Pelanggan (Belum Proses)", "Menampilkan nilai pesanan penjualan yang belum diproses per pelanggan"),
+    ],
+  },
+  {
+    key: "tenaga-penjual",
+    label: "Tenaga Penjual", labelEn: "Salespeople",
+    reports: [
+      r("Faktur Belum Lunas per Penjual", "Menampilkan faktur-faktur yang belum dilunasi, dikelompokkan per penjual"),
+      grid("Umur Piutang per Penjual", "Menampilkan umur dari piutang pelanggan per penjual"),
+      r("Rincian Umur Piutang per Penjual", "Menampilkan rincian transaksi atas umur piutang pelanggan per penjual"),
+      r("Faktur Penjualan per Penjual", "Menampilkan daftar faktur penjualan, dikelompokkan per penjual"),
+      grid("Penjualan Barang per Penjual", "Menampilkan nilai penjualan barang per penjual"),
+      grid("Retur Penjualan per Penjual", "Menampilkan daftar retur penjualan, dikelompokkan per penjual"),
+      r("Ringkasan Komisi (Dihitung per Periode)", "Laporan nilai komisi tiap tenaga penjual dengan perhitungan kumulatif per bulan"),
+      r("Ringkasan Komisi (Dihitung per Faktur)", "Laporan nilai komisi tiap tenaga penjual dengan perhitungan per faktur"),
+      r("Rincian Komisi (Dihitung per Periode)", "Laporan rincian perhitungan nilai komisi bulanan tenaga penjual"),
+      r("Rincian Komisi (Dihitung per Faktur)", "Laporan rincian perhitungan nilai komisi tenaga penjual dari tiap faktur"),
+      grid("Daftar Komisi Penjual", "Laporan yang berisi daftar perhitungan komisi untuk tenaga penjual"),
+      r("Histori Transaksi per Penjual", "Menampilkan histori transaksi per penjual"),
+      r("Check In per Karyawan", "Menampilkan rincian check in per karyawan pada tanggal dan karyawan yang dipilih"),
+    ],
+  },
+  {
+    key: "utang",
+    label: "Utang", labelEn: "Payables",
+    reports: [
+      r("Faktur Belum Lunas", "Menampilkan faktur-faktur yang belum dilunasi"),
+      grid("Faktur Belum Lunas per Pemasok", "Menampilkan total faktur dari pemasok yang belum lunas"),
+      grid("Umur Utang", "Menampilkan umur dari utang kepada pemasok yang belum lunas"),
+      r("Rincian Umur Utang", "Menampilkan umur dari utang faktur-faktur yang belum lunas"),
+      r("Histori Utang", "Menampilkan transaksi detail dari utang ke pemasok"),
+      grid("Buku Besar Pembantu Utang", "Menampilkan nilai faktur, pembayaran, dan retur per pemasok"),
+      r("Rincian Buku Besar Pembantu Utang", "Menampilkan rincian transaksi faktur, pembayaran, dan retur per pemasok"),
+      chart("Grafik Umur Utang", "Menampilkan grafik umur dari utang kepada pemasok yang belum lunas"),
+      r("Pernyataan Utang", "Menampilkan pernyataan atas rincian utang perusahaan kepada pemasok"),
+      r("Pembayaran Faktur", "Menampilkan daftar pembayaran atas faktur-faktur"),
+      r("Pembayaran PPh Pembelian", "Menampilkan daftar pembayaran atas pemotongan pajak penghasilan pembelian"),
+      r("Pembayaran Pembelian", "Menampilkan daftar pembayaran ke pemasok"),
+      r("Rincian Pembayaran Pembelian", "Menampilkan rincian daftar pembayaran ke pemasok"),
+      grid("Utang per Bulan", "Laporan daftar pemasok dengan rincian nilai utang per periode dalam setahun"),
+      grid("Daftar Pemasok", "Laporan yang berisi daftar pemasok"),
+    ],
+  },
+  {
+    key: "pembelian",
+    label: "Pembelian", labelEn: "Purchasing",
+    reports: [
+      grid("Pembelian per Pemasok", "Menampilkan daftar nilai pembelian per pemasok"),
+      grid("Pembelian per Barang", "Menampilkan daftar nilai pembelian per barang"),
+      grid("Pembelian per Biaya", "Menampilkan daftar nilai pembelian per biaya"),
+      r("Rincian Pembelian per Pemasok", "Menampilkan rincian nilai pembelian per pemasok"),
+      r("Rincian Pembelian per Barang", "Menampilkan rincian nilai pembelian per barang"),
+      r("Histori Proses Pembelian", "Menampilkan rantai proses pembelian dari permintaan hingga pembayaran"),
+      grid("Uang Muka Pembelian", "Menampilkan daftar uang muka pembelian, dikelompokkan per pemasok"),
+      grid("Retur Pembelian per Barang", "Menampilkan nilai retur per barang"),
+      grid("Pesanan per Pemasok (Belum Proses)", "Menampilkan nilai pesanan pembelian yang belum diproses per pemasok"),
+      grid("Pesanan per Barang (Belum Proses)", "Menampilkan nilai pesanan pembelian yang belum diproses per barang"),
+      grid("Daftar Pesanan Pembelian", "Laporan yang berisi daftar pesanan pembelian"),
+      r("Rincian Pesanan Pembelian", "Laporan yang berisi rincian barang pada pesanan pembelian"),
+      grid("Daftar Penerimaan Barang", "Laporan yang berisi daftar penerimaan barang"),
+      r("Rincian Penerimaan Barang", "Laporan yang berisi rincian barang pada penerimaan barang"),
+      grid("Daftar Faktur Pembelian", "Laporan yang berisi daftar faktur pembelian"),
+      r("Rincian Faktur Pembelian", "Laporan yang berisi rincian barang pada faktur pembelian"),
+      grid("Daftar Retur Pembelian", "Laporan yang berisi daftar retur pembelian"),
+      r("Rincian Retur Pembelian", "Laporan yang berisi rincian barang pada retur pembelian"),
+    ],
+  },
+  {
+    key: "persediaan",
+    label: "Persediaan", labelEn: "Inventory",
+    reports: [
+      r("Nilai Persediaan", "Laporan perubahan nilai stok dan biaya barang dalam kurun waktu terpilih"),
+      r("Rincian Nilai Persediaan", "Laporan rincian transaksi perubahan nilai stok dan biaya barang"),
+      r("Rincian Nilai Persediaan (CSV)", "Unduh data CSV rincian transaksi perubahan nilai stok dan biaya barang"),
+      r("Ketersediaan Stok Penjualan", "Laporan kuantitas barang yang tersedia untuk dijual"),
+      r("Rincian Ketersediaan Stok Penjualan", "Laporan rincian stok barang yang tersedia untuk dijual"),
+      grid("Umur Persediaan", "Laporan yang berisi daftar umur dari stok barang"),
+      r("Rincian Umur Persediaan", "Laporan rincian umur dari stok barang"),
+      r("Kartu Stok Persediaan", "Laporan rincian histori stok masuk dan keluar barang"),
+      grid("Permintaan per Barang (Belum Proses)", "Menampilkan nilai barang yang belum diproses per barang"),
+      grid("Daftar Permintaan Barang", "Laporan yang berisi daftar permintaan barang"),
+      r("Rincian Permintaan Barang", "Laporan rincian barang pada permintaan barang"),
+      grid("Status Pesanan Permintaan Barang", "Laporan status dan nilai pesanan atas barang pada permintaan barang"),
+      grid("Barang Grup", "Menampilkan rincian barang-barang dari barang jenis grup"),
+      r("Penyesuaian Stok Barang", "Menampilkan rincian penyesuaian stok barang"),
+      grid("Daftar Barang dan Jasa", "Laporan yang berisi daftar barang dan jasa"),
+      grid("Umur Nomor Seri/Batch", "Menampilkan laporan umur nomor seri/batch dari stok barang"),
+    ],
+  },
+  {
+    key: "gudang",
+    label: "Gudang", labelEn: "Warehouse",
+    reports: [
+      grid("Kuantitas Barang per Gudang", "Menampilkan daftar stok barang per masing-masing gudang"),
+      r("Mutasi per Gudang", "Menampilkan rincian mutasi masuk dan keluar barang per gudang"),
+      r("Mutasi per Barang", "Menampilkan rincian mutasi masuk dan keluar barang per barang"),
+      grid("Ringkasan Mutasi Gudang", "Menampilkan ringkasan mutasi masuk dan keluar barang per gudang"),
+      grid("Stok Nomor Seri/Produksi", "Menampilkan daftar stok nomor seri/produksi barang"),
+      grid("Stok Nomor Seri/Produksi per Barang", "Menampilkan daftar stok nomor seri/produksi per barang per gudang"),
+      grid("Stok Nomor Seri/Produksi per Gudang", "Menampilkan daftar stok nomor seri/produksi per gudang per barang"),
+      r("Histori Nomor Seri/Produksi", "Menampilkan histori mutasi nomor seri/produksi barang"),
+      r("Mutasi Nomor Seri/Produksi", "Menampilkan mutasi masuk dan keluar nomor seri/produksi barang"),
+      r("Nomor Produksi Segera Kadaluarsa", "Menampilkan laporan nomor seri/produksi yang akan segera kadaluarsa"),
+      grid("Sisa Umur per Nomor Produksi", "Menampilkan data sisa umur dari nomor produksi barang"),
+      r("Lembar Penghitungan Stok", "Menampilkan lembar penghitungan stok barang"),
+      r("Barang Diterima Sebagian", "Laporan pemindahan barang antar gudang di mana barang diterima sebagian"),
+      r("Rincian Pemindahan Barang", "Laporan yang berisi pemindahan barang antar gudang"),
+      grid("Ringkasan Pemindahan Barang", "Ringkasan pemindahan barang"),
+      grid("Daftar Gudang", "Laporan yang berisi daftar gudang"),
+    ],
+  },
+  {
+    key: "pekerjaan-pesanan",
+    label: "Pekerjaan Pesanan", labelEn: "Job Orders",
+    reports: [
+      grid("Bahan dan Biaya Pekerjaan per Bulan", "Laporan data bahan dan biaya pekerjaan pesanan per bulan"),
+      grid("Penyelesaian Barang/Biaya per Bulan", "Laporan penyelesaian barang dan biaya pekerjaan pesanan"),
+      r("Histori Pekerjaan Pesanan", "Laporan histori pekerjaan pesanan"),
+      r("Rincian Jurnal Pekerjaan Pesanan", "Laporan rincian jurnal dari pekerjaan pesanan"),
+      r("Rincian Penambahan Bahan Baku", "Menampilkan rincian penambahan bahan baku dari pekerjaan pesanan"),
+      grid("Daftar Penambahan Bahan Baku", "Laporan yang berisi daftar penambahan bahan baku"),
+      r("Rincian Akun Penyelesaian Pesanan", "Laporan yang berisi rincian akun pada penyelesaian pesanan"),
+      r("Rincian Barang Penyelesaian Pesanan", "Laporan yang berisi rincian barang pada penyelesaian pesanan"),
+      grid("Daftar Penyelesaian Pesanan", "Laporan yang berisi daftar penyelesaian pesanan"),
+      grid("Daftar Pekerjaan Pesanan", "Laporan yang berisi daftar pekerjaan pesanan"),
+    ],
+  },
+  {
+    key: "manufaktur",
+    label: "Manufaktur", labelEn: "Manufacturing",
+    reports: [
+      r("Jurnal Perintah Kerja", "Menampilkan histori jurnal dari perintah kerja yang dipilih"),
+      r("Penyesuaian Bahan (Harga Pokok Produksi)", "Laporan nilai penyesuaian bahan baku sebagai rincian penyesuaian bahan di laporan HPP"),
+      r("Pembelian (Harga Pokok Produksi)", "Laporan nilai pembelian bahan baku sebagai rincian pembelian bahan di laporan HPP"),
+    ],
+  },
+  {
+    key: "aset-tetap",
+    label: "Aset Tetap", labelEn: "Fixed Assets",
+    reports: [
+      grid("Daftar Aset Tetap", "Laporan yang berisi daftar aset tetap"),
+      grid("Aset Tetap per Kategori", "Laporan daftar aset tetap yang dikelompokkan per kategori aset"),
+      r("Detail Aset Tetap", "Laporan yang berisi detail aset tetap"),
+      r("Histori Aset", "Menampilkan nilai aset, penyusutan, beban, nilai buku, dan laba rugi"),
+      r("Histori Lokasi Aset", "Menampilkan histori perpindahan lokasi aset"),
+      r("Histori Perubahan Aset", "Menampilkan perubahan apa saja pada aset"),
+      r("Jurnal Aset", "Menampilkan histori jurnal dari aset yang dipilih"),
+      r("Perbedaan Penyusutan", "Laporan jumlah dan perbedaan antara penyusutan akuntansi dan pajak"),
+      grid("Daftar Perubahan Aset Tetap", "Laporan yang berisi daftar perubahan aset tetap"),
+      grid("Daftar Disposisi Aset Tetap", "Laporan yang berisi daftar disposisi aset tetap"),
+      grid("Daftar Kategori Aset Tetap Pajak", "Laporan yang berisi daftar kategori aset tetap pajak"),
+    ],
+  },
+  {
+    key: "pajak",
+    label: "Pajak", labelEn: "Tax",
+    reports: [
+      r("Daftar PPN/PPnBM Keluaran", "Menampilkan rincian nilai pajak keluaran"),
+      r("Daftar PPN/PPnBM Masukan", "Menampilkan rincian nilai pajak masukan"),
+      r("Rekonsiliasi PPN Lebih/Kurang Bayar", "Menampilkan rincian selisih antara pajak masukan dengan pajak keluaran"),
+      r("Faktur Penjualan SPT Masa PPN", "Laporan daftar faktur penjualan yang sudah tercatat di SPT PPN/PPnBM"),
+      r("Faktur Pembelian SPT Masa PPN", "Laporan daftar faktur pembelian yang sudah tercatat di SPT PPN/PPnBM"),
+      r("Daftar Bukti Potong PPh Penjualan", "Menampilkan daftar bukti potong PPh penerimaan penjualan"),
+      r("Daftar Bukti Potong PPh Pembelian", "Menampilkan daftar bukti potong PPh pembayaran pembelian"),
+    ],
+  },
+  {
+    key: "pemeriksaan",
+    label: "Pemeriksaan", labelEn: "Audit",
+    reports: [
+      r("Selisih Saldo Akun Persediaan dengan Nilai Barang", "Menampilkan rincian perbedaan nilai antara akun persediaan dengan nilai barang"),
+      r("Perbedaan Persediaan Terkirim Pemindahan Barang", "Menampilkan daftar pindah barang yang sudah diproses namun jurnal akun persediaan terkirim ada perbedaan"),
+      r("Laporan Rincian Penyetuju Transaksi", "Menampilkan laporan penyetuju setiap transaksi"),
+      r("Selisih Akun Pembelian Belum Tertagih", "Menampilkan rincian dari nilai pembelian belum tertagih"),
+    ],
+  },
+  {
+    key: "lain-lain",
+    label: "Lain-lain", labelEn: "Others",
+    reports: [
+      grid("Daftar FOB", "Laporan yang berisi daftar FOB"),
+      grid("Daftar Pajak", "Laporan yang berisi daftar pajak"),
+      grid("Daftar Pengiriman", "Laporan yang berisi daftar jenis pengiriman"),
+      grid("Daftar Karyawan", "Laporan yang berisi daftar karyawan"),
+      grid("Daftar Log Aktifitas", "Laporan yang berisi daftar log aktifitas"),
+      grid("Daftar Pengguna per Cabang", "Laporan yang berisi daftar pengguna per cabang"),
+    ],
+  },
+]
+
+export const CABANG_OPTIONS = ["cabang.all", "cabang.jkt", "cabang.bdg", "cabang.sby"]

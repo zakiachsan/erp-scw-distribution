@@ -64,7 +64,7 @@ export default function TargetPenjualanPage() {
         ]}
         itemFields={[
           { key: "qty", label: "Kuantitas", type: "number", defaultValue: 1 },
-          { key: "nilai", label: "Nilai", type: "number", defaultValue: 0 },
+          { key: "nilai", label: "Nilai", type: "money", defaultValue: 0 },
         ]}
         itemProducts={PRODUCT_OPTIONS}
         onSave={() => setShowForm(false)}

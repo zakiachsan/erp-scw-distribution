@@ -63,7 +63,7 @@ export default function PenyesuaianHargaDiskonPage() {
           { key: "mulaiBerlaku", label: "Mulai Berlaku", type: "date", defaultValue: "2026-07-01", required: true },
         ]}
         itemFields={[
-          { key: "hargaBaru", label: "Harga Baru", type: "number", defaultValue: 0 },
+          { key: "hargaBaru", label: "Harga Baru", type: "money", defaultValue: 0 },
         ]}
         itemProducts={PRODUCT_OPTIONS}
         onSave={() => setShowForm(false)}

@@ -55,7 +55,7 @@ export default function UangMukaPenjualanPage() {
         fields={[
           { key: "pelanggan", label: "Customer", type: "combobox", options: CUSTOMER_OPTIONS, required: true, placeholder: "Cari/Pilih Pelanggan..." },
           { key: "tanggal", label: "Date", type: "date", defaultValue: "2026-07-06", required: true },
-          { key: "downPayment", label: "Down Payment", type: "number", defaultValue: 0, required: true },
+          { key: "downPayment", label: "Down Payment", type: "money", defaultValue: 0, required: true },
           { key: "poNo", label: "PO No", type: "text", placeholder: "No. PO pelanggan..." },
           { key: "pajak", label: "Pajak", type: "select", options: [{ value: "taxable", label: "Taxable" }, { value: "inclusive", label: "Total Inclusive Tax" }], defaultValue: "inclusive" },
         ]}

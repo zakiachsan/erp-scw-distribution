@@ -2,9 +2,12 @@
 
 import { useState } from "react"
 import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download, ArrowLeft } from "lucide-react"
-import { dummySalesOrders, type SalesOrder } from "@/lib/accounting-dummy-data"
+import { dummySalesOrders, type SalesOrder, dummyCustomers, dummyProducts } from "@/lib/accounting-dummy-data"
 import { JournalDetailPanel } from "@/components/accounting/journal-detail-panel"
 import { BuatBaruModal } from "@/components/accounting/buat-baru-modal"
+
+const CUSTOMER_OPTIONS = dummyCustomers.map((c) => ({ value: c.nama, label: c.nama }))
+const PRODUCT_OPTIONS = dummyProducts.map((p) => ({ value: p.id, label: p.nama, kode: p.kode, harga: p.hargaJual }))
 
 const thStyle: React.CSSProperties = { padding: "8px 10px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#444746", textTransform: "uppercase", letterSpacing: "0.04em", background: "#fff", borderBottom: "1px solid #e0e0e0" }
 const thRight: React.CSSProperties = { ...thStyle, textAlign: "right" }
@@ -61,19 +64,14 @@ export default function FakturPenjualanPage() {
       </div>
 
       <BuatBaruModal
+        key={String(showForm)}
         open={showForm}
         onOpenChange={setShowForm}
         title="Buat Faktur Penjualan"
         subtitle="Faktur baru akan berstatus Draft"
         fields={[
-          { key: "pelanggan", label: "Pelanggan", type: "select", required: true, options: [
-            { value: "PT Maju Bersama", label: "PT Maju Bersama" },
-            { value: "CV Karya Mandiri", label: "CV Karya Mandiri" },
-            { value: "UD Sukses Selalu", label: "UD Sukses Selalu" },
-            { value: "PT Teknindo Solusi", label: "PT Teknindo Solusi" },
-            { value: "Toko Berkah Abadi", label: "Toko Berkah Abadi" },
-          ]},
-          { key: "tanggal", label: "Tanggal", type: "date", required: true, defaultValue: "06/07/2026" },
+          { key: "pelanggan", label: "Pelanggan", type: "combobox", options: CUSTOMER_OPTIONS, required: true, placeholder: "Cari/Pilih Pelanggan..." },
+          { key: "tanggal", label: "Tanggal", type: "date", required: true, defaultValue: "2026-07-06" },
           { key: "tipeNomor", label: "Tipe Nomor", type: "select", defaultValue: "Sales Invoice", options: [
             { value: "Sales Invoice", label: "Sales Invoice" },
           ]},
@@ -84,6 +82,7 @@ export default function FakturPenjualanPage() {
           { key: "qty", label: "Qty", type: "number" },
           { key: "harga", label: "Harga", type: "number" },
         ]}
+        itemProducts={PRODUCT_OPTIONS}
         onSave={() => setShowForm(false)}
       />
 

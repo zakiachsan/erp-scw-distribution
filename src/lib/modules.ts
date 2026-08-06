@@ -249,6 +249,7 @@ export const MODULES: ModuleInfo[] = [
           { label: "Laporan Hutang Piutang", href: "/accounting/laporan/hutang-piutang" },
         ],
       },
+      { label: "Daftar Laporan", icon: "FileText", href: "/accounting/daftar-laporan" },
     ],
   },
   {

@@ -6,8 +6,11 @@
 
 import { useState } from "react"
 import { Plus, RefreshCw, Printer, Settings, Search, Filter, Download, Link2 } from "lucide-react"
-import { dummySalesOrders, type SalesOrder } from "@/lib/accounting-dummy-data"
+import { dummySalesOrders, type SalesOrder, dummyCustomers, dummyProducts } from "@/lib/accounting-dummy-data"
 import { BuatBaruModal } from "@/components/accounting/buat-baru-modal"
+
+const CUSTOMER_OPTIONS = dummyCustomers.map((c) => ({ value: c.nama, label: c.nama }))
+const PRODUCT_OPTIONS = dummyProducts.map((p) => ({ value: p.id, label: p.nama, kode: p.kode, harga: p.hargaJual }))
 
 function formatIDR(n: number) { return `Rp ${n.toLocaleString("id-ID")}` }
 
@@ -71,19 +74,14 @@ export default function PesananPenjualanPage() {
       </div>
 
       <BuatBaruModal
+        key={String(showForm)}
         open={showForm}
         onOpenChange={setShowForm}
         title="Buat Pesanan Penjualan"
         subtitle="Pesanan baru akan berstatus Draft"
         fields={[
-          { key: "pelanggan", label: "Pelanggan", type: "select", required: true, options: [
-            { value: "PT Maju Bersama", label: "PT Maju Bersama" },
-            { value: "CV Karya Mandiri", label: "CV Karya Mandiri" },
-            { value: "UD Sukses Selalu", label: "UD Sukses Selalu" },
-            { value: "PT Teknindo Solusi", label: "PT Teknindo Solusi" },
-            { value: "Toko Berkah Abadi", label: "Toko Berkah Abadi" },
-          ]},
-          { key: "tanggal", label: "Tanggal", type: "date", required: true, defaultValue: "06/07/2026" },
+          { key: "pelanggan", label: "Pelanggan", type: "combobox", options: CUSTOMER_OPTIONS, required: true, placeholder: "Cari/Pilih Pelanggan..." },
+          { key: "tanggal", label: "Tanggal", type: "date", required: true, defaultValue: "2026-07-06" },
           { key: "tipeNomor", label: "Tipe Nomor", type: "select", defaultValue: "Sales Order", options: [
             { value: "Sales Order", label: "Sales Order" },
           ]},
@@ -94,6 +92,7 @@ export default function PesananPenjualanPage() {
           { key: "qty", label: "Qty", type: "number" },
           { key: "harga", label: "Harga", type: "number" },
         ]}
+        itemProducts={PRODUCT_OPTIONS}
         onSave={() => setShowForm(false)}
       />
 
